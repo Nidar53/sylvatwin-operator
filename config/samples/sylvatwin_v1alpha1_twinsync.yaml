@@ -1,0 +1,13 @@
+apiVersion: sylvatwin.orange.com/v1alpha1
+kind: TwinSync
+metadata:
+  name: sylvatwin-local
+  namespace: default
+spec:
+  clusterID: local
+  # Chemins valables en execution locale (make run).
+  # Adapter a ton dossier de PoC.
+  gitDir: /home/ybxq3581/sylvatwin-poc/git-desired
+  tboxPath: /home/ybxq3581/sylvatwin-poc/sylvatwin-slice-v0.ttl
+  outputPath: /home/ybxq3581/sylvatwin-poc/sylvatwin-graph.ttl
+  resyncPeriod: 30s
