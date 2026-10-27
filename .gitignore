@@ -28,3 +28,12 @@ go.work
 
 # Kubeconfig might contain secrets
 *.kubeconfig
+# Secrets / acces cluster : ne jamais commiter
+*kubeconfig*
+*.token
+*.pem
+*.key
+.env
+# Graphes generes
+*.ttl.tmp
+.sylvatwin-*.ttl
