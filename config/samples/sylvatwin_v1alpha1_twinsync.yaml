@@ -7,7 +7,7 @@ spec:
   clusterID: local
   # Chemins valables en execution locale (make run).
   # Adapter a ton dossier de PoC.
-  gitDir: /home/ybxq3581/sylvatwin-poc/git-desired
-  tboxPath: /home/ybxq3581/sylvatwin-poc/sylvatwin-slice-v0.ttl
-  outputPath: /home/ybxq3581/sylvatwin-poc/sylvatwin-graph.ttl
+  gitDir: /chemin/vers/sylvatwin-poc/git-desired
+  tboxPath: /chemin/vers/sylvatwin-poc/sylvatwin-slice-v0.ttl
+  outputPath: /chemin/vers/sylvatwin-poc/sylvatwin-graph.ttl
   resyncPeriod: 30s

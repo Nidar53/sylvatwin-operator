@@ -144,7 +144,7 @@ kubectl get crd twinsyncs.sylvatwin.orange.com
 ```
 
 Adapter les chemins dans `config/samples/sylvatwin_v1alpha1_twinsync.yaml`
-(remplacer `ybxq3581` par ton utilisateur), puis :
+(remplacer `/chemin/vers/sylvatwin-poc` par le chemin de ton clone), puis :
 
 ```bash
 kubectl apply -f config/samples/sylvatwin_v1alpha1_twinsync.yaml
