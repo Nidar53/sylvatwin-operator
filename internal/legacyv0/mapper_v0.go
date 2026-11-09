@@ -19,8 +19,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 
-	"github.com/orange/sylvatwin-operator/internal/desired"
-	rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
+		rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
 )
 
 // labelTerm aplatit une paire cle/valeur en "cle=valeur".
@@ -35,7 +34,15 @@ func labelTerm(k, v string) rdf.Term {
 }
 
 // mapDesiredDeployment ecrit le cote DESIRED (source : Git).
-func MapDesiredDeployment(g *rdf.Graph, d desired.Deployment) {
+// DesiredDeployment : projection v0 du cote desire (ancien internal/desired.Deployment).
+type DesiredDeployment struct {
+	Name         string
+	Namespace    string
+	Replicas     int
+	NodeSelector map[string]string
+}
+
+func MapDesiredDeployment(g *rdf.Graph, d DesiredDeployment) {
 	subj := rdf.IRI("", d.Name) // pas de prefixe : point de rencontre avec le cluster
 
 	g.Add(subj, rdf.A, rdf.Class("Deployment"))

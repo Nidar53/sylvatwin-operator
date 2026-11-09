@@ -38,7 +38,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	sylvatwinv1alpha1 "github.com/orange/sylvatwin-operator/api/v1alpha1"
-	"github.com/orange/sylvatwin-operator/internal/desired"
 	rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
 	"github.com/orange/sylvatwin-operator/internal/legacyv0"
 )
@@ -120,7 +119,7 @@ func (r *TwinSyncReconciler) buildGraph(
 	now := time.Now()
 
 	// ---- COTE DESIRED (Git) — relu a CHAQUE reconciliation ---------------
-	deps, err := desired.Read(ts.Spec.GitDir)
+	deps, err := legacyv0.ReadGitDirV0(ts.Spec.GitDir)
 	if err != nil {
 		return nil, c, fmt.Errorf("lecture du cote desired : %w", err)
 	}

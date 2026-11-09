@@ -6,7 +6,7 @@ difference majeure : ici la lecture a lieu a CHAQUE reconciliation, pas
 seulement au demarrage. Une modification d'un YAML est donc prise en compte,
 ce qui supprime les fausses derives de la v1.
 */
-package desired
+package legacyv0
 
 import (
 	"os"
@@ -18,16 +18,10 @@ import (
 )
 
 // Deployment : la projection minimale dont la TBox a besoin.
-type Deployment struct {
-	Name         string
-	Namespace    string
-	Replicas     int
-	NodeSelector map[string]string
-}
 
 // Read parcourt dir/*.yaml et *.yml et retourne les Deployments declares.
 // Un dossier absent n'est pas une erreur : le cote desired est alors vide.
-func Read(dir string) ([]Deployment, error) {
+func ReadGitDirV0(dir string) ([]DesiredDeployment, error) {
 	if dir == "" {
 		return nil, nil
 	}
@@ -44,7 +38,7 @@ func Read(dir string) ([]Deployment, error) {
 		paths = append(paths, m...)
 	}
 
-	var out []Deployment
+	var out []DesiredDeployment
 	for _, p := range paths {
 		raw, err := os.ReadFile(p)
 		if err != nil {
@@ -66,7 +60,7 @@ func Read(dir string) ([]Deployment, error) {
 			if dep.Spec.Replicas != nil {
 				replicas = int(*dep.Spec.Replicas)
 			}
-			out = append(out, Deployment{
+			out = append(out, DesiredDeployment{
 				Name:         dep.Name,
 				Namespace:    dep.Namespace,
 				Replicas:     replicas,
