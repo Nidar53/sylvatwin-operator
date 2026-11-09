@@ -71,3 +71,9 @@ Notes sur les colonnes :
 - **C6 accepte une limite connue.** S0-B donne une `ConvergenceDrift` suspectée, avec l'horizon de Flux, alors que Flux ne la corrigera pas. Le verdict est conforme à l'oracle, mais pas juste sur le fond : l'horizon pertinent est le `progressDeadlineSeconds` du Deployment.
 - **C2 mesure surtout la période de la boucle**, pas la capacité de l'architecture. Le délai d'environ 14,5 s correspond à « attendre le prochain cycle ».
 - **C3 pour S5 se discute.** Flux montre bien la suspension. L'apport tient seulement à l'impact sur les NF.
+
+## Observation de coût, faite après la campagne
+
+Après 436 cycles, la base Oxigraph occupait **5,7 Go**, alors que les graphes ne contenaient que 5 535 triplets. Chaque cycle remplace intégralement le graphe des faits (PUT) et réécrit le graphe par défaut à chaque passe : RocksDB accumule alors des fichiers de journal sans les compacter. La base a été vidée après la campagne (11 Mo après un cycle).
+
+**À traiter avant la phase 3** : écritures incrémentales, compaction, ou base en mémoire (`oxigraph serve` sans `--location`). Une boucle continue à 15 s rendrait sinon le disque saturé.
