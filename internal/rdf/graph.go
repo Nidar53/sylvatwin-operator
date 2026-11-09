@@ -61,7 +61,9 @@ func Str(s string) Term { return Term{k: kLiteral, value: s} }
 
 // Int : litteral xsd:integer. Le datatype est OBLIGATOIRE : sans lui, SPARQL
 // comparerait la chaine "3" a l'entier 3.
-func Int(i int64) Term { return Term{k: kLiteral, value: strconv.FormatInt(i, 10), dt: XSD + "integer"} }
+func Int(i int64) Term {
+	return Term{k: kLiteral, value: strconv.FormatInt(i, 10), dt: XSD + "integer"}
+}
 
 // Dec : litteral xsd:decimal (secondes des parametres Flux, par ex.).
 func Dec(f float64) Term {

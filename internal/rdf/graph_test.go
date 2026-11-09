@@ -16,7 +16,7 @@ func TestNTriplesEtTurtle(t *testing.T) {
 	g.Add(s, C("suspended"), Bool(false))
 	g.Add(s, C("observedAt"), DateTime(time.Date(2026, 11, 9, 12, 0, 0, 0, time.UTC)))
 	g.Add(s, C("resourceName"), Str(`a "b"`+"\n")) // doublon : ignore
-	g.Add(IRI(""), Type, C("Node"))                 // sujet vide : ignore
+	g.Add(IRI(""), Type, C("Node"))                // sujet vide : ignore
 	if g.Len() != 6 {
 		t.Fatalf("Len = %d, attendu 6", g.Len())
 	}

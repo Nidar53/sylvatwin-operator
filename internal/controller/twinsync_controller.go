@@ -38,8 +38,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	sylvatwinv1alpha1 "github.com/orange/sylvatwin-operator/api/v1alpha1"
-	rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
 	"github.com/orange/sylvatwin-operator/internal/legacyv0"
+	rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
 )
 
 type TwinSyncReconciler struct {

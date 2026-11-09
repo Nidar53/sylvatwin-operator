@@ -20,8 +20,9 @@ import (
 // variantes de tests/export_reference.py.
 //
 // Prerequis (sinon le test est ignore, avec la raison) :
-//   SYLVATWIN_POC : depot sylvatwin-poc (rules/, tests/) ; defaut ../../../sylvatwin-poc
-//   OXIGRAPH_BIN  : binaire oxigraph (v0.5.x) ; python3 + rdflib + owlrl.
+//
+//	SYLVATWIN_POC : depot sylvatwin-poc (rules/, tests/) ; defaut ../../../sylvatwin-poc
+//	OXIGRAPH_BIN  : binaire oxigraph (v0.5.x) ; python3 + rdflib + owlrl.
 func TestConformiteRdflibOxigraph(t *testing.T) {
 	poc := os.Getenv("SYLVATWIN_POC")
 	if poc == "" {
