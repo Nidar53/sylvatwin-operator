@@ -1,0 +1,1409 @@
+{
+ "apiVersion": "v1",
+ "items": [
+  {
+   "apiVersion": "cluster.x-k8s.io/v1beta2",
+   "kind": "Cluster",
+   "metadata": {
+    "annotations": {
+     "meta.helm.sh/release-name": "cluster",
+     "meta.helm.sh/release-namespace": "my-workload-kubeadm-capd"
+    },
+    "creationTimestamp": "2026-10-19T14:47:58Z",
+    "finalizers": [
+     "cluster.cluster.x-k8s.io",
+     "capicluster.turtles.cattle.io"
+    ],
+    "generation": 2,
+    "labels": {
+     "app.kubernetes.io/managed-by": "Helm",
+     "cluster-api.cattle.io/rancher-auto-import": "true",
+     "cluster.x-k8s.io/cluster-name": "my-workload-kubeadm-capd",
+     "helm.toolkit.fluxcd.io/name": "cluster",
+     "helm.toolkit.fluxcd.io/namespace": "my-workload-kubeadm-capd",
+     "sylva.org/sylva-managed": "true"
+    },
+    "name": "my-workload-kubeadm-capd",
+    "namespace": "my-workload-kubeadm-capd",
+    "resourceVersion": "4081048",
+    "uid": "5bf80b45-887b-4516-9127-3ffe7d9bf5b6"
+   },
+   "spec": {
+    "clusterNetwork": {
+     "pods": {
+      "cidrBlocks": [
+       "100.72.0.0/16"
+      ]
+     },
+     "serviceDomain": "cluster.local",
+     "services": {
+      "cidrBlocks": [
+       "100.73.0.0/16"
+      ]
+     }
+    },
+    "controlPlaneEndpoint": {
+     "host": "172.30.0.2",
+     "port": 6443
+    },
+    "controlPlaneRef": {
+     "apiGroup": "controlplane.cluster.x-k8s.io",
+     "kind": "KubeadmControlPlane",
+     "name": "my-workload-kubeadm-capd-control-plane"
+    },
+    "infrastructureRef": {
+     "apiGroup": "infrastructure.cluster.x-k8s.io",
+     "kind": "DockerCluster",
+     "name": "my-workload-kubeadm-capd"
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Available",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:04Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "ProbeSucceeded",
+      "status": "True",
+      "type": "RemoteConnectionProbe"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Ready",
+      "status": "True",
+      "type": "InfrastructureReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:04Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Initialized",
+      "status": "True",
+      "type": "ControlPlaneInitialized"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Available",
+      "status": "True",
+      "type": "ControlPlaneAvailable"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NoWorkers",
+      "status": "True",
+      "type": "WorkersAvailable"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotRollingOut",
+      "status": "False",
+      "type": "RollingOut"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotRemediating",
+      "status": "False",
+      "type": "Remediating"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotScalingDown",
+      "status": "False",
+      "type": "ScalingDown"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotScalingUp",
+      "status": "False",
+      "type": "ScalingUp"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:11:27Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Ready",
+      "status": "True",
+      "type": "ControlPlaneMachinesReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NoReplicas",
+      "status": "True",
+      "type": "WorkerMachinesReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "UpToDate",
+      "status": "True",
+      "type": "ControlPlaneMachinesUpToDate"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NoReplicas",
+      "status": "True",
+      "type": "WorkerMachinesUpToDate"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotPaused",
+      "status": "False",
+      "type": "Paused"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T14:47:58Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotDeleting",
+      "status": "False",
+      "type": "Deleting"
+     }
+    ],
+    "controlPlane": {
+     "availableReplicas": 1,
+     "desiredReplicas": 1,
+     "readyReplicas": 1,
+     "replicas": 1,
+     "upToDateReplicas": 1
+    },
+    "deprecated": {
+     "v1beta1": {
+      "conditions": [
+       {
+        "lastTransitionTime": "2026-10-19T15:10:04Z",
+        "status": "True",
+        "type": "Ready"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:04Z",
+        "status": "True",
+        "type": "ControlPlaneInitialized"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:04Z",
+        "status": "True",
+        "type": "ControlPlaneReady"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T14:47:58Z",
+        "reason": "Ready",
+        "status": "True",
+        "type": "InfrastructureReady"
+       }
+      ]
+     }
+    },
+    "initialization": {
+     "controlPlaneInitialized": true,
+     "infrastructureProvisioned": true
+    },
+    "observedGeneration": 2,
+    "phase": "Provisioned",
+    "workers": {}
+   }
+  },
+  {
+   "apiVersion": "cluster.x-k8s.io/v1beta2",
+   "kind": "Cluster",
+   "metadata": {
+    "annotations": {
+     "helm.sh/resource-policy": "keep",
+     "meta.helm.sh/release-name": "cluster",
+     "meta.helm.sh/release-namespace": "sylva-system"
+    },
+    "creationTimestamp": "2026-10-16T11:50:00Z",
+    "finalizers": [
+     "cluster.cluster.x-k8s.io"
+    ],
+    "generation": 2,
+    "labels": {
+     "app.kubernetes.io/managed-by": "Helm",
+     "cluster.x-k8s.io/cluster-name": "management-cluster",
+     "helm.toolkit.fluxcd.io/name": "cluster",
+     "helm.toolkit.fluxcd.io/namespace": "sylva-system",
+     "sylva.org/sylva-managed": "true"
+    },
+    "name": "management-cluster",
+    "namespace": "sylva-system",
+    "resourceVersion": "19381",
+    "uid": "a520cb87-42c9-42b0-9907-23a55263bc73"
+   },
+   "spec": {
+    "clusterNetwork": {
+     "pods": {
+      "cidrBlocks": [
+       "100.72.0.0/16"
+      ]
+     },
+     "serviceDomain": "cluster.local",
+     "services": {
+      "cidrBlocks": [
+       "100.73.0.0/16"
+      ]
+     }
+    },
+    "controlPlaneEndpoint": {
+     "host": "172.30.0.3",
+     "port": 6443
+    },
+    "controlPlaneRef": {
+     "apiGroup": "controlplane.cluster.x-k8s.io",
+     "kind": "KubeadmControlPlane",
+     "name": "management-cluster-control-plane"
+    },
+    "infrastructureRef": {
+     "apiGroup": "infrastructure.cluster.x-k8s.io",
+     "kind": "DockerCluster",
+     "name": "management-cluster"
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-16T11:58:43Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Available",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:03Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "ProbeSucceeded",
+      "status": "True",
+      "type": "RemoteConnectionProbe"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Ready",
+      "status": "True",
+      "type": "InfrastructureReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:04Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Initialized",
+      "status": "True",
+      "type": "ControlPlaneInitialized"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:58:43Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Available",
+      "status": "True",
+      "type": "ControlPlaneAvailable"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NoWorkers",
+      "status": "True",
+      "type": "WorkersAvailable"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:58:48Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotRollingOut",
+      "status": "False",
+      "type": "RollingOut"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotRemediating",
+      "status": "False",
+      "type": "Remediating"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:58:48Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotScalingDown",
+      "status": "False",
+      "type": "ScalingDown"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:04Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotScalingUp",
+      "status": "False",
+      "type": "ScalingUp"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:58:48Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "Ready",
+      "status": "True",
+      "type": "ControlPlaneMachinesReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NoReplicas",
+      "status": "True",
+      "type": "WorkerMachinesReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:58:48Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "UpToDate",
+      "status": "True",
+      "type": "ControlPlaneMachinesUpToDate"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NoReplicas",
+      "status": "True",
+      "type": "WorkerMachinesUpToDate"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotPaused",
+      "status": "False",
+      "type": "Paused"
+     },
+     {
+      "lastTransitionTime": "2026-10-16T11:50:02Z",
+      "message": "",
+      "observedGeneration": 2,
+      "reason": "NotDeleting",
+      "status": "False",
+      "type": "Deleting"
+     }
+    ],
+    "controlPlane": {
+     "availableReplicas": 1,
+     "desiredReplicas": 1,
+     "readyReplicas": 1,
+     "replicas": 1,
+     "upToDateReplicas": 1
+    },
+    "deprecated": {
+     "v1beta1": {
+      "conditions": [
+       {
+        "lastTransitionTime": "2026-10-16T11:50:04Z",
+        "status": "True",
+        "type": "Ready"
+       },
+       {
+        "lastTransitionTime": "2026-10-16T11:50:04Z",
+        "status": "True",
+        "type": "ControlPlaneInitialized"
+       },
+       {
+        "lastTransitionTime": "2026-10-16T11:50:04Z",
+        "status": "True",
+        "type": "ControlPlaneReady"
+       },
+       {
+        "lastTransitionTime": "2026-10-16T11:50:02Z",
+        "reason": "Ready",
+        "status": "True",
+        "type": "InfrastructureReady"
+       }
+      ]
+     }
+    },
+    "initialization": {
+     "controlPlaneInitialized": true,
+     "infrastructureProvisioned": true
+    },
+    "observedGeneration": 2,
+    "phase": "Provisioned",
+    "workers": {}
+   }
+  },
+  {
+   "apiVersion": "cluster.x-k8s.io/v1beta2",
+   "kind": "Machine",
+   "metadata": {
+    "annotations": {
+     "pre-terminate.delete.hook.machine.cluster.x-k8s.io/kcp-cleanup": ""
+    },
+    "creationTimestamp": "2026-10-19T15:08:46Z",
+    "finalizers": [
+     "machine.cluster.x-k8s.io"
+    ],
+    "generation": 3,
+    "labels": {
+     "cluster.x-k8s.io/cluster-name": "my-workload-kubeadm-capd",
+     "cluster.x-k8s.io/control-plane": "",
+     "cluster.x-k8s.io/control-plane-name": "my-workload-kubeadm-capd-control-plane"
+    },
+    "name": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "namespace": "my-workload-kubeadm-capd",
+    "ownerReferences": [
+     {
+      "apiVersion": "controlplane.cluster.x-k8s.io/v1beta2",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "KubeadmControlPlane",
+      "name": "my-workload-kubeadm-capd-control-plane",
+      "uid": "f5e7ac56-dddb-41c3-9f3d-f36fe5f19dcd"
+     }
+    ],
+    "resourceVersion": "4078023",
+    "uid": "7c421418-af81-4912-be16-fb7a7bcc4997"
+   },
+   "spec": {
+    "bootstrap": {
+     "configRef": {
+      "apiGroup": "bootstrap.cluster.x-k8s.io",
+      "kind": "KubeadmConfig",
+      "name": "my-workload-kubeadm-capd-control-plane-6w58l"
+     },
+     "dataSecretName": "my-workload-kubeadm-capd-control-plane-6w58l"
+    },
+    "clusterName": "my-workload-kubeadm-capd",
+    "deletion": {
+     "nodeDeletionTimeoutSeconds": 0,
+     "nodeDrainTimeoutSeconds": 0,
+     "nodeVolumeDetachTimeoutSeconds": 0
+    },
+    "infrastructureRef": {
+     "apiGroup": "infrastructure.cluster.x-k8s.io",
+     "kind": "DockerMachine",
+     "name": "my-workload-kubeadm-capd-control-plane-6w58l"
+    },
+    "providerID": "docker:////my-workload-kubeadm-capd-control-plane-6w58l",
+    "readinessGates": [
+     {
+      "conditionType": "APIServerPodHealthy"
+     },
+     {
+      "conditionType": "ControllerManagerPodHealthy"
+     },
+     {
+      "conditionType": "SchedulerPodHealthy"
+     },
+     {
+      "conditionType": "EtcdPodHealthy"
+     },
+     {
+      "conditionType": "EtcdMemberHealthy"
+     }
+    ],
+    "version": "v1.35.6"
+   },
+   "status": {
+    "addresses": [
+     {
+      "address": "my-workload-kubeadm-capd-control-plane-6w58l",
+      "type": "Hostname"
+     },
+     {
+      "address": "172.30.0.4",
+      "type": "InternalIP"
+     },
+     {
+      "address": "172.30.0.4",
+      "type": "ExternalIP"
+     }
+    ],
+    "certificatesExpiryDate": "2027-10-19T15:09:05Z",
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-19T15:11:26Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Available",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:11:26Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Ready",
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "UpToDate",
+      "status": "True",
+      "type": "UpToDate"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Ready",
+      "status": "True",
+      "type": "BootstrapConfigReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:09:34Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Ready",
+      "status": "True",
+      "type": "InfrastructureReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:11:26Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "NodeHealthy",
+      "status": "True",
+      "type": "NodeHealthy"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:11:26Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "NodeReady",
+      "status": "True",
+      "type": "NodeReady"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Running",
+      "status": "True",
+      "type": "EtcdPodHealthy"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Healthy",
+      "status": "True",
+      "type": "EtcdMemberHealthy"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Running",
+      "status": "True",
+      "type": "APIServerPodHealthy"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Running",
+      "status": "True",
+      "type": "ControllerManagerPodHealthy"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:10:05Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "Running",
+      "status": "True",
+      "type": "SchedulerPodHealthy"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "NotUpdating",
+      "status": "False",
+      "type": "Updating"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "NotPaused",
+      "status": "False",
+      "type": "Paused"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:46Z",
+      "message": "",
+      "observedGeneration": 3,
+      "reason": "NotDeleting",
+      "status": "False",
+      "type": "Deleting"
+     }
+    ],
+    "deprecated": {
+     "v1beta1": {
+      "conditions": [
+       {
+        "lastTransitionTime": "2026-10-19T15:08:46Z",
+        "status": "True",
+        "type": "Ready"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:05Z",
+        "status": "True",
+        "type": "APIServerPodHealthy"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:08:46Z",
+        "status": "True",
+        "type": "BootstrapReady"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:05Z",
+        "status": "True",
+        "type": "ControllerManagerPodHealthy"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:05Z",
+        "status": "True",
+        "type": "EtcdMemberHealthy"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:05Z",
+        "status": "True",
+        "type": "EtcdPodHealthy"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:09:34Z",
+        "reason": "Ready",
+        "status": "True",
+        "type": "InfrastructureReady"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:11:26Z",
+        "status": "True",
+        "type": "NodeHealthy"
+       },
+       {
+        "lastTransitionTime": "2026-10-19T15:10:05Z",
+        "status": "True",
+        "type": "SchedulerPodHealthy"
+       }
+      ]
+     }
+    },
+    "initialization": {
+     "bootstrapDataSecretCreated": true,
+     "infrastructureProvisioned": true
+    },
+    "lastUpdated": "2026-10-19T15:10:05Z",
+    "nodeInfo": {
+     "architecture": "amd64",
+     "bootID": "c9a12839-a09a-41ea-a9c4-f2c2640fb4cf",
+     "containerRuntimeVersion": "containerd://2.3.1",
+     "kernelVersion": "6.8.0-124-generic",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "v1.35.5",
+     "machineID": "359d1f1023b94bf199723fed98a60c98",
+     "operatingSystem": "linux",
+     "osImage": "Debian GNU/Linux 13 (trixie)",
+     "swap": {
+      "capacity": 2147479552
+     },
+     "systemUUID": "c3b2e742-ad1d-430d-a4a1-f92f18be95a6"
+    },
+    "nodeRef": {
+     "name": "my-workload-kubeadm-capd-control-plane-6w58l"
+    },
+    "observedGeneration": 3,
+    "phase": "Running"
+   }
+  },
+  {
+   "apiVersion": "source.toolkit.fluxcd.io/v1",
+   "kind": "GitRepository",
+   "metadata": {
+    "annotations": {
+     "reconcile.fluxcd.io/requestedAt": "1793960870"
+    },
+    "creationTimestamp": "2026-10-27T11:59:27Z",
+    "finalizers": [
+     "finalizers.fluxcd.io"
+    ],
+    "generation": 3,
+    "name": "sylvatwin-poc",
+    "namespace": "sylvatwin-flux",
+    "resourceVersion": "32221251",
+    "uid": "26adb963-f036-4b70-9bde-2a54c89afc37"
+   },
+   "spec": {
+    "ignore": "/*\n!/usecase/5gc/\n",
+    "interval": "2m",
+    "ref": {
+     "branch": "test"
+    },
+    "suspend": false,
+    "timeout": "60s",
+    "url": "https://github.com/Nidar53/sylvatwin-poc"
+   },
+   "status": {
+    "artifact": {
+     "digest": "sha256:77942d1671a7393c129941d844d1a05f9784fbfb8721493db28057888f458b87",
+     "lastUpdateTime": "2026-11-09T13:26:08Z",
+     "path": "gitrepository/sylvatwin-flux/sylvatwin-poc/6f6fb1151e2b87aa1927079578b2aeed56c04259.tar.gz",
+     "revision": "test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259",
+     "size": 4314,
+     "url": "http://source-controller.flux-system.svc.cluster.local./gitrepository/sylvatwin-flux/sylvatwin-poc/6f6fb1151e2b87aa1927079578b2aeed56c04259.tar.gz"
+    },
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-11-09T13:26:08Z",
+      "message": "stored artifact for revision 'test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259'",
+      "observedGeneration": 3,
+      "reason": "Succeeded",
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastTransitionTime": "2026-11-09T13:26:08Z",
+      "message": "stored artifact for revision 'test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259'",
+      "observedGeneration": 3,
+      "reason": "Succeeded",
+      "status": "True",
+      "type": "ArtifactInStorage"
+     }
+    ],
+    "lastHandledReconcileAt": "1793960870",
+    "observedGeneration": 3,
+    "observedIgnore": "/*\n!/usecase/5gc/\n"
+   }
+  },
+  {
+   "apiVersion": "kustomize.toolkit.fluxcd.io/v1",
+   "kind": "Kustomization",
+   "metadata": {
+    "annotations": {
+     "reconcile.fluxcd.io/requestedAt": "1793960870"
+    },
+    "creationTimestamp": "2026-10-27T11:59:27Z",
+    "finalizers": [
+     "finalizers.fluxcd.io"
+    ],
+    "generation": 3,
+    "name": "sylvatwin-5gc",
+    "namespace": "sylvatwin-flux",
+    "resourceVersion": "32221271",
+    "uid": "baa28d53-4f59-464c-ac64-19a77ab1ee34"
+   },
+   "spec": {
+    "force": false,
+    "interval": "2m",
+    "kubeConfig": {
+     "secretRef": {
+      "key": "value",
+      "name": "sylvatwin-5gc-kubeconfig"
+     }
+    },
+    "path": "./usecase/5gc",
+    "prune": true,
+    "retryInterval": "1m",
+    "sourceRef": {
+     "kind": "GitRepository",
+     "name": "sylvatwin-poc"
+    },
+    "suspend": false,
+    "targetNamespace": "sylvatwin-5gc",
+    "timeout": "5m",
+    "wait": false
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-11-09T13:26:09Z",
+      "message": "Applied revision: test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259",
+      "observedGeneration": 3,
+      "reason": "ReconciliationSucceeded",
+      "status": "True",
+      "type": "Ready"
+     }
+    ],
+    "history": [
+     {
+      "digest": "sha256:9da8eee423e2fb2e56c45b6ec2ee0daf0585d6e512960d4fead1d8e03e086b89",
+      "firstReconciled": "2026-11-06T10:27:51Z",
+      "lastReconciled": "2026-11-09T13:26:09Z",
+      "lastReconciledDuration": "327.583207ms",
+      "lastReconciledStatus": "ReconciliationSucceeded",
+      "metadata": {
+       "revision": "test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259"
+      },
+      "totalReconciliations": 2244
+     },
+     {
+      "digest": "sha256:d61a65eb21aeed16b5cc0b848e1d1ed30828cf4b336f0f8111cbb01e90626b9f",
+      "firstReconciled": "2026-10-27T13:49:47Z",
+      "lastReconciled": "2026-11-06T10:27:50Z",
+      "lastReconciledDuration": "235.200431ms",
+      "lastReconciledStatus": "ReconciliationSucceeded",
+      "metadata": {
+       "revision": "test@sha1:2a9ce4c07abfe847e387cfdcf42e0bc6af277f63"
+      },
+      "totalReconciliations": 7083
+     },
+     {
+      "digest": "sha256:c1904e19184f61091306658ad0293eda1e97a167fbe193ef141654cae13e4f87",
+      "firstReconciled": "2026-10-27T13:42:27Z",
+      "lastReconciled": "2026-10-27T13:48:35Z",
+      "lastReconciledDuration": "297.267813ms",
+      "lastReconciledStatus": "ReconciliationSucceeded",
+      "metadata": {
+       "revision": "test@sha1:4ba85f7a3fbaa324bfba55f1eef3eea9ff16c165"
+      },
+      "totalReconciliations": 4
+     },
+     {
+      "digest": "sha256:d57ff4cedda5d0e12e9b738fc68252e950f4def43d0c7bc2d224e335dc4dcad7",
+      "firstReconciled": "2026-10-27T13:40:28Z",
+      "lastReconciled": "2026-10-27T13:40:28Z",
+      "lastReconciledDuration": "539.097156ms",
+      "lastReconciledStatus": "ReconciliationSucceeded",
+      "metadata": {
+       "revision": "test@sha1:c15ec8badc0272e62cbcdba0937d934f6c78c26d"
+      },
+      "totalReconciliations": 1
+     }
+    ],
+    "inventory": {
+     "entries": [
+      {
+       "id": "_sylvatwin-5gc__Namespace",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_amf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_ausf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_bsf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_nrf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_nssf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_pcf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_scp-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_smf-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_udm-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_udr-config__ConfigMap",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_amf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_ausf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_bsf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_mongodb__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_nrf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_nssf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_pcf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_scp__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_smf__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_udm__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_udr__Service",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_amf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_ausf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_bsf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_mongodb_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_nrf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_nssf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_pcf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_scp_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_smf_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_udm_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_udr_apps_Deployment",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_mongodb-data__PersistentVolumeClaim",
+       "v": "v1"
+      },
+      {
+       "id": "sylvatwin-5gc_sylvatwin-5gc-default_networking.k8s.io_NetworkPolicy",
+       "v": "v1"
+      }
+     ]
+    },
+    "lastAppliedRevision": "test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259",
+    "lastAttemptedRevision": "test@sha1:6f6fb1151e2b87aa1927079578b2aeed56c04259",
+    "lastHandledReconcileAt": "1793960870",
+    "observedGeneration": 3
+   }
+  },
+  {
+   "apiVersion": "helm.toolkit.fluxcd.io/v2",
+   "kind": "HelmRelease",
+   "metadata": {
+    "annotations": {
+     "reconcile.fluxcd.io/requestedAt": "2026-10-19T15:21:57",
+     "sylva-units-helm-revision": "3",
+     "sylvactl/reconcileCompletedAt.1.68plcr": "2026-10-19T14:47:58",
+     "sylvactl/reconcileCompletedAt.2.x5oawQ": "2026-10-19T15:08:29",
+     "sylvactl/reconcileCompletedAt.3.Uvopqg": "2026-10-19T15:21:57",
+     "sylvactl/reconcileStartedAt.1.68plcr": "2026-10-19T14:47:57",
+     "sylvactl/reconcileStartedAt.2.x5oawQ": "2026-10-19T15:08:22",
+     "sylvactl/reconcileStartedAt.3.Uvopqg": "2026-10-19T15:21:57",
+     "sylvactl/unitTimeout": "900s"
+    },
+    "creationTimestamp": "2026-10-19T14:47:55Z",
+    "finalizers": [
+     "finalizers.fluxcd.io"
+    ],
+    "generation": 3,
+    "labels": {
+     "app.kubernetes.io/instance": "sylva-units",
+     "app.kubernetes.io/managed-by": "Helm",
+     "app.kubernetes.io/name": "sylva-units",
+     "app.kubernetes.io/version": "0.0.0",
+     "helm.sh/chart": "sylva-units-0.0.0-git_a36e2070773d",
+     "kustomize.toolkit.fluxcd.io/name": "cluster",
+     "kustomize.toolkit.fluxcd.io/namespace": "my-workload-kubeadm-capd",
+     "sylva-units.unit": "cluster",
+     "sylva-units/protected": "",
+     "sylva-units/root-dependency-wait": "",
+     "sylva.org/sylva-managed": "true"
+    },
+    "name": "cluster",
+    "namespace": "my-workload-kubeadm-capd",
+    "resourceVersion": "32212764",
+    "uid": "31909a74-cb4a-4ce9-98f6-2bc5e5f6e0c9"
+   },
+   "spec": {
+    "chart": {
+     "spec": {
+      "chart": "charts/sylva-capi-cluster",
+      "reconcileStrategy": "Revision",
+      "sourceRef": {
+       "kind": "GitRepository",
+       "name": "sylva-capi-cluster"
+      },
+      "version": "*"
+     }
+    },
+    "commonMetadata": {
+     "labels": {
+      "sylva.org/sylva-managed": "true"
+     }
+    },
+    "dependsOn": [
+     {
+      "name": "root-dependency-3"
+     }
+    ],
+    "driftDetection": {
+     "ignore": [
+      {
+       "paths": [
+        "/spec/conversion/webhook/clientConfig/caBundle"
+       ],
+       "target": {
+        "kind": "CustomResourceDefinition"
+       }
+      }
+     ],
+     "mode": "enabled"
+    },
+    "install": {
+     "serverSideApply": false,
+     "strategy": {
+      "name": "RetryOnFailure",
+      "retryInterval": "1m"
+     }
+    },
+    "interval": "24h",
+    "maxHistory": 2,
+    "postRenderers": [],
+    "releaseName": "cluster",
+    "rollback": {
+     "serverSideApply": "disabled"
+    },
+    "storageNamespace": "my-workload-kubeadm-capd",
+    "targetNamespace": "my-workload-kubeadm-capd",
+    "uninstall": {
+     "deletionPropagation": "background",
+     "timeout": "300s"
+    },
+    "upgrade": {
+     "crds": "CreateReplace",
+     "serverSideApply": "disabled",
+     "strategy": {
+      "name": "RetryOnFailure",
+      "retryInterval": "1m"
+     }
+    },
+    "values": {
+     "freeze_first_node_files": false,
+     "resource_groups": [
+      "cluster-resource",
+      "base"
+     ],
+     "unset_cluster_paused": true
+    },
+    "valuesFrom": [
+     {
+      "kind": "Secret",
+      "name": "helm-unit-values-cluster-4044679",
+      "valuesKey": "values"
+     },
+     {
+      "kind": "ConfigMap",
+      "name": "capo-cluster-resources",
+      "optional": true,
+      "targetPath": "cluster_virtual_ip",
+      "valuesKey": "allocated_ip"
+     },
+     {
+      "kind": "ConfigMap",
+      "name": "capo-cluster-resources",
+      "optional": true,
+      "targetPath": "cluster_public_ip",
+      "valuesKey": "allocated_fip"
+     },
+     {
+      "kind": "ConfigMap",
+      "name": "capo-cluster-resources",
+      "optional": true,
+      "targetPath": "control_plane.capo.server_group_id",
+      "valuesKey": "control_plane_servergroup_id"
+     },
+     {
+      "kind": "ConfigMap",
+      "name": "capo-cluster-resources",
+      "optional": true,
+      "targetPath": "machine_deployment_default.capo.server_group_id",
+      "valuesKey": "worker_servergroup_id"
+     },
+     {
+      "kind": "ConfigMap",
+      "name": "openstack-images-uuids",
+      "optional": true
+     },
+     {
+      "kind": "Secret",
+      "name": "cluster-sylva-ca",
+      "targetPath": "additional_ca_delayed_update",
+      "valuesKey": "ca.crt"
+     }
+    ],
+    "waitStrategy": {
+     "name": "legacy"
+    }
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-19T15:08:29Z",
+      "message": "Helm upgrade succeeded for release my-workload-kubeadm-capd/cluster.v2 with chart sylva-capi-cluster@0.0.0+6cc241e1c3b7",
+      "observedGeneration": 3,
+      "reason": "UpgradeSucceeded",
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastTransitionTime": "2026-10-19T15:08:29Z",
+      "message": "Helm upgrade succeeded for release my-workload-kubeadm-capd/cluster.v2 with chart sylva-capi-cluster@0.0.0+6cc241e1c3b7",
+      "observedGeneration": 2,
+      "reason": "UpgradeSucceeded",
+      "status": "True",
+      "type": "Released"
+     }
+    ],
+    "helmChart": "my-workload-kubeadm-capd/my-workload-kubeadm-capd-cluster",
+    "history": [
+     {
+      "action": "upgrade",
+      "apiVersion": "v2",
+      "appVersion": "0.0.0",
+      "chartName": "sylva-capi-cluster",
+      "chartVersion": "0.0.0+6cc241e1c3b7",
+      "configDigest": "sha256:2a796d97814b71f170c79956f63166cea83befcead74a466c87066849e91c2d9",
+      "digest": "sha256:dc24d01ea69f22c29395019376d7ea08e9ede000e3c8dfededb90a38b5e12536",
+      "firstDeployed": "2026-10-19T14:47:57Z",
+      "lastDeployed": "2026-10-19T15:08:23Z",
+      "name": "cluster",
+      "namespace": "my-workload-kubeadm-capd",
+      "status": "deployed",
+      "version": 2
+     },
+     {
+      "apiVersion": "v2",
+      "appVersion": "0.0.0",
+      "chartName": "sylva-capi-cluster",
+      "chartVersion": "0.0.0+0f7db9679df3",
+      "configDigest": "sha256:63ab220ebd8f6b42821cea72cbdbfb03421de135bd6c6744717136506b8b8bd7",
+      "digest": "sha256:82ad0b10864fd7bcc9ea40a183859130e9edf15e604242ea9dfdb468c92290fa",
+      "firstDeployed": "2026-10-19T14:47:57Z",
+      "lastDeployed": "2026-10-19T14:47:57Z",
+      "name": "cluster",
+      "namespace": "my-workload-kubeadm-capd",
+      "status": "superseded",
+      "version": 1
+     }
+    ],
+    "inventory": {
+     "entries": [
+      {
+       "id": "my-workload-kubeadm-capd_cluster-pre-delete-hook-sa__ServiceAccount",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_cluster-post-upgrade-hook__ServiceAccount",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_ca-delayed-update__Secret",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_cluster-pre-delete-hook-cr_rbac.authorization.k8s.io_Role",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_cluster-post-upgrade-hook_rbac.authorization.k8s.io_Role",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_cluster-pre-delete-hook-crb_rbac.authorization.k8s.io_RoleBinding",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_cluster-post-upgrade-hook_rbac.authorization.k8s.io_RoleBinding",
+       "v": "v1"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_my-workload-kubeadm-capd_cluster.x-k8s.io_Cluster",
+       "v": "v1beta2"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_my-workload-kubeadm-capd_infrastructure.cluster.x-k8s.io_DockerCluster",
+       "v": "v1beta2"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_my-workload-kubeadm-capd-cp-8c004f3980_infrastructure.cluster.x-k8s.io_DockerMachineTemplate",
+       "v": "v1beta2"
+      },
+      {
+       "id": "my-workload-kubeadm-capd_my-workload-kubeadm-capd-control-plane_controlplane.cluster.x-k8s.io_KubeadmControlPlane",
+       "v": "v1beta2"
+      }
+     ]
+    },
+    "lastAttemptedConfigDigest": "sha256:2a796d97814b71f170c79956f63166cea83befcead74a466c87066849e91c2d9",
+    "lastAttemptedGeneration": 3,
+    "lastAttemptedReleaseAction": "upgrade",
+    "lastAttemptedReleaseActionDuration": "6.018584394s",
+    "lastAttemptedRevision": "0.0.0+6cc241e1c3b7",
+    "lastHandledReconcileAt": "2026-10-19T15:21:57",
+    "observedCommonMetadataDigest": "sha256:8cd29b0062a6b080d76a12401c622ca28f9eae2dffe9a501bd77fd76f8733e66",
+    "observedGeneration": 3,
+    "observedPostRenderersDigest": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "storageNamespace": "my-workload-kubeadm-capd"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Namespace",
+   "metadata": {
+    "annotations": {
+     "cattle.io/status": "{\"Conditions\":[{\"Type\":\"ResourceQuotaInit\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-27T11:58:42Z\"},{\"Type\":\"InitialRolesPopulated\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-27T11:58:42Z\"}]}",
+     "lifecycle.cattle.io/create.namespace-auth": "true"
+    },
+    "creationTimestamp": "2026-10-27T11:58:41Z",
+    "labels": {
+     "kubernetes.io/metadata.name": "sylvatwin-flux"
+    },
+    "name": "sylvatwin-flux",
+    "resourceVersion": "14637005",
+    "uid": "3599e381-6308-4daa-9933-20a109d4f824"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Namespace",
+   "metadata": {
+    "annotations": {
+     "cattle.io/status": "{\"Conditions\":[{\"Type\":\"ResourceQuotaInit\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-19T14:46:47Z\"},{\"Type\":\"InitialRolesPopulated\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-19T14:46:47Z\"}]}",
+     "lifecycle.cattle.io/create.namespace-auth": "true"
+    },
+    "creationTimestamp": "2026-10-19T14:46:46Z",
+    "labels": {
+     "kubernetes.io/metadata.name": "my-workload-kubeadm-capd",
+     "sylva-project.org/workload-cluster": "",
+     "sylva.org/sylva-managed": "true"
+    },
+    "name": "my-workload-kubeadm-capd",
+    "resourceVersion": "4053077",
+    "uid": "24afaf81-b946-4271-8ced-35393a1ef519"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Namespace",
+   "metadata": {
+    "annotations": {
+     "cattle.io/status": "{\"Conditions\":[{\"Type\":\"ResourceQuotaInit\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-16T15:03:56Z\"},{\"Type\":\"InitialRolesPopulated\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-16T15:04:00Z\"}]}",
+     "kustomize.toolkit.fluxcd.io/prune": "disabled",
+     "lifecycle.cattle.io/create.namespace-auth": "true"
+    },
+    "creationTimestamp": "2026-10-16T11:39:34Z",
+    "labels": {
+     "kubernetes.io/metadata.name": "sylva-system",
+     "kustomize.toolkit.fluxcd.io/name": "namespace-defs",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylva-system",
+     "sylva.org/sylva-managed": "true"
+    },
+    "name": "sylva-system",
+    "resourceVersion": "4043612",
+    "uid": "72ff35cb-f2da-468a-8200-e95dc187569b"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   }
+  }
+ ],
+ "kind": "List"
+}

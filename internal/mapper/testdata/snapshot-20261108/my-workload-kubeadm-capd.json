@@ -1,0 +1,3945 @@
+{
+ "apiVersion": "v1",
+ "items": [
+  {
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "udm",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux",
+     "sylvatwin.orange.com/nf": "udm"
+    },
+    "name": "udm",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4102008",
+    "uid": "fd119f6f-65ff-444e-a113-48f390eb63e3"
+   },
+   "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "udm"
+     }
+    },
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "25%",
+      "maxUnavailable": "25%"
+     },
+     "type": "RollingUpdate"
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "udm",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "sylvatwin.orange.com/nf": "udm"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-udmd",
+         "-c",
+         "/etc/open5gs/custom/udm.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "udm",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         },
+         {
+          "mountPath": "/etc/open5gs/hnet",
+          "name": "udm-keys",
+          "readOnly": true
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "udm-config"
+        },
+        "name": "config"
+       },
+       {
+        "name": "udm-keys",
+        "secret": {
+         "defaultMode": 420,
+         "secretName": "udm-keys"
+        }
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-27T13:42:50Z",
+      "lastUpdateTime": "2026-10-27T13:42:50Z",
+      "message": "Deployment has minimum availability.",
+      "reason": "MinimumReplicasAvailable",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "lastUpdateTime": "2026-10-27T13:42:50Z",
+      "message": "ReplicaSet \"udm-7cf6c5b78d\" has successfully progressed.",
+      "reason": "NewReplicaSetAvailable",
+      "status": "True",
+      "type": "Progressing"
+     }
+    ],
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/desired-replicas": "1",
+     "deployment.kubernetes.io/max-replicas": "2",
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "udm",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "7cf6c5b78d",
+     "sylvatwin.orange.com/nf": "udm"
+    },
+    "name": "udm-7cf6c5b78d",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "Deployment",
+      "name": "udm",
+      "uid": "fd119f6f-65ff-444e-a113-48f390eb63e3"
+     }
+    ],
+    "resourceVersion": "4102007",
+    "uid": "39ac6715-f499-4517-9aed-80c9533f5841"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "udm",
+      "pod-template-hash": "7cf6c5b78d"
+     }
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "udm",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "pod-template-hash": "7cf6c5b78d",
+       "sylvatwin.orange.com/nf": "udm"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-udmd",
+         "-c",
+         "/etc/open5gs/custom/udm.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "udm",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         },
+         {
+          "mountPath": "/etc/open5gs/hnet",
+          "name": "udm-keys",
+          "readOnly": true
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "udm-config"
+        },
+        "name": "config"
+       },
+       {
+        "name": "udm-keys",
+        "secret": {
+         "defaultMode": 420,
+         "secretName": "udm-keys"
+        }
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Pod",
+   "metadata": {
+    "annotations": {
+     "cni.projectcalico.org/containerID": "5c4b672d26a1b5c3434ff94fda10f4d3f8d59c62331e13f9ed90333ebb226ca4",
+     "cni.projectcalico.org/podIP": "100.72.149.150/32",
+     "cni.projectcalico.org/podIPs": "100.72.149.150/32"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generateName": "udm-7cf6c5b78d-",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "udm",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "7cf6c5b78d",
+     "sylvatwin.orange.com/nf": "udm"
+    },
+    "name": "udm-7cf6c5b78d-rw6fk",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "ReplicaSet",
+      "name": "udm-7cf6c5b78d",
+      "uid": "39ac6715-f499-4517-9aed-80c9533f5841"
+     }
+    ],
+    "resourceVersion": "4102004",
+    "uid": "03ddabb2-a6fa-4dcd-b954-5920204c11d3"
+   },
+   "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+     {
+      "command": [
+       "open5gs-udmd",
+       "-c",
+       "/etc/open5gs/custom/udm.yaml"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "udm",
+      "ports": [
+       {
+        "containerPort": 7777,
+        "name": "sbi",
+        "protocol": "TCP"
+       }
+      ],
+      "readinessProbe": {
+       "failureThreshold": 3,
+       "periodSeconds": 10,
+       "successThreshold": 1,
+       "tcpSocket": {
+        "port": 7777
+       },
+       "timeoutSeconds": 1
+      },
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       },
+       "privileged": false
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File",
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       },
+       {
+        "mountPath": "/etc/open5gs/hnet",
+        "name": "udm-keys",
+        "readOnly": true
+       }
+      ]
+     }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "initContainers": [
+     {
+      "command": [
+       "sh",
+       "-c",
+       "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "wait-nrf",
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       }
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File"
+     }
+    ],
+    "nodeName": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Always",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+     "runAsGroup": 999,
+     "runAsNonRoot": true,
+     "runAsUser": 999,
+     "seccompProfile": {
+      "type": "RuntimeDefault"
+     }
+    },
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/not-ready",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     },
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/unreachable",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     }
+    ],
+    "volumes": [
+     {
+      "configMap": {
+       "defaultMode": 420,
+       "name": "udm-config"
+      },
+      "name": "config"
+     },
+     {
+      "name": "udm-keys",
+      "secret": {
+       "defaultMode": 420,
+       "secretName": "udm-keys"
+      }
+     }
+    ]
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:42:48Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodReadyToStartContainers"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:42:49Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Initialized"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:42:50Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:42:50Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "ContainersReady"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodScheduled"
+     }
+    ],
+    "containerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "20m",
+       "memory": "64Mi"
+      },
+      "containerID": "containerd://39c0d48e6bc93682b116b265ea99e5ac4236f7aac93842295cedd1e12f22b282",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "udm",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": true,
+      "state": {
+       "running": {
+        "startedAt": "2026-10-27T13:42:49Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      },
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       },
+       {
+        "mountPath": "/etc/open5gs/hnet",
+        "name": "udm-keys",
+        "readOnly": true,
+        "recursiveReadOnly": "Disabled"
+       }
+      ]
+     }
+    ],
+    "hostIP": "172.30.0.4",
+    "hostIPs": [
+     {
+      "ip": "172.30.0.4"
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "5m",
+       "memory": "16Mi"
+      },
+      "containerID": "containerd://30c5a4e2ebd21af8ac24f2516107fe05b4015f98de7357740c13fb378244313b",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "wait-nrf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": false,
+      "state": {
+       "terminated": {
+        "containerID": "containerd://30c5a4e2ebd21af8ac24f2516107fe05b4015f98de7357740c13fb378244313b",
+        "exitCode": 0,
+        "finishedAt": "2026-10-27T13:42:48Z",
+        "reason": "Completed",
+        "startedAt": "2026-10-27T13:42:47Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      }
+     }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "100.72.149.150",
+    "podIPs": [
+     {
+      "ip": "100.72.149.150"
+     }
+    ],
+    "qosClass": "Burstable",
+    "startTime": "2026-10-27T13:40:28Z"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "data": {
+    "udm.yaml": "logger: {level: info}\nglobal: {max: {ue: 64}}\nudm:\n  # Cles SUCI (chiffrement de l'identite abonne) : lues depuis le Secret udm-keys,\n  # cree HORS Git (scenario D3). Les valeurs ne sont jamais dans le depot.\n  hnet:\n    - id: 1\n      scheme: 1\n      key: /etc/open5gs/hnet/curve25519-1.key\n    - id: 2\n      scheme: 2\n      key: /etc/open5gs/hnet/secp256r1-2.key\n  sbi:\n    server:\n      - dev: eth0\n        port: 7777\n        advertise: udm.sylvatwin-5gc.svc.cluster.local\n    client:\n      nrf:\n        - uri: http://nrf.sylvatwin-5gc.svc.cluster.local:7777\n"
+   },
+   "kind": "ConfigMap",
+   "metadata": {
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "labels": {
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux"
+    },
+    "name": "udm-config",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4100678",
+    "uid": "9cf6641c-a277-42ff-9a69-13fbe9946d5f"
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "nrf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux",
+     "sylvatwin.orange.com/nf": "nrf"
+    },
+    "name": "nrf",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4100980",
+    "uid": "0944ef2b-4b04-4db9-b27e-c90f1f4fc11f"
+   },
+   "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "nrf"
+     }
+    },
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "25%",
+      "maxUnavailable": "25%"
+     },
+     "type": "RollingUpdate"
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "nrf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "sylvatwin.orange.com/nf": "nrf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-nrfd",
+         "-c",
+         "/etc/open5gs/custom/nrf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "nrf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "nrf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-27T13:40:40Z",
+      "lastUpdateTime": "2026-10-27T13:40:40Z",
+      "message": "Deployment has minimum availability.",
+      "reason": "MinimumReplicasAvailable",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "lastUpdateTime": "2026-10-27T13:40:40Z",
+      "message": "ReplicaSet \"nrf-57b6849ccd\" has successfully progressed.",
+      "reason": "NewReplicaSetAvailable",
+      "status": "True",
+      "type": "Progressing"
+     }
+    ],
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/desired-replicas": "1",
+     "deployment.kubernetes.io/max-replicas": "2",
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "nrf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "57b6849ccd",
+     "sylvatwin.orange.com/nf": "nrf"
+    },
+    "name": "nrf-57b6849ccd",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "Deployment",
+      "name": "nrf",
+      "uid": "0944ef2b-4b04-4db9-b27e-c90f1f4fc11f"
+     }
+    ],
+    "resourceVersion": "4100977",
+    "uid": "7f7848e4-d908-4dc1-a01f-c356c7a1e845"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "nrf",
+      "pod-template-hash": "57b6849ccd"
+     }
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "nrf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "pod-template-hash": "57b6849ccd",
+       "sylvatwin.orange.com/nf": "nrf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-nrfd",
+         "-c",
+         "/etc/open5gs/custom/nrf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "nrf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "nrf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Pod",
+   "metadata": {
+    "annotations": {
+     "cni.projectcalico.org/containerID": "b09754e9f4aed445d62481229555c4aff6312da4b39e27b87b2f449396726bcc",
+     "cni.projectcalico.org/podIP": "100.72.149.188/32",
+     "cni.projectcalico.org/podIPs": "100.72.149.188/32"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generateName": "nrf-57b6849ccd-",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "nrf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "57b6849ccd",
+     "sylvatwin.orange.com/nf": "nrf"
+    },
+    "name": "nrf-57b6849ccd-wflfd",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "ReplicaSet",
+      "name": "nrf-57b6849ccd",
+      "uid": "7f7848e4-d908-4dc1-a01f-c356c7a1e845"
+     }
+    ],
+    "resourceVersion": "4100974",
+    "uid": "99ddd1ee-94a4-42b6-8f8c-96f798634825"
+   },
+   "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+     {
+      "command": [
+       "open5gs-nrfd",
+       "-c",
+       "/etc/open5gs/custom/nrf.yaml"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "nrf",
+      "ports": [
+       {
+        "containerPort": 7777,
+        "name": "sbi",
+        "protocol": "TCP"
+       }
+      ],
+      "readinessProbe": {
+       "failureThreshold": 3,
+       "periodSeconds": 10,
+       "successThreshold": 1,
+       "tcpSocket": {
+        "port": 7777
+       },
+       "timeoutSeconds": 1
+      },
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       },
+       "privileged": false
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File",
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "nodeName": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Always",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+     "runAsGroup": 999,
+     "runAsNonRoot": true,
+     "runAsUser": 999,
+     "seccompProfile": {
+      "type": "RuntimeDefault"
+     }
+    },
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/not-ready",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     },
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/unreachable",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     }
+    ],
+    "volumes": [
+     {
+      "configMap": {
+       "defaultMode": 420,
+       "name": "nrf-config"
+      },
+      "name": "config"
+     }
+    ]
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:39Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodReadyToStartContainers"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Initialized"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:40Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:40Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "ContainersReady"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodScheduled"
+     }
+    ],
+    "containerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "20m",
+       "memory": "64Mi"
+      },
+      "containerID": "containerd://b4415d41089014608fc4bbe4e198b7b8462245189bd8361ae31e833b9b191741",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "nrf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": true,
+      "state": {
+       "running": {
+        "startedAt": "2026-10-27T13:40:39Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      },
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "hostIP": "172.30.0.4",
+    "hostIPs": [
+     {
+      "ip": "172.30.0.4"
+     }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "100.72.149.188",
+    "podIPs": [
+     {
+      "ip": "100.72.149.188"
+     }
+    ],
+    "qosClass": "Burstable",
+    "startTime": "2026-10-27T13:40:28Z"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "data": {
+    "nrf.yaml": "logger: {level: info}\nglobal: {max: {ue: 64}}\nnrf:\n  serving:\n    - plmn_id: {mcc: 999, mnc: 70}\n  sbi:\n    server:\n      - dev: eth0\n        port: 7777\n        advertise: nrf.sylvatwin-5gc.svc.cluster.local\n"
+   },
+   "kind": "ConfigMap",
+   "metadata": {
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "labels": {
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux"
+    },
+    "name": "nrf-config",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4100674",
+    "uid": "907c7ffd-42da-4697-a4f6-c68a63bd0866"
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "bsf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux",
+     "sylvatwin.orange.com/nf": "bsf"
+    },
+    "name": "bsf",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4101060",
+    "uid": "693de78a-5a9e-4402-9811-fbb5d33ec487"
+   },
+   "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "bsf"
+     }
+    },
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "25%",
+      "maxUnavailable": "25%"
+     },
+     "type": "RollingUpdate"
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "bsf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "sylvatwin.orange.com/nf": "bsf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-bsfd",
+         "-c",
+         "/etc/open5gs/custom/bsf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "bsf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "bsf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-27T13:40:45Z",
+      "lastUpdateTime": "2026-10-27T13:40:45Z",
+      "message": "Deployment has minimum availability.",
+      "reason": "MinimumReplicasAvailable",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "lastUpdateTime": "2026-10-27T13:40:45Z",
+      "message": "ReplicaSet \"bsf-78db7b6587\" has successfully progressed.",
+      "reason": "NewReplicaSetAvailable",
+      "status": "True",
+      "type": "Progressing"
+     }
+    ],
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/desired-replicas": "1",
+     "deployment.kubernetes.io/max-replicas": "2",
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "bsf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "78db7b6587",
+     "sylvatwin.orange.com/nf": "bsf"
+    },
+    "name": "bsf-78db7b6587",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "Deployment",
+      "name": "bsf",
+      "uid": "693de78a-5a9e-4402-9811-fbb5d33ec487"
+     }
+    ],
+    "resourceVersion": "4101058",
+    "uid": "2dc32652-0a74-4164-9677-6a8617bdd966"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "bsf",
+      "pod-template-hash": "78db7b6587"
+     }
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "bsf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "pod-template-hash": "78db7b6587",
+       "sylvatwin.orange.com/nf": "bsf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-bsfd",
+         "-c",
+         "/etc/open5gs/custom/bsf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "bsf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "bsf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Pod",
+   "metadata": {
+    "annotations": {
+     "cni.projectcalico.org/containerID": "78a70466fe17007445dedd6138848197f41d577445aa3e67b4d5f050982f40a2",
+     "cni.projectcalico.org/podIP": "100.72.149.185/32",
+     "cni.projectcalico.org/podIPs": "100.72.149.185/32"
+    },
+    "creationTimestamp": "2026-10-27T13:40:28Z",
+    "generateName": "bsf-78db7b6587-",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "bsf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "78db7b6587",
+     "sylvatwin.orange.com/nf": "bsf"
+    },
+    "name": "bsf-78db7b6587-8wkqn",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "ReplicaSet",
+      "name": "bsf-78db7b6587",
+      "uid": "2dc32652-0a74-4164-9677-6a8617bdd966"
+     }
+    ],
+    "resourceVersion": "4101054",
+    "uid": "a335be44-3bb7-4a71-9585-1d6037067578"
+   },
+   "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+     {
+      "command": [
+       "open5gs-bsfd",
+       "-c",
+       "/etc/open5gs/custom/bsf.yaml"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "bsf",
+      "ports": [
+       {
+        "containerPort": 7777,
+        "name": "sbi",
+        "protocol": "TCP"
+       }
+      ],
+      "readinessProbe": {
+       "failureThreshold": 3,
+       "periodSeconds": 10,
+       "successThreshold": 1,
+       "tcpSocket": {
+        "port": 7777
+       },
+       "timeoutSeconds": 1
+      },
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       },
+       "privileged": false
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File",
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "initContainers": [
+     {
+      "command": [
+       "sh",
+       "-c",
+       "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "wait-nrf",
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       }
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File"
+     }
+    ],
+    "nodeName": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Always",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+     "runAsGroup": 999,
+     "runAsNonRoot": true,
+     "runAsUser": 999,
+     "seccompProfile": {
+      "type": "RuntimeDefault"
+     }
+    },
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/not-ready",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     },
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/unreachable",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     }
+    ],
+    "volumes": [
+     {
+      "configMap": {
+       "defaultMode": 420,
+       "name": "bsf-config"
+      },
+      "name": "config"
+     }
+    ]
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:42Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodReadyToStartContainers"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:43Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Initialized"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:44Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:44Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "ContainersReady"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:40:28Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodScheduled"
+     }
+    ],
+    "containerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "20m",
+       "memory": "64Mi"
+      },
+      "containerID": "containerd://d4cb0d2efc2ba692aeab888abcceec78251dd8863144740ecc10d73388671817",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "bsf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": true,
+      "state": {
+       "running": {
+        "startedAt": "2026-10-27T13:40:44Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      },
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "hostIP": "172.30.0.4",
+    "hostIPs": [
+     {
+      "ip": "172.30.0.4"
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "5m",
+       "memory": "16Mi"
+      },
+      "containerID": "containerd://48878c941e062304e5905293ae161fd3710e5e56a178eff94388888789f2f0f5",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "wait-nrf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": false,
+      "state": {
+       "terminated": {
+        "containerID": "containerd://48878c941e062304e5905293ae161fd3710e5e56a178eff94388888789f2f0f5",
+        "exitCode": 0,
+        "finishedAt": "2026-10-27T13:40:43Z",
+        "reason": "Completed",
+        "startedAt": "2026-10-27T13:40:42Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      }
+     }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "100.72.149.185",
+    "podIPs": [
+     {
+      "ip": "100.72.149.185"
+     }
+    ],
+    "qosClass": "Burstable",
+    "startTime": "2026-10-27T13:40:28Z"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "data": {
+    "bsf.yaml": "logger: {level: info}\nglobal: {max: {ue: 64}}\nbsf:\n  sbi:\n    server:\n      - dev: eth0\n        port: 7777\n        advertise: bsf.sylvatwin-5gc.svc.cluster.local\n    client:\n      nrf:\n        - uri: http://nrf.sylvatwin-5gc.svc.cluster.local:7777\n"
+   },
+   "kind": "ConfigMap",
+   "metadata": {
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "labels": {
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux"
+    },
+    "name": "bsf-config",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4100673",
+    "uid": "b155a069-bd47-4acc-a925-7f3053e9eb44"
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-11-06T10:27:51Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "amf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux",
+     "sylvatwin.orange.com/nf": "amf"
+    },
+    "name": "amf",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "9193491",
+    "uid": "505b00ea-bd77-4cd6-a03e-e84d5de345a3"
+   },
+   "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "amf"
+     }
+    },
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "25%",
+      "maxUnavailable": "25%"
+     },
+     "type": "RollingUpdate"
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "amf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "sylvatwin.orange.com/nf": "amf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-amfd",
+         "-c",
+         "/etc/open5gs/custom/amf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "amf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "amf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-11-06T10:27:56Z",
+      "lastUpdateTime": "2026-11-06T10:27:56Z",
+      "message": "Deployment has minimum availability.",
+      "reason": "MinimumReplicasAvailable",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-11-06T10:27:51Z",
+      "lastUpdateTime": "2026-11-06T10:27:56Z",
+      "message": "ReplicaSet \"amf-76894b88b5\" has successfully progressed.",
+      "reason": "NewReplicaSetAvailable",
+      "status": "True",
+      "type": "Progressing"
+     }
+    ],
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/desired-replicas": "1",
+     "deployment.kubernetes.io/max-replicas": "2",
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-11-06T10:27:51Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "amf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "76894b88b5",
+     "sylvatwin.orange.com/nf": "amf"
+    },
+    "name": "amf-76894b88b5",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "Deployment",
+      "name": "amf",
+      "uid": "505b00ea-bd77-4cd6-a03e-e84d5de345a3"
+     }
+    ],
+    "resourceVersion": "9193489",
+    "uid": "5e1db126-6072-43cc-8257-4fdc392d34c8"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "amf",
+      "pod-template-hash": "76894b88b5"
+     }
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "amf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "pod-template-hash": "76894b88b5",
+       "sylvatwin.orange.com/nf": "amf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-amfd",
+         "-c",
+         "/etc/open5gs/custom/amf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "amf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "amf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Pod",
+   "metadata": {
+    "annotations": {
+     "cni.projectcalico.org/containerID": "656646702fcd2c8204e0b60def03e6c53d12eddcd4e582f68f5afc3ee4de541d",
+     "cni.projectcalico.org/podIP": "100.72.149.155/32",
+     "cni.projectcalico.org/podIPs": "100.72.149.155/32"
+    },
+    "creationTimestamp": "2026-11-06T10:27:51Z",
+    "generateName": "amf-76894b88b5-",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "amf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "76894b88b5",
+     "sylvatwin.orange.com/nf": "amf"
+    },
+    "name": "amf-76894b88b5-njbl9",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "ReplicaSet",
+      "name": "amf-76894b88b5",
+      "uid": "5e1db126-6072-43cc-8257-4fdc392d34c8"
+     }
+    ],
+    "resourceVersion": "9193486",
+    "uid": "34d0096d-0a9c-4144-98ed-c4be254b1698"
+   },
+   "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+     {
+      "command": [
+       "open5gs-amfd",
+       "-c",
+       "/etc/open5gs/custom/amf.yaml"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "amf",
+      "ports": [
+       {
+        "containerPort": 7777,
+        "name": "sbi",
+        "protocol": "TCP"
+       }
+      ],
+      "readinessProbe": {
+       "failureThreshold": 3,
+       "periodSeconds": 10,
+       "successThreshold": 1,
+       "tcpSocket": {
+        "port": 7777
+       },
+       "timeoutSeconds": 1
+      },
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       },
+       "privileged": false
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File",
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "initContainers": [
+     {
+      "command": [
+       "sh",
+       "-c",
+       "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "wait-nrf",
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       }
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File"
+     }
+    ],
+    "nodeName": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Always",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+     "runAsGroup": 999,
+     "runAsNonRoot": true,
+     "runAsUser": 999,
+     "seccompProfile": {
+      "type": "RuntimeDefault"
+     }
+    },
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/not-ready",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     },
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/unreachable",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     }
+    ],
+    "volumes": [
+     {
+      "configMap": {
+       "defaultMode": 420,
+       "name": "amf-config"
+      },
+      "name": "config"
+     }
+    ]
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-11-06T10:27:55Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodReadyToStartContainers"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-11-06T10:27:55Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Initialized"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-11-06T10:27:56Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-11-06T10:27:56Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "ContainersReady"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-11-06T10:27:51Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodScheduled"
+     }
+    ],
+    "containerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "20m",
+       "memory": "64Mi"
+      },
+      "containerID": "containerd://7551df4a3f97748fd1f15ff151e2146b6c2f63723875cb78fab2fd1f8ed5b2ac",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "amf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": true,
+      "state": {
+       "running": {
+        "startedAt": "2026-11-06T10:27:56Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      },
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "hostIP": "172.30.0.4",
+    "hostIPs": [
+     {
+      "ip": "172.30.0.4"
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "5m",
+       "memory": "16Mi"
+      },
+      "containerID": "containerd://9998268fb028894adfb0e9dbc87db34e6c2c6faef4239b29eb39c4b45d762b63",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "wait-nrf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": false,
+      "state": {
+       "terminated": {
+        "containerID": "containerd://9998268fb028894adfb0e9dbc87db34e6c2c6faef4239b29eb39c4b45d762b63",
+        "exitCode": 0,
+        "finishedAt": "2026-11-06T10:27:55Z",
+        "reason": "Completed",
+        "startedAt": "2026-11-06T10:27:54Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      }
+     }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "100.72.149.155",
+    "podIPs": [
+     {
+      "ip": "100.72.149.155"
+     }
+    ],
+    "qosClass": "Burstable",
+    "startTime": "2026-11-06T10:27:51Z"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "data": {
+    "amf.yaml": "# AMF execute depuis le 06/11/2026 (accord de l'administrateur : modifications necessaires uniquement).\n# NGAP (SCTP 38412) lie a 127.0.0.1 : utilise le module sctp de l'hote (deja charge), injoignable hors du pod.\nlogger: {level: info}\nglobal: {max: {ue: 64}}\namf:\n  sbi:\n    server:\n      - dev: eth0\n        port: 7777\n        advertise: amf.sylvatwin-5gc.svc.cluster.local\n    client:\n      nrf:\n        - uri: http://nrf.sylvatwin-5gc.svc.cluster.local:7777\n  ngap:\n    server:\n      - address: 127.0.0.1\n  guami:\n    - plmn_id: {mcc: 999, mnc: 70}\n      amf_id: {region: 2, set: 1}\n  tai:\n    - plmn_id: {mcc: 999, mnc: 70}\n      tac: 1\n  plmn_support:\n    - plmn_id: {mcc: 999, mnc: 70}\n      s_nssai:\n        - sst: 1\n  security:\n    integrity_order: [NIA2, NIA1, NIA0]\n    ciphering_order: [NEA0, NEA1, NEA2]\n  network_name: {full: SylvaTwin}\n  amf_name: sylvatwin-amf0\n  time: {t3512: {value: 540}}\n"
+   },
+   "kind": "ConfigMap",
+   "metadata": {
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "labels": {
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux"
+    },
+    "name": "amf-config",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "9193399",
+    "uid": "8fdf3785-b104-4360-bde9-a9f8d83f0c87"
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "Deployment",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:49:47Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "smf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux",
+     "sylvatwin.orange.com/nf": "smf"
+    },
+    "name": "smf",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4104563",
+    "uid": "24e676e9-9b5a-4788-99e9-89cafd591452"
+   },
+   "spec": {
+    "progressDeadlineSeconds": 600,
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "smf"
+     }
+    },
+    "strategy": {
+     "rollingUpdate": {
+      "maxSurge": "25%",
+      "maxUnavailable": "25%"
+     },
+     "type": "RollingUpdate"
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "smf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "sylvatwin.orange.com/nf": "smf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-smfd",
+         "-c",
+         "/etc/open5gs/custom/smf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "smf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "smf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "conditions": [
+     {
+      "lastTransitionTime": "2026-10-27T13:49:52Z",
+      "lastUpdateTime": "2026-10-27T13:49:52Z",
+      "message": "Deployment has minimum availability.",
+      "reason": "MinimumReplicasAvailable",
+      "status": "True",
+      "type": "Available"
+     },
+     {
+      "lastTransitionTime": "2026-10-27T13:49:47Z",
+      "lastUpdateTime": "2026-10-27T13:49:52Z",
+      "message": "ReplicaSet \"smf-6d7f6658f7\" has successfully progressed.",
+      "reason": "NewReplicaSetAvailable",
+      "status": "True",
+      "type": "Progressing"
+     }
+    ],
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0,
+    "updatedReplicas": 1
+   }
+  },
+  {
+   "apiVersion": "apps/v1",
+   "kind": "ReplicaSet",
+   "metadata": {
+    "annotations": {
+     "deployment.kubernetes.io/desired-replicas": "1",
+     "deployment.kubernetes.io/max-replicas": "2",
+     "deployment.kubernetes.io/revision": "1"
+    },
+    "creationTimestamp": "2026-10-27T13:49:47Z",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "smf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "6d7f6658f7",
+     "sylvatwin.orange.com/nf": "smf"
+    },
+    "name": "smf-6d7f6658f7",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "Deployment",
+      "name": "smf",
+      "uid": "24e676e9-9b5a-4788-99e9-89cafd591452"
+     }
+    ],
+    "resourceVersion": "4104562",
+    "uid": "ab17f9e7-5d24-4ae8-933b-9e2d0d36d0bf"
+   },
+   "spec": {
+    "replicas": 1,
+    "selector": {
+     "matchLabels": {
+      "app.kubernetes.io/name": "smf",
+      "pod-template-hash": "6d7f6658f7"
+     }
+    },
+    "template": {
+     "metadata": {
+      "labels": {
+       "app.kubernetes.io/name": "smf",
+       "app.kubernetes.io/part-of": "sylvatwin-5gc",
+       "pod-template-hash": "6d7f6658f7",
+       "sylvatwin.orange.com/nf": "smf"
+      }
+     },
+     "spec": {
+      "automountServiceAccountToken": false,
+      "containers": [
+       {
+        "command": [
+         "open5gs-smfd",
+         "-c",
+         "/etc/open5gs/custom/smf.yaml"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "smf",
+        "ports": [
+         {
+          "containerPort": 7777,
+          "name": "sbi",
+          "protocol": "TCP"
+         }
+        ],
+        "readinessProbe": {
+         "failureThreshold": 3,
+         "periodSeconds": 10,
+         "successThreshold": 1,
+         "tcpSocket": {
+          "port": 7777
+         },
+         "timeoutSeconds": 1
+        },
+        "resources": {
+         "limits": {
+          "cpu": "200m",
+          "memory": "256Mi"
+         },
+         "requests": {
+          "cpu": "20m",
+          "memory": "64Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         },
+         "privileged": false
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File",
+        "volumeMounts": [
+         {
+          "mountPath": "/etc/open5gs/custom",
+          "name": "config"
+         }
+        ]
+       }
+      ],
+      "dnsPolicy": "ClusterFirst",
+      "initContainers": [
+       {
+        "command": [
+         "sh",
+         "-c",
+         "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+        ],
+        "image": "gradiant/open5gs:2.7.2",
+        "imagePullPolicy": "IfNotPresent",
+        "name": "wait-nrf",
+        "resources": {
+         "limits": {
+          "cpu": "50m",
+          "memory": "32Mi"
+         },
+         "requests": {
+          "cpu": "5m",
+          "memory": "16Mi"
+         }
+        },
+        "securityContext": {
+         "allowPrivilegeEscalation": false,
+         "capabilities": {
+          "drop": [
+           "ALL"
+          ]
+         }
+        },
+        "terminationMessagePath": "/dev/termination-log",
+        "terminationMessagePolicy": "File"
+       }
+      ],
+      "restartPolicy": "Always",
+      "schedulerName": "default-scheduler",
+      "securityContext": {
+       "runAsGroup": 999,
+       "runAsNonRoot": true,
+       "runAsUser": 999,
+       "seccompProfile": {
+        "type": "RuntimeDefault"
+       }
+      },
+      "terminationGracePeriodSeconds": 30,
+      "volumes": [
+       {
+        "configMap": {
+         "defaultMode": 420,
+         "name": "smf-config"
+        },
+        "name": "config"
+       }
+      ]
+     }
+    }
+   },
+   "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1,
+    "terminatingReplicas": 0
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Pod",
+   "metadata": {
+    "annotations": {
+     "cni.projectcalico.org/containerID": "7f59fdd78b034e6cd4b023a0941037703dbfbfad2e61d63c70c17a8245fccc41",
+     "cni.projectcalico.org/podIP": "100.72.149.152/32",
+     "cni.projectcalico.org/podIPs": "100.72.149.152/32"
+    },
+    "creationTimestamp": "2026-10-27T13:49:47Z",
+    "generateName": "smf-6d7f6658f7-",
+    "generation": 1,
+    "labels": {
+     "app.kubernetes.io/name": "smf",
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "pod-template-hash": "6d7f6658f7",
+     "sylvatwin.orange.com/nf": "smf"
+    },
+    "name": "smf-6d7f6658f7-gfrqw",
+    "namespace": "sylvatwin-5gc",
+    "ownerReferences": [
+     {
+      "apiVersion": "apps/v1",
+      "blockOwnerDeletion": true,
+      "controller": true,
+      "kind": "ReplicaSet",
+      "name": "smf-6d7f6658f7",
+      "uid": "ab17f9e7-5d24-4ae8-933b-9e2d0d36d0bf"
+     }
+    ],
+    "resourceVersion": "4104559",
+    "uid": "fa204404-a06b-4fbf-ad05-10dcb858b00b"
+   },
+   "spec": {
+    "automountServiceAccountToken": false,
+    "containers": [
+     {
+      "command": [
+       "open5gs-smfd",
+       "-c",
+       "/etc/open5gs/custom/smf.yaml"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "smf",
+      "ports": [
+       {
+        "containerPort": 7777,
+        "name": "sbi",
+        "protocol": "TCP"
+       }
+      ],
+      "readinessProbe": {
+       "failureThreshold": 3,
+       "periodSeconds": 10,
+       "successThreshold": 1,
+       "tcpSocket": {
+        "port": 7777
+       },
+       "timeoutSeconds": 1
+      },
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       },
+       "privileged": false
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File",
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "dnsPolicy": "ClusterFirst",
+    "enableServiceLinks": true,
+    "initContainers": [
+     {
+      "command": [
+       "sh",
+       "-c",
+       "until curl -s -m 2 --http2-prior-knowledge -o /dev/null http://nrf.sylvatwin-5gc.svc.cluster.local:7777/nnrf-nfm/v1/nf-instances; do echo attente NRF; sleep 3; done"
+      ],
+      "image": "gradiant/open5gs:2.7.2",
+      "imagePullPolicy": "IfNotPresent",
+      "name": "wait-nrf",
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "securityContext": {
+       "allowPrivilegeEscalation": false,
+       "capabilities": {
+        "drop": [
+         "ALL"
+        ]
+       }
+      },
+      "terminationMessagePath": "/dev/termination-log",
+      "terminationMessagePolicy": "File"
+     }
+    ],
+    "nodeName": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "preemptionPolicy": "PreemptLowerPriority",
+    "priority": 0,
+    "restartPolicy": "Always",
+    "schedulerName": "default-scheduler",
+    "securityContext": {
+     "runAsGroup": 999,
+     "runAsNonRoot": true,
+     "runAsUser": 999,
+     "seccompProfile": {
+      "type": "RuntimeDefault"
+     }
+    },
+    "serviceAccount": "default",
+    "serviceAccountName": "default",
+    "terminationGracePeriodSeconds": 30,
+    "tolerations": [
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/not-ready",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     },
+     {
+      "effect": "NoExecute",
+      "key": "node.kubernetes.io/unreachable",
+      "operator": "Exists",
+      "tolerationSeconds": 300
+     }
+    ],
+    "volumes": [
+     {
+      "configMap": {
+       "defaultMode": 420,
+       "name": "smf-config"
+      },
+      "name": "config"
+     }
+    ]
+   },
+   "status": {
+    "conditions": [
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:49:50Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodReadyToStartContainers"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:49:51Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Initialized"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:49:52Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "Ready"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:49:52Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "ContainersReady"
+     },
+     {
+      "lastProbeTime": null,
+      "lastTransitionTime": "2026-10-27T13:49:47Z",
+      "observedGeneration": 1,
+      "status": "True",
+      "type": "PodScheduled"
+     }
+    ],
+    "containerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "20m",
+       "memory": "64Mi"
+      },
+      "containerID": "containerd://2569f15a5b513fea216c31b3d24f1fcde97254790ebde60b6d1fbedf1fb1fca6",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "smf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "200m",
+        "memory": "256Mi"
+       },
+       "requests": {
+        "cpu": "20m",
+        "memory": "64Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": true,
+      "state": {
+       "running": {
+        "startedAt": "2026-10-27T13:49:52Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      },
+      "volumeMounts": [
+       {
+        "mountPath": "/etc/open5gs/custom",
+        "name": "config"
+       }
+      ]
+     }
+    ],
+    "hostIP": "172.30.0.4",
+    "hostIPs": [
+     {
+      "ip": "172.30.0.4"
+     }
+    ],
+    "initContainerStatuses": [
+     {
+      "allocatedResources": {
+       "cpu": "5m",
+       "memory": "16Mi"
+      },
+      "containerID": "containerd://36cbe9168e3fcd099cddffa8e5d28527f4f24032825b9af183c411511fd2f172",
+      "image": "docker.io/gradiant/open5gs:2.7.2",
+      "imageID": "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+      "lastState": {},
+      "name": "wait-nrf",
+      "ready": true,
+      "resources": {
+       "limits": {
+        "cpu": "50m",
+        "memory": "32Mi"
+       },
+       "requests": {
+        "cpu": "5m",
+        "memory": "16Mi"
+       }
+      },
+      "restartCount": 0,
+      "started": false,
+      "state": {
+       "terminated": {
+        "containerID": "containerd://36cbe9168e3fcd099cddffa8e5d28527f4f24032825b9af183c411511fd2f172",
+        "exitCode": 0,
+        "finishedAt": "2026-10-27T13:49:51Z",
+        "reason": "Completed",
+        "startedAt": "2026-10-27T13:49:50Z"
+       }
+      },
+      "user": {
+       "linux": {
+        "gid": 999,
+        "supplementalGroups": [
+         999
+        ],
+        "uid": 999
+       }
+      }
+     }
+    ],
+    "observedGeneration": 1,
+    "phase": "Running",
+    "podIP": "100.72.149.152",
+    "podIPs": [
+     {
+      "ip": "100.72.149.152"
+     }
+    ],
+    "qosClass": "Burstable",
+    "startTime": "2026-10-27T13:49:47Z"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "data": {
+    "smf.yaml": "# GTP-U est OBLIGATOIRE dans Open5GS v2.7.2 (src/smf/context.c, smf_context_validation).\n# Il est lie a 127.0.0.1 : socket UDP locale au pod, injoignable de l'exterieur.\n# Volontairement absents : gtpc, freeDiameter, et toute adresse d'UPF.\nlogger: {level: info}\nglobal: {max: {ue: 64}}\nsmf:\n  sbi:\n    server:\n      - dev: eth0\n        port: 7777\n        advertise: smf.sylvatwin-5gc.svc.cluster.local\n    client:\n      nrf:\n        - uri: http://nrf.sylvatwin-5gc.svc.cluster.local:7777\n  pfcp:\n    server:\n      - address: 127.0.0.1\n  gtpu:\n    server:\n      - address: 127.0.0.1\n  session:\n    - subnet: 10.45.0.1/16\n      dnn: internet\n  dns:\n    - 8.8.8.8\n  mtu: 1400\n  info:\n    - s_nssai:\n        - sst: 1\n          dnn:\n            - internet\n      tai:\n        - plmn_id: {mcc: 999, mnc: 70}\n          tac: 1\n"
+   },
+   "kind": "ConfigMap",
+   "metadata": {
+    "creationTimestamp": "2026-10-27T13:40:27Z",
+    "labels": {
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux"
+    },
+    "name": "smf-config",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4100677",
+    "uid": "4517eeb0-dc0c-4bab-a0e4-8f96e5969868"
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Node",
+   "metadata": {
+    "annotations": {
+     "cluster.x-k8s.io/annotations-from-machine": "",
+     "cluster.x-k8s.io/cluster-name": "my-workload-kubeadm-capd",
+     "cluster.x-k8s.io/cluster-namespace": "my-workload-kubeadm-capd",
+     "cluster.x-k8s.io/labels-from-machine": "",
+     "cluster.x-k8s.io/machine": "my-workload-kubeadm-capd-control-plane-6w58l",
+     "cluster.x-k8s.io/owner-kind": "KubeadmControlPlane",
+     "cluster.x-k8s.io/owner-name": "my-workload-kubeadm-capd-control-plane",
+     "management.cattle.io/pod-limits": "{\"cpu\":\"4400m\",\"memory\":\"16924Mi\"}",
+     "management.cattle.io/pod-requests": "{\"cpu\":\"2610m\",\"memory\":\"5960Mi\",\"pods\":\"49\"}",
+     "node.alpha.kubernetes.io/ttl": "0",
+     "post-commands-executed": "true",
+     "projectcalico.org/IPv4Address": "172.30.0.4/24",
+     "projectcalico.org/IPv4VXLANTunnelAddr": "100.72.149.128",
+     "projectcalico.org/Interfaces": "[{\"name\":\"eth0\",\"addresses\":[\"172.30.0.4\"]}]",
+     "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+    },
+    "creationTimestamp": "2026-10-19T15:09:28Z",
+    "finalizers": [
+     "sylva.org/provider-id-blacklist"
+    ],
+    "labels": {
+     "beta.kubernetes.io/arch": "amd64",
+     "beta.kubernetes.io/os": "linux",
+     "cluster": "my-workload-kubeadm-capd",
+     "kubernetes.io/arch": "amd64",
+     "kubernetes.io/hostname": "my-workload-kubeadm-capd-control-plane-6w58l",
+     "kubernetes.io/os": "linux",
+     "node-role.kubernetes.io/control-plane": "",
+     "node.kubernetes.io/exclude-from-external-load-balancers": ""
+    },
+    "name": "my-workload-kubeadm-capd-control-plane-6w58l",
+    "resourceVersion": "10805519",
+    "uid": "2fd24ea5-3f64-4403-8bc9-fdf6d9f183d0"
+   },
+   "spec": {
+    "podCIDR": "100.72.0.0/24",
+    "podCIDRs": [
+     "100.72.0.0/24"
+    ],
+    "providerID": "docker:////my-workload-kubeadm-capd-control-plane-6w58l"
+   },
+   "status": {
+    "addresses": [
+     {
+      "address": "172.30.0.4",
+      "type": "InternalIP"
+     },
+     {
+      "address": "my-workload-kubeadm-capd-control-plane-6w58l",
+      "type": "Hostname"
+     }
+    ],
+    "allocatable": {
+     "cpu": "32",
+     "ephemeral-storage": "460366888Ki",
+     "hugepages-1Gi": "0",
+     "hugepages-2Mi": "0",
+     "memory": "264022140Ki",
+     "pods": "210"
+    },
+    "capacity": {
+     "cpu": "32",
+     "ephemeral-storage": "460366888Ki",
+     "hugepages-1Gi": "0",
+     "hugepages-2Mi": "0",
+     "memory": "264022140Ki",
+     "pods": "210"
+    },
+    "conditions": [
+     {
+      "lastHeartbeatTime": "2026-10-19T15:11:38Z",
+      "lastTransitionTime": "2026-10-19T15:11:38Z",
+      "message": "Calico is running on this node",
+      "reason": "CalicoIsUp",
+      "status": "False",
+      "type": "NetworkUnavailable"
+     },
+     {
+      "lastHeartbeatTime": "2026-11-09T13:25:33Z",
+      "lastTransitionTime": "2026-10-19T15:09:26Z",
+      "message": "kubelet has sufficient memory available",
+      "reason": "KubeletHasSufficientMemory",
+      "status": "False",
+      "type": "MemoryPressure"
+     },
+     {
+      "lastHeartbeatTime": "2026-11-09T13:25:33Z",
+      "lastTransitionTime": "2026-10-19T15:09:26Z",
+      "message": "kubelet has no disk pressure",
+      "reason": "KubeletHasNoDiskPressure",
+      "status": "False",
+      "type": "DiskPressure"
+     },
+     {
+      "lastHeartbeatTime": "2026-11-09T13:25:33Z",
+      "lastTransitionTime": "2026-10-19T15:09:26Z",
+      "message": "kubelet has sufficient PID available",
+      "reason": "KubeletHasSufficientPID",
+      "status": "False",
+      "type": "PIDPressure"
+     },
+     {
+      "lastHeartbeatTime": "2026-11-09T13:25:33Z",
+      "lastTransitionTime": "2026-10-19T15:11:26Z",
+      "message": "kubelet is posting ready status",
+      "reason": "KubeletReady",
+      "status": "True",
+      "type": "Ready"
+     }
+    ],
+    "daemonEndpoints": {
+     "kubeletEndpoint": {
+      "Port": 10250
+     }
+    },
+    "features": {
+     "supplementalGroupsPolicy": true
+    },
+    "images": [
+     {
+      "names": [
+       "docker.io/rancher/rancher-agent@sha256:58875a3be35284420b18ff4a13f38b2f3f7f25e9b119f9c0d934853f800f4a14",
+       "docker.io/rancher/rancher-agent:v2.14.3"
+      ],
+      "sizeBytes": 610244057
+     },
+     {
+      "names": [
+       "docker.io/library/mongo@sha256:8b6d8f5bbedb25cb73517b65cf99f13aeb75ad5b157a56c479287a840bbad3ac",
+       "docker.io/library/mongo:6.0"
+      ],
+      "sizeBytes": 278908424
+     },
+     {
+      "names": [
+       "docker.io/rancher/nginx-ingress-controller@sha256:6cbc1e932b5b1559e18c9890dc21ac63a07ca040286917ac53e67f1839888774",
+       "docker.io/rancher/nginx-ingress-controller:v1.14.5-hardened2"
+      ],
+      "sizeBytes": 274022784
+     },
+     {
+      "names": [
+       "docker.io/rancher/appco-grafana@sha256:c4508fe1195b873268c29d370dbff16fa366e5ef10582ad84c5ce0f4698bb49a",
+       "docker.io/rancher/appco-grafana:12.3.1-1.12"
+      ],
+      "sizeBytes": 191771996
+     },
+     {
+      "names": [
+       "registry.gitlab.com/sylva-projects/sylva-elements/container-images/kube-job@sha256:70e2abaa554cd30f52cfb9ae128b26e2fd95acf973cbd0b2d56310890e109137",
+       "registry.gitlab.com/sylva-projects/sylva-elements/container-images/kube-job:v1.6.1"
+      ],
+      "sizeBytes": 143593962
+     },
+     {
+      "names": [
+       "docker.io/rancher/prom-prometheus@sha256:2b6f734e372c1b4717008f7d0a0152316aedd4d13ae17ef1e3268dbfaf68041b",
+       "docker.io/rancher/prom-prometheus:v3.8.1"
+      ],
+      "sizeBytes": 136309267
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-node@sha256:f4fafd8ba641d96c5a91b01e5a519117d77d55dee789a3562ba3ad4aa125b36a",
+       "docker.io/rancher/mirrored-calico-node:v3.32.0"
+      ],
+      "sizeBytes": 120319620
+     },
+     {
+      "names": [
+       "docker.io/rancher/shell@sha256:f2326fe57fd60b11543dc04718d3fa56dad975a89b60c7550fceac9c22269a60",
+       "docker.io/rancher/shell:v0.7.1"
+      ],
+      "sizeBytes": 110550386
+     },
+     {
+      "names": [
+       "docker.io/gradiant/open5gs@sha256:f8a3aa0115c5cf97a7a757e35a7ee78f5f8dae0d842e0f09c14d4d7597ad6ff3",
+       "docker.io/gradiant/open5gs:2.7.2"
+      ],
+      "sizeBytes": 92683351
+     },
+     {
+      "names": [
+       "docker.io/library/import-2026-06-02@sha256:038e312b110459e41468e12f89210cd944aa27e4a9d174c88939c08d7d39e8a4",
+       "registry.k8s.io/kube-apiserver-amd64:v1.35.5",
+       "registry.k8s.io/kube-apiserver:v1.35.5"
+      ],
+      "sizeBytes": 90872179
+     },
+     {
+      "names": [
+       "docker.io/rancher/local-path-provisioner@sha256:1eba82e9c386038b4af6d69cca7519fac738c28c42735ed48ce70c882ad0d80f",
+       "docker.io/rancher/local-path-provisioner:v0.0.36"
+      ],
+      "sizeBytes": 89390500
+     },
+     {
+      "names": [
+       "docker.io/rancher/kuberlr-kubectl@sha256:caf8ba5dece3a9e79030a82bac8dd9635f2f284e8919f231b7fbdcdb803ef71c",
+       "docker.io/rancher/kuberlr-kubectl:v7.1.1"
+      ],
+      "sizeBytes": 81162573
+     },
+     {
+      "names": [
+       "docker.io/rancher/kuberlr-kubectl@sha256:fb6644562e7f24fec1ab13e7cdbfb6519ae4f62e212bbbedee55ccfceee7831f",
+       "docker.io/rancher/kuberlr-kubectl:v7.1.0"
+      ],
+      "sizeBytes": 80428649
+     },
+     {
+      "names": [
+       "docker.io/library/import-2026-06-02@sha256:54023c4f6c4faa1fd787fd8c05c22f911d43cb76e6981086c03e0f856564cd02",
+       "registry.k8s.io/kube-controller-manager-amd64:v1.35.5",
+       "registry.k8s.io/kube-controller-manager:v1.35.5"
+      ],
+      "sizeBytes": 76908764
+     },
+     {
+      "names": [
+       "registry.gitlab.com/sylva-projects/sylva-elements/container-images/sandbox-registry/metallb-speaker@sha256:ceefbe0a3bf5c4163dd6138ce4bccb7deb7ed19f9739ed6ec76633a71d596339",
+       "registry.gitlab.com/sylva-projects/sylva-elements/container-images/sandbox-registry/metallb-speaker:v0.16.1-sylva-custom"
+      ],
+      "sizeBytes": 71912860
+     },
+     {
+      "names": [
+       "docker.io/library/import-2026-06-02@sha256:791b991dcbfbc579f7543fe4e6bd3bb29f1e6ed210c3d971c316511582bc11e6",
+       "registry.k8s.io/kube-proxy-amd64:v1.35.5",
+       "registry.k8s.io/kube-proxy:v1.35.5"
+      ],
+      "sizeBytes": 71701058
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-cni@sha256:1cfc6aa9c4dad3575fdf36b78185fd7d68bcd4acc95778f8342be4fb6a851a14",
+       "docker.io/rancher/mirrored-calico-cni:v3.32.0"
+      ],
+      "sizeBytes": 69471162
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-kube-controllers@sha256:adf0ac895796d21bca5383bc81c4cd2614be3a4308085b47857d7999f4cc2b1f",
+       "docker.io/rancher/mirrored-calico-kube-controllers:v3.32.0"
+      ],
+      "sizeBytes": 61030975
+     },
+     {
+      "names": [
+       "docker.io/library/import-2026-06-02@sha256:c883ece124557dd93528f357f295d765e7b25e2fff18c5b2bf06c4c169372462",
+       "registry.k8s.io/kube-scheduler-amd64:v1.35.5",
+       "registry.k8s.io/kube-scheduler:v1.35.5"
+      ],
+      "sizeBytes": 52775512
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-apiserver@sha256:713a7d195e98721e1c25b16ce572f630daf5e34e8567556535a6446d9c8b4174",
+       "docker.io/rancher/mirrored-calico-apiserver:v3.32.0"
+      ],
+      "sizeBytes": 50871083
+     },
+     {
+      "names": [
+       "reg.kyverno.io/kyverno/kyverno@sha256:0a540e2ddf74d0d2d3d45f9ef248d7dbc96576accdbcc6a2dd7eaff9fea56504",
+       "reg.kyverno.io/kyverno/kyverno:v1.18.2"
+      ],
+      "sizeBytes": 46556846
+     },
+     {
+      "names": [
+       "reg.kyverno.io/kyverno/background-controller@sha256:d62566ce41bd0d4a32bf2cf44b9ebfc02c36374f821f83070890287f62f68671",
+       "reg.kyverno.io/kyverno/background-controller:v1.18.2"
+      ],
+      "sizeBytes": 45682773
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-operator@sha256:23c9bacd1ed01cd585372032c5b494ceee9a1c7e7f66d3d158c2146a2e8c0118",
+       "docker.io/rancher/mirrored-calico-operator:v1.42.0"
+      ],
+      "sizeBytes": 45594177
+     },
+     {
+      "names": [
+       "reg.kyverno.io/kyverno/reports-controller@sha256:f09cf305170014e191b94e1c54f5be73163d8824eefad49349675c4efe43159a",
+       "reg.kyverno.io/kyverno/reports-controller:v1.18.2"
+      ],
+      "sizeBytes": 45335953
+     },
+     {
+      "names": [
+       "reg.kyverno.io/kyverno/cleanup-controller@sha256:b0395d29ae332276e6910eb40418be9bc127c068d659f90aa1bcddd6be99ccb4",
+       "reg.kyverno.io/kyverno/cleanup-controller:v1.18.2"
+      ],
+      "sizeBytes": 42310074
+     },
+     {
+      "names": [
+       "reg.kyverno.io/kyverno/kyvernopre@sha256:cd8cb4a31d25b3992734fb8f24a90ef691c90ce49338c89bea96792160eacb98",
+       "reg.kyverno.io/kyverno/kyvernopre:v1.18.2"
+      ],
+      "sizeBytes": 41483207
+     },
+     {
+      "names": [
+       "docker.io/rancher/appco-k8s-sidecar@sha256:cb65fbe92667edfe46d7f4cd00b02a87bfa1dbc5e3c86b3209edd7eef26ae3e5",
+       "docker.io/rancher/appco-k8s-sidecar:2.1.2-1.10"
+      ],
+      "sizeBytes": 41203584
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-typha@sha256:fa5e25a5d6568a1df2fe56d3bde5ec9fb2d310f2b3e42375a8d0064837fe2b80",
+       "docker.io/rancher/mirrored-calico-typha:v3.32.0"
+      ],
+      "sizeBytes": 41055688
+     },
+     {
+      "names": [
+       "registry.k8s.io/sig-storage/snapshot-controller@sha256:b845f4bbc34d70bd84e92f8021f47704df1de3dbabbd8289969651360b39d605",
+       "registry.k8s.io/sig-storage/snapshot-controller:v8.4.0"
+      ],
+      "sizeBytes": 40197018
+     },
+     {
+      "names": [
+       "docker.io/kindest/kindnetd:v20260528-9350166c"
+      ],
+      "sizeBytes": 39749049
+     },
+     {
+      "names": [
+       "registry.gitlab.com/sylva-projects/sylva-elements/container-images/sandbox-registry/metallb-controller@sha256:0e22d64f9eec6a5078005399314e21c7db583f4a59acf1df9258780a6bb439a2",
+       "registry.gitlab.com/sylva-projects/sylva-elements/container-images/sandbox-registry/metallb-controller:v0.16.1-sylva-custom"
+      ],
+      "sizeBytes": 37287200
+     },
+     {
+      "names": [
+       "registry.gitlab.com/sylva-projects/sylva-elements/misc-controllers-suite@sha256:06534457c812e1019de18f6d024e259b9c9947ad913db9ebb8e2e222f57ccf9f",
+       "registry.gitlab.com/sylva-projects/sylva-elements/misc-controllers-suite:v1.3.2"
+      ],
+      "sizeBytes": 35018583
+     },
+     {
+      "names": [
+       "docker.io/rancher/appco-kube-state-metrics@sha256:c4be6c4113730d533a19690a14f6470978a4cd821264773a9c7fc47abb5bfa48",
+       "docker.io/rancher/appco-kube-state-metrics:2.17.0-10.14"
+      ],
+      "sizeBytes": 30760673
+     },
+     {
+      "names": [
+       "docker.io/rancher/fleet-agent@sha256:71f502ad36268d972136cce82176e7c2b59aba0da4e3ce74da48751ddbddd4d6",
+       "docker.io/rancher/fleet-agent:v0.15.4"
+      ],
+      "sizeBytes": 28118736
+     },
+     {
+      "names": [
+       "registry.k8s.io/kube-apiserver@sha256:5bb9700f458af4d1cea5f7bbd080f2c66140fb000d9840a436569f16978489d8",
+       "registry.k8s.io/kube-apiserver:v1.35.6"
+      ],
+      "sizeBytes": 27616105
+     },
+     {
+      "names": [
+       "docker.io/rancher/kube-webhook-certgen@sha256:6bb869baf40b92a3300c14ff591b1aa6ddb26bb4fef972e7a6a673b852eede3e",
+       "docker.io/rancher/kube-webhook-certgen:v1.14.5-hardened2"
+      ],
+      "sizeBytes": 26542257
+     },
+     {
+      "names": [
+       "docker.io/rancher/rancher-webhook@sha256:950352603e35617aa6c80c41d1ef4030ef8724bd264a04c58610cc093dbabc1c",
+       "docker.io/rancher/rancher-webhook:v0.10.7"
+      ],
+      "sizeBytes": 26108028
+     },
+     {
+      "names": [
+       "registry.k8s.io/kube-proxy@sha256:d8cb1b26c2c9289bea51e7c0d928c06a8c5b873616d15c996c66e703f9435319",
+       "registry.k8s.io/kube-proxy:v1.35.6"
+      ],
+      "sizeBytes": 25727251
+     },
+     {
+      "names": [
+       "quay.io/jetstack/cert-manager-controller@sha256:6c13d61e0348a5bc3477f8ea9a928624300b30d19b1c72a7d2b90372fc713db4",
+       "quay.io/jetstack/cert-manager-controller:v1.20.3"
+      ],
+      "sizeBytes": 23662428
+     },
+     {
+      "names": [
+       "registry.k8s.io/etcd:3.6.6-0"
+      ],
+      "sizeBytes": 23641797
+     },
+     {
+      "names": [
+       "registry.k8s.io/coredns/coredns:v1.13.1"
+      ],
+      "sizeBytes": 23553139
+     },
+     {
+      "names": [
+       "docker.io/rancher/appco-alertmanager@sha256:7ab4d7310b24569e33190a65c1c8a76d8b38c439bfad299c9b91efb9149b8cbd",
+       "docker.io/rancher/appco-alertmanager:0.30.0-12.16"
+      ],
+      "sizeBytes": 23209341
+     },
+     {
+      "names": [
+       "registry.k8s.io/kube-controller-manager@sha256:7277ab445774ad6fa62e7859151f819a8deb749e1203cbd6ddf7ac8dce5c0e1e",
+       "registry.k8s.io/kube-controller-manager:v1.35.6"
+      ],
+      "sizeBytes": 23048145
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-library-nginx@sha256:42a516af16b852e33b7682d5ef8acbd5d13fe08fecadc7ed98605ba5e3b26ab8",
+       "docker.io/rancher/mirrored-library-nginx:1.29.1-alpine"
+      ],
+      "sizeBytes": 22477192
+     },
+     {
+      "names": [
+       "quay.io/jetstack/cert-manager-webhook@sha256:a61e817632cebed3bb59a189327e786fa3fdd7597167d994a1848d98fd55848f",
+       "quay.io/jetstack/cert-manager-webhook:v1.20.3"
+      ],
+      "sizeBytes": 19511753
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-prometheus-operator-prometheus-operator@sha256:6dbbbbeca6d7b94aa30723bfaa55262e41b9f8c15304c484611c696503840aac",
+       "docker.io/rancher/mirrored-prometheus-operator-prometheus-operator:v0.87.1"
+      ],
+      "sizeBytes": 19444206
+     },
+     {
+      "names": [
+       "docker.io/rancher/appco-node-exporter@sha256:93f8d255c362fc896fe8bf0159d7d83a297d26034b1c66ab335b0b310fcaee47",
+       "docker.io/rancher/appco-node-exporter:1.10.2-14.3"
+      ],
+      "sizeBytes": 17731126
+     },
+     {
+      "names": [
+       "registry.k8s.io/kube-scheduler@sha256:51a32afb3c6966c974cd3b351042b1cb1b15af0619cb25e006c409d91367ea2e",
+       "registry.k8s.io/kube-scheduler:v1.35.6"
+      ],
+      "sizeBytes": 17149986
+     },
+     {
+      "names": [
+       "quay.io/jetstack/cert-manager-cainjector@sha256:06ad347fe0dc2eb84cc355c26f6752e05e87dceb6447f5cd29b963dd66dfd8bd",
+       "quay.io/jetstack/cert-manager-cainjector:v1.20.3"
+      ],
+      "sizeBytes": 16409208
+     },
+     {
+      "names": [
+       "docker.io/kindest/local-path-provisioner:v20260521-9fb22683"
+      ],
+      "sizeBytes": 15864063
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-prometheus-operator-prometheus-config-reloader@sha256:257ce3543e8f45c059dab488bcf897d8cc598cabd78afba12f41d6dbe36e22d2",
+       "docker.io/rancher/mirrored-prometheus-operator-prometheus-config-reloader:v0.87.1"
+      ],
+      "sizeBytes": 15204798
+     },
+     {
+      "names": [
+       "quay.io/jetstack/cert-manager-startupapicheck@sha256:b0c9a2c18d02f3c40a9e091a6fe9afdf39cbf7fb2d9acc18c9881c21c625f2dc",
+       "quay.io/jetstack/cert-manager-startupapicheck:v1.20.3"
+      ],
+      "sizeBytes": 14496192
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-jkroepke-kube-webhook-certgen@sha256:7a62bba56a7cef38c78ed5eaf62f7feaef5a50460fe5517d120cd402d62fee9c",
+       "docker.io/rancher/mirrored-jkroepke-kube-webhook-certgen:1.7.4"
+      ],
+      "sizeBytes": 8772898
+     },
+     {
+      "names": [
+       "docker.io/rancher/mirrored-calico-pod2daemon-flexvol@sha256:2f7849e28a34af85ce5d365568896f175367ada6a357352743766ec95f6ab9dd",
+       "docker.io/rancher/mirrored-calico-pod2daemon-flexvol:v3.32.0"
+      ],
+      "sizeBytes": 7560883
+     },
+     {
+      "names": [
+       "docker.io/kindest/local-path-helper:v20260131-7181c60a"
+      ],
+      "sizeBytes": 2872608
+     },
+     {
+      "names": [
+       "docker.io/library/busybox@sha256:bdf57e528e45e4433820e045b29b4597825a1c9e38353532d90a01445013f82e",
+       "docker.io/library/busybox:1.37.0"
+      ],
+      "sizeBytes": 2222118
+     },
+     {
+      "names": [
+       "registry.k8s.io/pause@sha256:278fb9dbcca9518083ad1e11276933a2e96f23de604a3a08cc3c80002767d24c",
+       "registry.k8s.io/pause:3.10.1"
+      ],
+      "sizeBytes": 320448
+     },
+     {
+      "names": [
+       "registry.k8s.io/pause:3.10"
+      ],
+      "sizeBytes": 320368
+     }
+    ],
+    "nodeInfo": {
+     "architecture": "amd64",
+     "bootID": "c9a12839-a09a-41ea-a9c4-f2c2640fb4cf",
+     "containerRuntimeVersion": "containerd://2.3.1",
+     "kernelVersion": "6.8.0-124-generic",
+     "kubeProxyVersion": "",
+     "kubeletVersion": "v1.35.5",
+     "machineID": "359d1f1023b94bf199723fed98a60c98",
+     "operatingSystem": "linux",
+     "osImage": "Debian GNU/Linux 13 (trixie)",
+     "swap": {
+      "capacity": 2147479552
+     },
+     "systemUUID": "c3b2e742-ad1d-430d-a4a1-f92f18be95a6"
+    },
+    "runtimeHandlers": [
+     {
+      "features": {
+       "recursiveReadOnlyMounts": true,
+       "userNamespaces": true
+      },
+      "name": ""
+     },
+     {
+      "features": {
+       "recursiveReadOnlyMounts": true,
+       "userNamespaces": true
+      },
+      "name": "runc"
+     },
+     {
+      "features": {
+       "recursiveReadOnlyMounts": true,
+       "userNamespaces": true
+      },
+      "name": "test-handler"
+     }
+    ]
+   }
+  },
+  {
+   "apiVersion": "v1",
+   "kind": "Namespace",
+   "metadata": {
+    "annotations": {
+     "cattle.io/status": "{\"Conditions\":[{\"Type\":\"ResourceQuotaInit\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-27T11:58:23Z\"},{\"Type\":\"InitialRolesPopulated\",\"Status\":\"True\",\"Message\":\"\",\"LastUpdateTime\":\"2026-10-27T11:58:23Z\"}]}",
+     "lifecycle.cattle.io/create.namespace-auth": "true"
+    },
+    "creationTimestamp": "2026-10-27T11:58:22Z",
+    "labels": {
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "kubernetes.io/metadata.name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/name": "sylvatwin-5gc",
+     "kustomize.toolkit.fluxcd.io/namespace": "sylvatwin-flux",
+     "pod-security.kubernetes.io/enforce": "restricted"
+    },
+    "name": "sylvatwin-5gc",
+    "resourceVersion": "4100668",
+    "uid": "8490205e-47fa-4366-832b-0713ebfbef25"
+   },
+   "spec": {
+    "finalizers": [
+     "kubernetes"
+    ]
+   },
+   "status": {
+    "phase": "Active"
+   }
+  },
+  {
+   "apiVersion": "meta.k8s.io/v1",
+   "kind": "PartialObjectMetadata",
+   "metadata": {
+    "annotations": {
+     "sylvatwin.orange.com/role": "scenario D3 : Secret cree hors Git (cles SUCI d exemple Open5GS, non sensibles)"
+    },
+    "creationTimestamp": "2026-10-27T13:42:30Z",
+    "labels": {
+     "app.kubernetes.io/part-of": "sylvatwin-5gc",
+     "sylvatwin.orange.com/hors-git": "true"
+    },
+    "name": "udm-keys",
+    "namespace": "sylvatwin-5gc",
+    "resourceVersion": "4101806",
+    "uid": "184ff885-76c8-4bf9-8d8a-6473a09ca7ff",
+    "x-sylvatwin-kind": "Secret"
+   }
+  }
+ ],
+ "kind": "List"
+}
