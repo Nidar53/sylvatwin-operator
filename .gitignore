@@ -37,3 +37,8 @@ go.work
 # Graphes generes
 *.ttl.tmp
 .sylvatwin-*.ttl
+
+# Sorties de tests / runs locaux (graphes generes)
+*-graph.ttl
+sylvatwin-out/
+cover.out
