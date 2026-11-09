@@ -1,0 +1,4 @@
+LAST SEEN              TYPE     REASON                    OBJECT                        MESSAGE
+40m (x4 over 85m)      Normal   Progressing               Kustomization/sylvatwin-5gc   Deployment/sylvatwin-5gc/nrf configured
+15m (x3 over 24m)      Normal   Progressing               Kustomization/sylvatwin-5gc   ConfigMap/sylvatwin-5gc/nrf-config configured
+43s (x9400 over 13d)   Normal   ReconciliationSucceeded   Kustomization/sylvatwin-5gc   (combined from similar events): Reconciliation finished in 379.495985ms, next run in 2m0s

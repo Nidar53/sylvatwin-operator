@@ -1,0 +1,1 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5527 derives=map[] verdicts=map[] duree=3.191s

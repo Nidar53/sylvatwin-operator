@@ -1,0 +1,72 @@
+### 2026-11-09T16:29:54.677Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     13m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:30:05.092Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     14m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:30:15.524Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     14m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:30:25.937Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     14m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:30:36.371Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     14m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:30:46.786Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     14m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:30:57.200Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     15m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:31:07.602Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     15m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:31:18.023Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     15m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:31:28.445Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     15m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:31:38.873Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     15m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>
+### 2026-11-09T16:31:49.304Z
+True ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-w7cls 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+zone=
+bsf-755b4c9bd4-6tssf   1/1   Running   0     15m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>   <none>

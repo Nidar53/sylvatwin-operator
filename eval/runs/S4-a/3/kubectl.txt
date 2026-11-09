@@ -1,0 +1,4 @@
+    - plmn_id: {mcc: 999, mnc: 70}
+    - plmn_id: {mcc: 999, mnc: 70}
+--- diff
+(fin du diff)

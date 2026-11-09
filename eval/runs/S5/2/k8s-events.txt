@@ -1,0 +1,41 @@
+LAST SEEN   TYPE      REASON              OBJECT                      MESSAGE
+58m         Warning   FailedMount         pod/udm-7cf6c5b78d-r6sgk    MountVolume.SetUp failed for volume "udm-keys" : secret "udm-keys" not found
+56m         Normal    Created             pod/udm-7cf6c5b78d-r6sgk    Container created
+56m         Normal    Pulled              pod/udm-7cf6c5b78d-r6sgk    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+56m         Normal    Started             pod/udm-7cf6c5b78d-r6sgk    Container started
+56m         Normal    Pulled              pod/udm-7cf6c5b78d-r6sgk    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+56m         Normal    Created             pod/udm-7cf6c5b78d-r6sgk    Container created
+56m         Normal    Started             pod/udm-7cf6c5b78d-r6sgk    Container started
+56m         Normal    Scheduled           pod/udm-7cf6c5b78d-w7cls    Successfully assigned sylvatwin-5gc/udm-7cf6c5b78d-w7cls to my-workload-kubeadm-capd-control-plane-6w58l
+56m         Normal    Killing             pod/udm-7cf6c5b78d-r6sgk    Stopping container udm
+56m         Normal    SuccessfulCreate    replicaset/udm-7cf6c5b78d   Created pod: udm-7cf6c5b78d-w7cls
+51m         Normal    Created             pod/udm-7cf6c5b78d-w7cls    Container created
+51m         Normal    Pulled              pod/udm-7cf6c5b78d-w7cls    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+51m         Normal    Started             pod/udm-7cf6c5b78d-w7cls    Container started
+51m         Normal    Started             pod/udm-7cf6c5b78d-w7cls    Container started
+51m         Normal    Created             pod/udm-7cf6c5b78d-w7cls    Container created
+51m         Normal    Pulled              pod/udm-7cf6c5b78d-w7cls    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+36m         Warning   FailedMount         pod/udm-7cf6c5b78d-w7cls    MountVolume.SetUp failed for volume "udm-keys" : secret "udm-keys" not found
+34m         Normal    SuccessfulDelete    replicaset/nrf-57b6849ccd   Deleted pod: nrf-57b6849ccd-88pjb
+34m         Normal    Killing             pod/nrf-57b6849ccd-88pjb    Stopping container nrf
+34m         Normal    SuccessfulCreate    replicaset/nrf-57b6849ccd   Created pod: nrf-57b6849ccd-7rk8r
+34m         Normal    Scheduled           pod/nrf-57b6849ccd-7rk8r    Successfully assigned sylvatwin-5gc/nrf-57b6849ccd-7rk8r to my-workload-kubeadm-capd-control-plane-6w58l
+34m         Normal    Created             pod/nrf-57b6849ccd-7rk8r    Container created
+34m         Normal    Pulled              pod/nrf-57b6849ccd-7rk8r    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+34m         Normal    Started             pod/nrf-57b6849ccd-7rk8r    Container started
+30m         Normal    SuccessfulDelete    replicaset/nrf-57b6849ccd   Deleted pod: nrf-57b6849ccd-7rk8r
+30m         Normal    Killing             pod/nrf-57b6849ccd-7rk8r    Stopping container nrf
+28m         Normal    Scheduled           pod/nrf-57b6849ccd-qhh5r    Successfully assigned sylvatwin-5gc/nrf-57b6849ccd-qhh5r to my-workload-kubeadm-capd-control-plane-6w58l
+28m         Normal    SuccessfulCreate    replicaset/nrf-57b6849ccd   Created pod: nrf-57b6849ccd-qhh5r
+28m         Normal    Pulled              pod/nrf-57b6849ccd-qhh5r    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+28m         Normal    Created             pod/nrf-57b6849ccd-qhh5r    Container created
+28m         Normal    Started             pod/nrf-57b6849ccd-qhh5r    Container started
+25m         Normal    SuccessfulDelete    replicaset/nrf-57b6849ccd   Deleted pod: nrf-57b6849ccd-qhh5r
+25m         Normal    Killing             pod/nrf-57b6849ccd-qhh5r    Stopping container nrf
+25m         Normal    ScalingReplicaSet   deployment/nrf              Scaled down replica set nrf-57b6849ccd from 1 to 0
+23m         Normal    SuccessfulCreate    replicaset/nrf-57b6849ccd   Created pod: nrf-57b6849ccd-fvbbj
+23m         Normal    ScalingReplicaSet   deployment/nrf              Scaled up replica set nrf-57b6849ccd from 0 to 1
+23m         Normal    Scheduled           pod/nrf-57b6849ccd-fvbbj    Successfully assigned sylvatwin-5gc/nrf-57b6849ccd-fvbbj to my-workload-kubeadm-capd-control-plane-6w58l
+23m         Normal    Started             pod/nrf-57b6849ccd-fvbbj    Container started
+23m         Normal    Created             pod/nrf-57b6849ccd-fvbbj    Container created
+23m         Normal    Pulled              pod/nrf-57b6849ccd-fvbbj    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod

@@ -1,0 +1,15 @@
+[2026-11-09T16:15:53.180Z] preparation S1 : label puis nodeSelector
+[2026-11-09T16:15:55.232Z] commit 4fcd072cc4137f30c601f891ce75d37a03b56ab2
+✔ applied revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2
+Waiting for deployment "bsf" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "bsf" rollout to finish: 1 old replicas are pending termination...
+deployment "bsf" successfully rolled out
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 8 s
+[2026-11-09T16:33:52.273Z] annulation preparation S1
+[2026-11-09T16:33:54.058Z] revert 38c205c6ea46b6bfd51d05a0cac68b457dfc7803
+✔ applied revision test@sha1:38c205c6ea46b6bfd51d05a0cac68b457dfc7803
+Waiting for deployment "bsf" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "bsf" rollout to finish: 1 old replicas are pending termination...
+deployment "bsf" successfully rolled out
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+SAIN (revision test@sha1:38c205c6ea46b6bfd51d05a0cac68b457dfc7803) apres 8 s

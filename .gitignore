@@ -42,3 +42,6 @@ go.work
 *-graph.ttl
 sylvatwin-out/
 cover.out
+
+# Gros fichiers de faits des campagnes (archives hors Git)
+eval/runs/**/facts.*

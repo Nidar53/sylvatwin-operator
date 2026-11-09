@@ -1,0 +1,10 @@
+[2026-11-09T15:30:41.237Z] === S4-a repetition 2 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:30:46.669Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:30:46.677Z] INJECTION
+configmap/nrf-config configured
+[2026-11-09T15:30:47.077Z] injection terminee a 2026-11-09T15:30:46.674Z
+[2026-11-09T15:35:01.407Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:35:32.451Z] retour a l'etat sain : OK

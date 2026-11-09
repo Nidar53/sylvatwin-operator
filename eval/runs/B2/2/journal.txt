@@ -1,0 +1,10 @@
+[2026-11-09T16:00:52.872Z] === B2 repetition 2 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T16:00:58.272Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:00:58.280Z] INJECTION
+deployment.apps/pcf restarted
+[2026-11-09T16:00:58.393Z] injection terminee a 2026-11-09T16:00:58.277Z
+[2026-11-09T16:03:34.022Z] ANNULATION
+deployment "pcf" successfully rolled out
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T16:04:00.838Z] retour a l'etat sain : OK

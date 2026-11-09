@@ -1,0 +1,7 @@
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+udm    1/1     1            1           13d
+NAME                   READY   STATUS    RESTARTS   AGE
+udm-7cf6c5b78d-w7cls   1/1     Running   0          17m
+Error from server (NotFound): secrets "udm-keys" not found
+--- diff
+(fin du diff)

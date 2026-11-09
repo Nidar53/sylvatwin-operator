@@ -1,0 +1,47 @@
+{
+  "start": "2026-11-09T15:06:28.909886129Z",
+  "end": "2026-11-09T15:06:31.654474052Z",
+  "clusters": {
+    "management-cluster": "ok",
+    "my-workload-kubeadm-capd": "ok"
+  },
+  "objects": {
+    "management-cluster": 353,
+    "my-workload-kubeadm-capd": 66
+  },
+  "desired": [
+    {
+      "kustomization": "sylvatwin-flux/sylvatwin-5gc",
+      "revision": "test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099",
+      "known": true,
+      "objects": 35
+    }
+  ],
+  "facts": 5488,
+  "drifts": {
+    "BrokenReferenceDrift": 1,
+    "FunctionImpactDrift": 1
+  },
+  "verdicts": {
+    "ConfirmedViolation": 2
+  },
+  "driftList": [
+    "BrokenReferenceDrift BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys",
+    "FunctionImpactDrift FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm"
+  ],
+  "verdictList": [
+    "ConfirmedViolation BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys",
+    "ConfirmedViolation FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm"
+  ],
+  "timingsMs": {
+    "desired": 48,
+    "judge_lifecycle": 224,
+    "judge_load": 695,
+    "judge_passe1": 408,
+    "judge_passe2": 378,
+    "judge_passe3": 336,
+    "judge_verdict": 2,
+    "map": 113,
+    "observe": 534
+  }
+}

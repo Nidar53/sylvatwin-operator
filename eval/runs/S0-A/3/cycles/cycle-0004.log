@@ -1,0 +1,21 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5493 derives=map[FunctionImpactDrift:9 SpecDrift:1] verdicts=map[SuspectedViolation:10] duree=2.757s
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm
+  derive  : FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr
+  derive  : SpecDrift SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm
+  verdict : SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr
+  verdict : SuspectedViolation SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf

@@ -1,0 +1,11 @@
+[2026-11-09T14:50:07.663Z] === S0-B repetition 3 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:50:13.024Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:50:13.032Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+pod "udm-7cf6c5b78d-r6sgk" deleted from sylvatwin-5gc namespace
+[2026-11-09T14:50:13.185Z] injection terminee a 2026-11-09T14:50:13.030Z
+[2026-11-09T14:52:54.492Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 100 s
+[2026-11-09T14:54:59.879Z] retour a l'etat sain : OK

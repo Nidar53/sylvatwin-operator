@@ -1,0 +1,63 @@
+{
+  "start": "2026-11-09T15:16:47.747263766Z",
+  "end": "2026-11-09T15:16:52.555298939Z",
+  "clusters": {
+    "management-cluster": "ok",
+    "my-workload-kubeadm-capd": "ok"
+  },
+  "objects": {
+    "management-cluster": 353,
+    "my-workload-kubeadm-capd": 66
+  },
+  "desired": [
+    {
+      "kustomization": "sylvatwin-flux/sylvatwin-5gc",
+      "revision": "test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099",
+      "known": true,
+      "objects": 35
+    }
+  ],
+  "facts": 5493,
+  "drifts": {
+    "FunctionImpactDrift": 9,
+    "SpecDrift": 1
+  },
+  "verdicts": {
+    "SuspectedViolation": 10
+  },
+  "driftList": [
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm",
+    "FunctionImpactDrift FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr",
+    "SpecDrift SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf"
+  ],
+  "verdictList": [
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm",
+    "SuspectedViolation FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr",
+    "SuspectedViolation SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf"
+  ],
+  "timingsMs": {
+    "desired": 48,
+    "judge_lifecycle": 763,
+    "judge_load": 1253,
+    "judge_passe1": 878,
+    "judge_passe2": 590,
+    "judge_passe3": 563,
+    "judge_verdict": 7,
+    "map": 136,
+    "observe": 558
+  }
+}

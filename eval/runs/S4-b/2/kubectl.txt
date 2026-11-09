@@ -1,0 +1,9 @@
+        - sst: 1
+          dnn:
+--
+        - sst: 2
+          dnn:
+        - sst: 1
+  security:
+--- diff (attendu : vide, conforme a Git)
+(fin du diff)

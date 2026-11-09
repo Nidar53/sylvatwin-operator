@@ -1,0 +1,47 @@
+{
+  "start": "2026-11-09T14:48:35.113888148Z",
+  "end": "2026-11-09T14:48:38.034868577Z",
+  "clusters": {
+    "management-cluster": "ok",
+    "my-workload-kubeadm-capd": "ok"
+  },
+  "objects": {
+    "management-cluster": 353,
+    "my-workload-kubeadm-capd": 67
+  },
+  "desired": [
+    {
+      "kustomization": "sylvatwin-flux/sylvatwin-5gc",
+      "revision": "test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099",
+      "known": true,
+      "objects": 35
+    }
+  ],
+  "facts": 5503,
+  "drifts": {
+    "ConvergenceDrift": 1,
+    "FunctionImpactDrift": 1
+  },
+  "verdicts": {
+    "SuspectedViolation": 2
+  },
+  "driftList": [
+    "ConvergenceDrift ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm",
+    "FunctionImpactDrift FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm"
+  ],
+  "verdictList": [
+    "SuspectedViolation ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm",
+    "SuspectedViolation FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm"
+  ],
+  "timingsMs": {
+    "desired": 34,
+    "judge_lifecycle": 138,
+    "judge_load": 1105,
+    "judge_passe1": 409,
+    "judge_passe2": 353,
+    "judge_passe3": 313,
+    "judge_verdict": 2,
+    "map": 88,
+    "observe": 473
+  }
+}

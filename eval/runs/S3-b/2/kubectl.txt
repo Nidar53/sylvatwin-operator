@@ -1,0 +1,10 @@
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+nrf    1/1     1            1           13d
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+Events:
+  Type    Reason             Age                  From                   Message
+  ----    ------             ----                 ----                   -------
+  Normal  ScalingReplicaSet  4m8s (x5 over 54m)   deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0
+  Normal  ScalingReplicaSet  2m39s (x6 over 13d)  deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1
+--- diff
+(fin du diff)

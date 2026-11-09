@@ -1,0 +1,1562 @@
+{
+ "S0-A": [
+  {
+   "scenario": "S0-A",
+   "rep": 1,
+   "injection": "2026-11-09T14:25:56.287000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.8,
+   "derives": [
+    "FunctionImpactDrift",
+    "SpecDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "dependance"
+    ],
+    [
+     "ausf",
+     "dependance"
+    ],
+    [
+     "bsf",
+     "dependance"
+    ],
+    [
+     "nrf",
+     "direct"
+    ],
+    [
+     "nssf",
+     "dependance"
+    ],
+    [
+     "pcf",
+     "dependance"
+    ],
+    [
+     "smf",
+     "dependance"
+    ],
+    [
+     "udm",
+     "dependance"
+    ],
+    [
+     "udr",
+     "dependance"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 31.9,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "SuspectedViolation",
+    "SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf": "SuspectedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/nrf"
+   ],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nnrf    1/1     1            1           13d\nReplicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable\nEvents:\n  Type    Reason             Age                  From                   Message\n  ----    ------             ----                 ----                   -------\n  Normal  ScalingReplicaSet  4m9s                 deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0\n  Normal  ScalingReplicaSet  3m40s (x2 over 13d)  deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:25:56.377Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-wflfd 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S0-A",
+   "rep": 2,
+   "injection": "2026-11-09T14:30:46.928000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.4,
+   "derives": [
+    "FunctionImpactDrift",
+    "SpecDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "dependance"
+    ],
+    [
+     "ausf",
+     "dependance"
+    ],
+    [
+     "bsf",
+     "dependance"
+    ],
+    [
+     "nrf",
+     "direct"
+    ],
+    [
+     "nssf",
+     "dependance"
+    ],
+    [
+     "pcf",
+     "dependance"
+    ],
+    [
+     "smf",
+     "dependance"
+    ],
+    [
+     "udm",
+     "dependance"
+    ],
+    [
+     "udr",
+     "dependance"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 85.4,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "SuspectedViolation",
+    "SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf": "SuspectedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/nrf"
+   ],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nnrf    1/1     1            1           13d\nReplicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable\nEvents:\n  Type    Reason             Age                   From                   Message\n  ----    ------             ----                  ----                   -------\n  Normal  ScalingReplicaSet  4m8s (x2 over 8m59s)  deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0\n  Normal  ScalingReplicaSet  2m47s (x3 over 13d)   deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:30:47.019Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S0-A",
+   "rep": 3,
+   "injection": "2026-11-09T14:35:37.530000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.3,
+   "derives": [
+    "FunctionImpactDrift",
+    "SpecDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "dependance"
+    ],
+    [
+     "ausf",
+     "dependance"
+    ],
+    [
+     "bsf",
+     "dependance"
+    ],
+    [
+     "nrf",
+     "direct"
+    ],
+    [
+     "nssf",
+     "dependance"
+    ],
+    [
+     "pcf",
+     "dependance"
+    ],
+    [
+     "smf",
+     "dependance"
+    ],
+    [
+     "udm",
+     "dependance"
+    ],
+    [
+     "udr",
+     "dependance"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 85.4,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "SuspectedViolation",
+    "SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf": "SuspectedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/nrf"
+   ],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nnrf    1/1     1            1           13d\nReplicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable\nEvents:\n  Type    Reason             Age                  From                   Message\n  ----    ------             ----                 ----                   -------\n  Normal  ScalingReplicaSet  4m9s (x3 over 13m)   deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0\n  Normal  ScalingReplicaSet  2m46s (x4 over 13d)  deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:35:37.613Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-tr8th 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running",
+   "retour_sain": true
+  }
+ ],
+ "S3-b": [
+  {
+   "scenario": "S3-b",
+   "rep": 1,
+   "injection": "2026-11-09T15:11:22.224000+00:00",
+   "cycles": 16,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.8,
+   "derives": [
+    "FunctionImpactDrift",
+    "SpecDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "dependance"
+    ],
+    [
+     "ausf",
+     "dependance"
+    ],
+    [
+     "bsf",
+     "dependance"
+    ],
+    [
+     "nrf",
+     "direct"
+    ],
+    [
+     "nssf",
+     "dependance"
+    ],
+    [
+     "pcf",
+     "dependance"
+    ],
+    [
+     "smf",
+     "dependance"
+    ],
+    [
+     "udm",
+     "dependance"
+    ],
+    [
+     "udr",
+     "dependance"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 51.9,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "SuspectedViolation",
+    "SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf": "SuspectedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/nrf"
+   ],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nnrf    1/1     1            1           13d\nReplicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable\nEvents:\n  Type    Reason             Age                  From                   Message\n  ----    ------             ----                 ----                   -------\n  Normal  ScalingReplicaSet  4m9s (x4 over 49m)   deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0\n  Normal  ScalingReplicaSet  3m30s (x5 over 13d)  deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:11:22.320Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S3-b",
+   "rep": 2,
+   "injection": "2026-11-09T15:16:14.006000+00:00",
+   "cycles": 16,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.4,
+   "derives": [
+    "FunctionImpactDrift",
+    "SpecDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "dependance"
+    ],
+    [
+     "ausf",
+     "dependance"
+    ],
+    [
+     "bsf",
+     "dependance"
+    ],
+    [
+     "nrf",
+     "direct"
+    ],
+    [
+     "nssf",
+     "dependance"
+    ],
+    [
+     "pcf",
+     "dependance"
+    ],
+    [
+     "smf",
+     "dependance"
+    ],
+    [
+     "udm",
+     "dependance"
+    ],
+    [
+     "udr",
+     "dependance"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 92.4,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "SuspectedViolation",
+    "SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf": "SuspectedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/nrf"
+   ],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nnrf    1/1     1            1           13d\nReplicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable\nEvents:\n  Type    Reason             Age                  From                   Message\n  ----    ------             ----                 ----                   -------\n  Normal  ScalingReplicaSet  4m8s (x5 over 54m)   deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0\n  Normal  ScalingReplicaSet  2m39s (x6 over 13d)  deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:16:14.096Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-7rk8r 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S3-b",
+   "rep": 3,
+   "injection": "2026-11-09T15:21:04.802000+00:00",
+   "cycles": 16,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.7,
+   "derives": [
+    "FunctionImpactDrift",
+    "SpecDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "dependance"
+    ],
+    [
+     "ausf",
+     "dependance"
+    ],
+    [
+     "bsf",
+     "dependance"
+    ],
+    [
+     "nrf",
+     "direct"
+    ],
+    [
+     "nssf",
+     "dependance"
+    ],
+    [
+     "pcf",
+     "dependance"
+    ],
+    [
+     "smf",
+     "dependance"
+    ],
+    [
+     "udm",
+     "dependance"
+    ],
+    [
+     "udr",
+     "dependance"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 90.1,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation",
+    "FunctionImpactDrift/SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "SuspectedViolation",
+    "SpecDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/nrf": "SuspectedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/nrf"
+   ],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nnrf    1/1     1            1           13d\nReplicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable\nEvents:\n  Type    Reason             Age                  From                   Message\n  ----    ------             ----                 ----                   -------\n  Normal  ScalingReplicaSet  4m9s (x6 over 59m)   deployment-controller  Scaled down replica set nrf-57b6849ccd from 1 to 0\n  Normal  ScalingReplicaSet  2m45s (x7 over 13d)  deployment-controller  Scaled up replica set nrf-57b6849ccd from 0 to 1\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:21:04.891Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-qhh5r 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running",
+   "retour_sain": true
+  }
+ ],
+ "S0-B": [
+  {
+   "scenario": "S0-B",
+   "rep": 1,
+   "injection": "2026-11-09T14:40:28.092000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.7,
+   "derives": [
+    "BrokenReferenceDrift",
+    "ConvergenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 177.0,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm": "SuspectedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation",
+    "FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    0/1     1            0           13d\nNAME                   READY   STATUS     RESTARTS   AGE\nudm-7cf6c5b78d-6czcs   0/1     Init:0/1   0          2m36s\nEvents:\n  Type     Reason       Age                  From               Message\n  ----     ------       ----                 ----               -------\n  Normal   Scheduled    2m36s                default-scheduler  Successfully assigned sylvatwin-5gc/udm-7cf6c5b78d-6czcs to my-workload-kubeadm-capd-control-plane-6w58l\n  Warning  FailedMount  28s (x9 over 2m36s)  kubelet            MountVolume.SetUp failed for volume \"udm-keys\" : secret \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:40:28.265Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     <none> udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S0-B",
+   "rep": 2,
+   "injection": "2026-11-09T14:45:20.505000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.6,
+   "derives": [
+    "BrokenReferenceDrift",
+    "ConvergenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 176.6,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm": "SuspectedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation",
+    "FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    0/1     1            0           13d\nNAME                   READY   STATUS     RESTARTS   AGE\nudm-7cf6c5b78d-r6sgk   0/1     Init:0/1   0          2m36s\nEvents:\n  Type     Reason       Age                  From               Message\n  ----     ------       ----                 ----               -------\n  Normal   Scheduled    2m36s                default-scheduler  Successfully assigned sylvatwin-5gc/udm-7cf6c5b78d-r6sgk to my-workload-kubeadm-capd-control-plane-6w58l\n  Warning  FailedMount  28s (x9 over 2m36s)  kubelet            MountVolume.SetUp failed for volume \"udm-keys\" : secret \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:45:20.676Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     <none> udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S0-B",
+   "rep": 3,
+   "injection": "2026-11-09T14:50:13.030000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.5,
+   "derives": [
+    "BrokenReferenceDrift",
+    "ConvergenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "SuspectedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "SuspectedViolation"
+    ]
+   ],
+   "resolu_apres_s": 176.2,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm": "SuspectedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation",
+    "FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "SuspectedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    0/1     1            0           13d\nNAME                   READY   STATUS     RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   0/1     Init:0/1   0          2m35s\nEvents:\n  Type     Reason       Age                  From               Message\n  ----     ------       ----                 ----               -------\n  Normal   Scheduled    2m35s                default-scheduler  Successfully assigned sylvatwin-5gc/udm-7cf6c5b78d-w7cls to my-workload-kubeadm-capd-control-plane-6w58l\n  Warning  FailedMount  27s (x9 over 2m35s)  kubelet            MountVolume.SetUp failed for volume \"udm-keys\" : secret \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:50:13.193Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     <none> udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf",
+   "retour_sain": true
+  }
+ ],
+ "S2": [
+  {
+   "scenario": "S2",
+   "rep": 1,
+   "injection": "2026-11-09T14:55:05.375000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.5,
+   "derives": [
+    "BrokenReferenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 141.1,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    1/1     1            1           13d\nNAME                   READY   STATUS    RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   1/1     Running   0          6m57s\nError from server (NotFound): secrets \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:55:05.463Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S2",
+   "rep": 2,
+   "injection": "2026-11-09T14:57:48.351000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.2,
+   "derives": [
+    "BrokenReferenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 137.0,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    1/1     1            1           13d\nNAME                   READY   STATUS    RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   1/1     Running   0          9m40s\nError from server (NotFound): secrets \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T14:57:48.440Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S2",
+   "rep": 3,
+   "injection": "2026-11-09T15:00:31.089000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.0,
+   "derives": [
+    "BrokenReferenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 137.4,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    1/1     1            1           13d\nNAME                   READY   STATUS    RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   1/1     Running   0          12m\nError from server (NotFound): secrets \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:00:31.176Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  }
+ ],
+ "S3-a": [
+  {
+   "scenario": "S3-a",
+   "rep": 1,
+   "injection": "2026-11-09T15:03:13.843000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.3,
+   "derives": [
+    "BrokenReferenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 138.7,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    1/1     1            1           13d\nNAME                   READY   STATUS    RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   1/1     Running   0          15m\nError from server (NotFound): secrets \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:03:13.929Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S3-a",
+   "rep": 2,
+   "injection": "2026-11-09T15:05:56.561000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.4,
+   "derives": [
+    "BrokenReferenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 139.8,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    1/1     1            1           13d\nNAME                   READY   STATUS    RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   1/1     Running   0          17m\nError from server (NotFound): secrets \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:05:56.651Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S3-a",
+   "rep": 3,
+   "injection": "2026-11-09T15:08:39.368000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.4,
+   "derives": [
+    "BrokenReferenceDrift",
+    "FunctionImpactDrift"
+   ],
+   "nf": [
+    [
+     "udm",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 141.0,
+   "tous_verdicts_premier": {
+    "BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys": "ConfirmedViolation",
+    "FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME   READY   UP-TO-DATE   AVAILABLE   AGE\nudm    1/1     1            1           13d\nNAME                   READY   STATUS    RESTARTS   AGE\nudm-7cf6c5b78d-w7cls   1/1     Running   0          20m\nError from server (NotFound): secrets \"udm-keys\" not found\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:08:39.454Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-88pjb 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  }
+ ],
+ "S1": [
+  {
+   "scenario": "S1",
+   "rep": 1,
+   "injection": "2026-11-09T16:16:17.534000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.7,
+   "derives": [
+    "FunctionImpactDrift",
+    "PlacementDrift"
+   ],
+   "nf": [
+    [
+     "bsf",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 139.5,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "0\nNAME                   READY   STATUS    RESTARTS   AGE     IP               NODE                                           NOMINATED NODE   READINESS GATES\nbsf-755b4c9bd4-6tssf   1/1     Running   0          2m27s   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>\n{\"sylvatwin.orange.com/zone\":\"a\"}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:16:17.635Z\nTrue ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S1",
+   "rep": 2,
+   "injection": "2026-11-09T16:19:00.927000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.7,
+   "derives": [
+    "FunctionImpactDrift",
+    "PlacementDrift"
+   ],
+   "nf": [
+    [
+     "bsf",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 139.1,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "0\nNAME                   READY   STATUS    RESTARTS   AGE     IP               NODE                                           NOMINATED NODE   READINESS GATES\nbsf-755b4c9bd4-6tssf   1/1     Running   0          5m10s   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>\n{\"sylvatwin.orange.com/zone\":\"a\"}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:19:01.038Z\nTrue ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S1",
+   "rep": 3,
+   "injection": "2026-11-09T16:21:44.103000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.1,
+   "derives": [
+    "FunctionImpactDrift",
+    "PlacementDrift"
+   ],
+   "nf": [
+    [
+     "bsf",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 137.4,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "0\nNAME                   READY   STATUS    RESTARTS   AGE     IP               NODE                                           NOMINATED NODE   READINESS GATES\nbsf-755b4c9bd4-6tssf   1/1     Running   0          7m53s   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>\n{\"sylvatwin.orange.com/zone\":\"a\"}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:21:44.211Z\nTrue ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  }
+ ],
+ "S3-c": [
+  {
+   "scenario": "S3-c",
+   "rep": 1,
+   "injection": "2026-11-09T16:24:27.611000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.5,
+   "derives": [
+    "FunctionImpactDrift",
+    "PlacementDrift"
+   ],
+   "nf": [
+    [
+     "bsf",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 140.4,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "0\nNAME                   READY   STATUS    RESTARTS   AGE   IP               NODE                                           NOMINATED NODE   READINESS GATES\nbsf-755b4c9bd4-6tssf   1/1     Running   0          10m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>\n{\"sylvatwin.orange.com/zone\":\"a\"}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:24:27.718Z\nTrue ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S3-c",
+   "rep": 2,
+   "injection": "2026-11-09T16:27:10.968000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.8,
+   "derives": [
+    "FunctionImpactDrift",
+    "PlacementDrift"
+   ],
+   "nf": [
+    [
+     "bsf",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 143.2,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "0\nNAME                   READY   STATUS    RESTARTS   AGE   IP               NODE                                           NOMINATED NODE   READINESS GATES\nbsf-755b4c9bd4-6tssf   1/1     Running   0          13m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>\n{\"sylvatwin.orange.com/zone\":\"a\"}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:27:11.067Z\nTrue ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S3-c",
+   "rep": 3,
+   "injection": "2026-11-09T16:29:54.569000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.8,
+   "derives": [
+    "FunctionImpactDrift",
+    "PlacementDrift"
+   ],
+   "nf": [
+    [
+     "bsf",
+     "direct"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 145.0,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [],
+   "kubectl": "0\nNAME                   READY   STATUS    RESTARTS   AGE   IP               NODE                                           NOMINATED NODE   READINESS GATES\nbsf-755b4c9bd4-6tssf   1/1     Running   0          16m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>\n{\"sylvatwin.orange.com/zone\":\"a\"}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:29:54.677Z\nTrue ReconciliationSucceeded test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-755b4c9bd4-6tssf 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  }
+ ],
+ "S4-a": [
+  {
+   "scenario": "S4-a",
+   "rep": 1,
+   "injection": "2026-11-09T15:25:55.689000+00:00",
+   "cycles": 16,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.8,
+   "derives": [
+    "InterNFConsistencyDrift"
+   ],
+   "nf": [],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 107.8,
+   "tous_verdicts_premier": {
+    "InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "ConfirmedViolation",
+    "InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "ConfigMap/sylvatwin-5gc/nrf-config"
+   ],
+   "kubectl": "    - plmn_id: {mcc: 999, mnc: 70}\n    - plmn_id: {mcc: 999, mnc: 70}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:25:56.071Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S4-a",
+   "rep": 2,
+   "injection": "2026-11-09T15:30:46.674000+00:00",
+   "cycles": 16,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.8,
+   "derives": [
+    "InterNFConsistencyDrift"
+   ],
+   "nf": [],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 89.7,
+   "tous_verdicts_premier": {
+    "InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "ConfirmedViolation",
+    "InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "ConfigMap/sylvatwin-5gc/nrf-config"
+   ],
+   "kubectl": "    - plmn_id: {mcc: 999, mnc: 70}\n    - plmn_id: {mcc: 999, mnc: 70}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:30:47.083Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S4-a",
+   "rep": 3,
+   "injection": "2026-11-09T15:35:37.949000+00:00",
+   "cycles": 17,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.9,
+   "derives": [
+    "InterNFConsistencyDrift"
+   ],
+   "nf": [],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 101.0,
+   "tous_verdicts_premier": {
+    "InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "ConfirmedViolation",
+    "InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "ConfigMap/sylvatwin-5gc/nrf-config"
+   ],
+   "kubectl": "    - plmn_id: {mcc: 999, mnc: 70}\n    - plmn_id: {mcc: 999, mnc: 70}\n--- diff\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T15:35:38.355Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f",
+   "retour_sain": true
+  }
+ ],
+ "S4-b": [
+  {
+   "scenario": "S4-b",
+   "rep": 1,
+   "injection": "2026-11-09T16:07:14.291000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.7,
+   "derives": [
+    "InterNFConsistencyDrift"
+   ],
+   "nf": [],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 143.9,
+   "tous_verdicts_premier": {
+    "InterNFConsistencyDrift/slice/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf/sst-2": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 6,
+   "flux_objets_reconfigures": [
+    "ConfigMap/sylvatwin-5gc/smf-config"
+   ],
+   "kubectl": "        - sst: 1\n          dnn:\n--\n        - sst: 2\n          dnn:\n        - sst: 1\n  security:\n--- diff (attendu : vide, conforme a Git)\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:07:21.025Z\nTrue ReconciliationSucceeded test@sha1:869ce60852d539edaa88fac7f594763a0c9e1144 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S4-b",
+   "rep": 2,
+   "injection": "2026-11-09T16:10:09.524000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.4,
+   "derives": [
+    "InterNFConsistencyDrift"
+   ],
+   "nf": [],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 145.1,
+   "tous_verdicts_premier": {
+    "InterNFConsistencyDrift/slice/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf/sst-2": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 6,
+   "flux_objets_reconfigures": [
+    "ConfigMap/sylvatwin-5gc/smf-config"
+   ],
+   "kubectl": "        - sst: 1\n          dnn:\n--\n        - sst: 2\n          dnn:\n        - sst: 1\n  security:\n--- diff (attendu : vide, conforme a Git)\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:10:15.746Z\nTrue ReconciliationSucceeded test@sha1:c8396fef93731599f4787e9d366c4bb935037875 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S4-b",
+   "rep": 3,
+   "injection": "2026-11-09T16:13:03.722000+00:00",
+   "cycles": 10,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.4,
+   "derives": [
+    "InterNFConsistencyDrift"
+   ],
+   "nf": [],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 140.5,
+   "tous_verdicts_premier": {
+    "InterNFConsistencyDrift/slice/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf/sst-2": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 6,
+   "flux_objets_reconfigures": [
+    "ConfigMap/sylvatwin-5gc/smf-config"
+   ],
+   "kubectl": "        - sst: 1\n          dnn:\n--\n        - sst: 2\n          dnn:\n        - sst: 1\n  security:\n--- diff (attendu : vide, conforme a Git)\n(fin du diff)\n",
+   "observation_extrait": "### 2026-11-09T16:13:10.177Z\nTrue ReconciliationSucceeded test@sha1:ff22aed52683f6e6ee252bb32e325e464d0ba194 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-g82x5 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f",
+   "retour_sain": true
+  }
+ ],
+ "S5": [
+  {
+   "scenario": "S5",
+   "rep": 1,
+   "injection": "2026-11-09T15:40:28.921000+00:00",
+   "cycles": 11,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.2,
+   "derives": [
+    "FunctionImpactDrift",
+    "GitOpsSyncDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "flux"
+    ],
+    [
+     "ausf",
+     "flux"
+    ],
+    [
+     "bsf",
+     "flux"
+    ],
+    [
+     "nrf",
+     "flux"
+    ],
+    [
+     "nssf",
+     "flux"
+    ],
+    [
+     "pcf",
+     "flux"
+    ],
+    [
+     "smf",
+     "flux"
+    ],
+    [
+     "udm",
+     "flux"
+    ],
+    [
+     "udr",
+     "flux"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     14,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 172.6,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "ConfirmedViolation",
+    "GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 1,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME            AGE   READY   STATUS\nsylvatwin-5gc   13d   True    Applied revision: test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099\nNAME         \tREVISION          \tSUSPENDED\tREADY\tMESSAGE                              \nsylvatwin-5gc\ttest@sha1:ce6ecc70\tTrue     \tTrue \tApplied revision: test@sha1:ce6ecc70\t\n",
+   "observation_extrait": "### 2026-11-09T15:40:29.073Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=true\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S5",
+   "rep": 2,
+   "injection": "2026-11-09T15:43:39.058000+00:00",
+   "cycles": 11,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.7,
+   "derives": [
+    "FunctionImpactDrift",
+    "GitOpsSyncDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "flux"
+    ],
+    [
+     "ausf",
+     "flux"
+    ],
+    [
+     "bsf",
+     "flux"
+    ],
+    [
+     "nrf",
+     "flux"
+    ],
+    [
+     "nssf",
+     "flux"
+    ],
+    [
+     "pcf",
+     "flux"
+    ],
+    [
+     "smf",
+     "flux"
+    ],
+    [
+     "udm",
+     "flux"
+    ],
+    [
+     "udr",
+     "flux"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 157.7,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "ConfirmedViolation",
+    "GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 1,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME            AGE   READY   STATUS\nsylvatwin-5gc   13d   True    Applied revision: test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099\nNAME         \tREVISION          \tSUSPENDED\tREADY\tMESSAGE                              \nsylvatwin-5gc\ttest@sha1:ce6ecc70\tTrue     \tTrue \tApplied revision: test@sha1:ce6ecc70\t\n",
+   "observation_extrait": "### 2026-11-09T15:43:39.171Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=true\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6",
+   "retour_sain": true
+  },
+  {
+   "scenario": "S5",
+   "rep": 3,
+   "injection": "2026-11-09T15:46:49.408000+00:00",
+   "cycles": 11,
+   "cycles_avant_avec_derive": 0,
+   "detecte": true,
+   "delai_s": 14.6,
+   "derives": [
+    "FunctionImpactDrift",
+    "GitOpsSyncDrift"
+   ],
+   "nf": [
+    [
+     "amf",
+     "flux"
+    ],
+    [
+     "ausf",
+     "flux"
+    ],
+    [
+     "bsf",
+     "flux"
+    ],
+    [
+     "nrf",
+     "flux"
+    ],
+    [
+     "nssf",
+     "flux"
+    ],
+    [
+     "pcf",
+     "flux"
+    ],
+    [
+     "smf",
+     "flux"
+    ],
+    [
+     "udm",
+     "flux"
+    ],
+    [
+     "udr",
+     "flux"
+    ]
+   ],
+   "verdict_premier": "ConfirmedViolation",
+   "sequence_verdict": [
+    [
+     15,
+     "ConfirmedViolation"
+    ]
+   ],
+   "resolu_apres_s": 162.1,
+   "tous_verdicts_premier": {
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm": "ConfirmedViolation",
+    "FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr": "ConfirmedViolation",
+    "GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc": "ConfirmedViolation"
+   },
+   "flux_log_lignes": 1,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME            AGE   READY   STATUS\nsylvatwin-5gc   13d   True    Applied revision: test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099\nNAME         \tREVISION          \tSUSPENDED\tREADY\tMESSAGE                              \nsylvatwin-5gc\ttest@sha1:ce6ecc70\tTrue     \tTrue \tApplied revision: test@sha1:ce6ecc70\t\n",
+   "observation_extrait": "### 2026-11-09T15:46:49.532Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=true\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6",
+   "retour_sain": true
+  }
+ ],
+ "B1": [
+  {
+   "scenario": "B1",
+   "rep": 1,
+   "injection": "2026-11-09T15:49:59.724000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": false,
+   "derives_vues": [],
+   "confirmees_b\u00e9nin": 0,
+   "suspectees_b\u00e9nin": 0,
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME                    READY   STATUS    RESTARTS   AGE\nausf-695f864d8c-42v7l   1/1     Running   0          2m5s\n",
+   "observation_extrait": "### 2026-11-09T15:49:59.822Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=\namf       1     1 ausf      1     <none> bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-42v7l 0/1 Init:0/1;ausf-695f864d8c-t54bv 1/1 Terminating;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;sc",
+   "retour_sain": true
+  },
+  {
+   "scenario": "B1",
+   "rep": 2,
+   "injection": "2026-11-09T15:52:36.508000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": false,
+   "derives_vues": [],
+   "confirmees_b\u00e9nin": 0,
+   "suspectees_b\u00e9nin": 0,
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME                    READY   STATUS    RESTARTS   AGE\nausf-695f864d8c-hjc6c   1/1     Running   0          2m5s\n",
+   "observation_extrait": "### 2026-11-09T15:52:36.601Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=\namf       1     1 ausf      1     <none> bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-42v7l 1/1 Terminating;ausf-695f864d8c-hjc6c 0/1 Init:0/1;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;sc",
+   "retour_sain": true
+  },
+  {
+   "scenario": "B1",
+   "rep": 3,
+   "injection": "2026-11-09T15:55:13.365000+00:00",
+   "cycles": 9,
+   "cycles_avant_avec_derive": 0,
+   "detecte": false,
+   "derives_vues": [],
+   "confirmees_b\u00e9nin": 0,
+   "suspectees_b\u00e9nin": 0,
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [],
+   "kubectl": "NAME                    READY   STATUS    RESTARTS   AGE\nausf-695f864d8c-4ffff   1/1     Running   0          2m5s\n",
+   "observation_extrait": "### 2026-11-09T15:55:13.459Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=\namf       1     1 ausf      1     <none> bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 0/1 Init:0/1;ausf-695f864d8c-hjc6c 1/1 Terminating;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;sc",
+   "retour_sain": true
+  }
+ ],
+ "B2": [
+  {
+   "scenario": "B2",
+   "rep": 1,
+   "injection": "2026-11-09T15:57:50.267000+00:00",
+   "cycles": 11,
+   "cycles_avant_avec_derive": 0,
+   "detecte": false,
+   "derives_vues": [],
+   "confirmees_b\u00e9nin": 0,
+   "suspectees_b\u00e9nin": 0,
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/pcf"
+   ],
+   "kubectl": "deployment \"pcf\" successfully rolled out\n",
+   "observation_extrait": "### 2026-11-09T15:57:50.376Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;pcf-76cf7dccb-nf4pg 0/1 Init:0/1;scp-655fff694",
+   "retour_sain": true
+  },
+  {
+   "scenario": "B2",
+   "rep": 2,
+   "injection": "2026-11-09T16:00:58.277000+00:00",
+   "cycles": 11,
+   "cycles_avant_avec_derive": 0,
+   "detecte": false,
+   "derives_vues": [],
+   "confirmees_b\u00e9nin": 0,
+   "suspectees_b\u00e9nin": 0,
+   "flux_log_lignes": 4,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/pcf"
+   ],
+   "kubectl": "deployment \"pcf\" successfully rolled out\n",
+   "observation_extrait": "### 2026-11-09T16:00:58.401Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-zhj7s 1/1 Running;pcf-6848f8b96f-zxgds 0/1 Init:0/1;scp-655fff69",
+   "retour_sain": true
+  },
+  {
+   "scenario": "B2",
+   "rep": 3,
+   "injection": "2026-11-09T16:04:06.275000+00:00",
+   "cycles": 11,
+   "cycles_avant_avec_derive": 0,
+   "detecte": false,
+   "derives_vues": [],
+   "confirmees_b\u00e9nin": 0,
+   "suspectees_b\u00e9nin": 0,
+   "flux_log_lignes": 2,
+   "flux_objets_reconfigures": [
+    "Deployment/sylvatwin-5gc/pcf"
+   ],
+   "kubectl": "deployment \"pcf\" successfully rolled out\n",
+   "observation_extrait": "### 2026-11-09T16:04:06.391Z\nTrue ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=\namf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 \namf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-4ffff 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-fvbbj 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-krwbh 1/1 Running;pcf-6cc46f6f5b-2cn4v 0/1 Init:0/1;scp-655fff69",
+   "retour_sain": true
+  }
+ ]
+}

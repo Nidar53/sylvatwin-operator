@@ -1,0 +1,9 @@
+[2026-11-09T15:55:07.951Z] === B1 repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:55:13.360Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:55:13.368Z] INJECTION
+pod "ausf-695f864d8c-hjc6c" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:55:13.451Z] injection terminee a 2026-11-09T15:55:13.365Z
+[2026-11-09T15:57:18.020Z] ANNULATION
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:57:44.767Z] retour a l'etat sain : OK

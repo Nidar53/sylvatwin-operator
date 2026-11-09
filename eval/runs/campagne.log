@@ -1,0 +1,379 @@
+[2026-11-09T14:25:52.160Z] === S0-A repetition 1 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T14:25:56.283Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:25:56.290Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T14:25:56.370Z] injection terminee a 2026-11-09T14:25:56.287Z
+[2026-11-09T14:30:10.747Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T14:30:41.781Z] retour a l'etat sain : OK
+[2026-11-09T14:30:41.794Z] === S0-A repetition 2 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:30:46.923Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:30:46.931Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T14:30:47.012Z] injection terminee a 2026-11-09T14:30:46.928Z
+[2026-11-09T14:35:01.289Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:35:32.307Z] retour a l'etat sain : OK
+[2026-11-09T14:35:32.318Z] === S0-A repetition 3 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T14:35:37.525Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:35:37.532Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T14:35:37.607Z] injection terminee a 2026-11-09T14:35:37.530Z
+[2026-11-09T14:39:51.774Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T14:40:22.777Z] retour a l'etat sain : OK
+[2026-11-09T14:40:22.789Z] === S0-B repetition 1 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:40:28.087Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:40:28.096Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+pod "udm-7cf6c5b78d-rw6fk" deleted from sylvatwin-5gc namespace
+[2026-11-09T14:40:28.258Z] injection terminee a 2026-11-09T14:40:28.092Z
+[2026-11-09T14:43:09.714Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 100 s
+[2026-11-09T14:45:15.207Z] retour a l'etat sain : OK
+[2026-11-09T14:45:15.219Z] === S0-B repetition 2 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T14:45:20.501Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:45:20.507Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+pod "udm-7cf6c5b78d-6czcs" deleted from sylvatwin-5gc namespace
+[2026-11-09T14:45:20.669Z] injection terminee a 2026-11-09T14:45:20.505Z
+[2026-11-09T14:48:01.966Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 100 s
+[2026-11-09T14:50:07.650Z] retour a l'etat sain : OK
+[2026-11-09T14:50:07.663Z] === S0-B repetition 3 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:50:13.024Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:50:13.032Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+pod "udm-7cf6c5b78d-r6sgk" deleted from sylvatwin-5gc namespace
+[2026-11-09T14:50:13.185Z] injection terminee a 2026-11-09T14:50:13.030Z
+[2026-11-09T14:52:54.492Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 100 s
+[2026-11-09T14:54:59.879Z] retour a l'etat sain : OK
+[2026-11-09T14:54:59.890Z] === S2 repetition 1 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:55:05.371Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:55:05.377Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+[2026-11-09T14:55:05.458Z] injection terminee a 2026-11-09T14:55:05.375Z
+[2026-11-09T14:57:15.701Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T14:57:42.901Z] retour a l'etat sain : OK
+[2026-11-09T14:57:42.914Z] === S2 repetition 2 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T14:57:48.345Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T14:57:48.353Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+[2026-11-09T14:57:48.434Z] injection terminee a 2026-11-09T14:57:48.351Z
+[2026-11-09T14:59:58.680Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:00:25.928Z] retour a l'etat sain : OK
+[2026-11-09T15:00:25.939Z] === S2 repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:00:31.085Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:00:31.091Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:00:31.170Z] injection terminee a 2026-11-09T15:00:31.089Z
+[2026-11-09T15:02:41.477Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:03:08.679Z] retour a l'etat sain : OK
+[2026-11-09T15:03:08.691Z] === S3-a repetition 1 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:03:13.839Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:03:13.846Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:03:13.924Z] injection terminee a 2026-11-09T15:03:13.843Z
+[2026-11-09T15:05:24.099Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:05:51.296Z] retour a l'etat sain : OK
+[2026-11-09T15:05:51.307Z] === S3-a repetition 2 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:05:56.556Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:05:56.563Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:05:56.644Z] injection terminee a 2026-11-09T15:05:56.561Z
+[2026-11-09T15:08:06.945Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:08:34.144Z] retour a l'etat sain : OK
+[2026-11-09T15:08:34.156Z] === S3-a repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:08:39.364Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:08:39.370Z] INJECTION
+secret "udm-keys" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:08:39.448Z] injection terminee a 2026-11-09T15:08:39.368Z
+[2026-11-09T15:10:49.795Z] ANNULATION
+secret/udm-keys created
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:11:16.960Z] retour a l'etat sain : OK
+[2026-11-09T15:11:16.974Z] === S3-b repetition 1 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:11:22.219Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:11:22.227Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T15:11:22.313Z] injection terminee a 2026-11-09T15:11:22.224Z
+[2026-11-09T15:15:36.605Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:16:07.620Z] retour a l'etat sain : OK
+[2026-11-09T15:16:07.632Z] === S3-b repetition 2 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:16:14.002Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:16:14.008Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T15:16:14.088Z] injection terminee a 2026-11-09T15:16:14.006Z
+[2026-11-09T15:20:28.354Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:20:59.347Z] retour a l'etat sain : OK
+[2026-11-09T15:20:59.358Z] === S3-b repetition 3 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:21:04.798Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:21:04.805Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T15:21:04.882Z] injection terminee a 2026-11-09T15:21:04.802Z
+[2026-11-09T15:25:19.099Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:25:50.107Z] retour a l'etat sain : OK
+[2026-11-09T15:25:50.119Z] === S4-a repetition 1 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:25:55.685Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:25:55.691Z] INJECTION
+configmap/nrf-config configured
+[2026-11-09T15:25:56.065Z] injection terminee a 2026-11-09T15:25:55.689Z
+[2026-11-09T15:30:10.221Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:30:41.224Z] retour a l'etat sain : OK
+[2026-11-09T15:30:41.237Z] === S4-a repetition 2 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:30:46.669Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:30:46.677Z] INJECTION
+configmap/nrf-config configured
+[2026-11-09T15:30:47.077Z] injection terminee a 2026-11-09T15:30:46.674Z
+[2026-11-09T15:35:01.407Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:35:32.451Z] retour a l'etat sain : OK
+[2026-11-09T15:35:32.462Z] === S4-a repetition 3 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:35:37.945Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:35:37.951Z] INJECTION
+configmap/nrf-config configured
+[2026-11-09T15:35:38.350Z] injection terminee a 2026-11-09T15:35:37.949Z
+[2026-11-09T15:39:52.781Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:40:23.808Z] retour a l'etat sain : OK
+[2026-11-09T15:40:23.821Z] === S5 repetition 1 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:40:28.917Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:40:28.924Z] INJECTION
+► suspending kustomization sylvatwin-5gc in sylvatwin-flux namespace
+✔ kustomization suspended
+[2026-11-09T15:40:29.066Z] injection terminee a 2026-11-09T15:40:28.921Z
+[2026-11-09T15:43:04.996Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:43:33.887Z] retour a l'etat sain : OK
+[2026-11-09T15:43:33.898Z] === S5 repetition 2 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:43:39.054Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:43:39.060Z] INJECTION
+► suspending kustomization sylvatwin-5gc in sylvatwin-flux namespace
+✔ kustomization suspended
+[2026-11-09T15:43:39.164Z] injection terminee a 2026-11-09T15:43:39.058Z
+[2026-11-09T15:46:15.249Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:46:44.136Z] retour a l'etat sain : OK
+[2026-11-09T15:46:44.148Z] === S5 repetition 3 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:46:49.404Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:46:49.410Z] INJECTION
+► suspending kustomization sylvatwin-5gc in sylvatwin-flux namespace
+✔ kustomization suspended
+[2026-11-09T15:46:49.524Z] injection terminee a 2026-11-09T15:46:49.408Z
+[2026-11-09T15:49:25.466Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:49:54.356Z] retour a l'etat sain : OK
+[2026-11-09T15:49:54.368Z] === B1 repetition 1 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:49:59.719Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:49:59.727Z] INJECTION
+pod "ausf-695f864d8c-t54bv" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:49:59.814Z] injection terminee a 2026-11-09T15:49:59.724Z
+[2026-11-09T15:52:04.346Z] ANNULATION
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:52:31.089Z] retour a l'etat sain : OK
+[2026-11-09T15:52:31.100Z] === B1 repetition 2 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:52:36.504Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:52:36.511Z] INJECTION
+pod "ausf-695f864d8c-42v7l" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:52:36.594Z] injection terminee a 2026-11-09T15:52:36.508Z
+[2026-11-09T15:54:41.142Z] ANNULATION
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:55:07.938Z] retour a l'etat sain : OK
+[2026-11-09T15:55:07.951Z] === B1 repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:55:13.360Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:55:13.368Z] INJECTION
+pod "ausf-695f864d8c-hjc6c" deleted from sylvatwin-5gc namespace
+[2026-11-09T15:55:13.451Z] injection terminee a 2026-11-09T15:55:13.365Z
+[2026-11-09T15:57:18.020Z] ANNULATION
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:57:44.767Z] retour a l'etat sain : OK
+[2026-11-09T15:57:44.778Z] === B2 repetition 1 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T15:57:50.263Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:57:50.270Z] INJECTION
+deployment.apps/pcf restarted
+[2026-11-09T15:57:50.370Z] injection terminee a 2026-11-09T15:57:50.267Z
+[2026-11-09T16:00:26.010Z] ANNULATION
+deployment "pcf" successfully rolled out
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T16:00:52.860Z] retour a l'etat sain : OK
+[2026-11-09T16:00:52.872Z] === B2 repetition 2 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T16:00:58.272Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:00:58.280Z] INJECTION
+deployment.apps/pcf restarted
+[2026-11-09T16:00:58.393Z] injection terminee a 2026-11-09T16:00:58.277Z
+[2026-11-09T16:03:34.022Z] ANNULATION
+deployment "pcf" successfully rolled out
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T16:04:00.838Z] retour a l'etat sain : OK
+[2026-11-09T16:04:00.848Z] === B2 repetition 3 (observation 150s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T16:04:06.270Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:04:06.277Z] INJECTION
+deployment.apps/pcf restarted
+[2026-11-09T16:04:06.384Z] injection terminee a 2026-11-09T16:04:06.275Z
+[2026-11-09T16:06:42.042Z] ANNULATION
+deployment "pcf" successfully rolled out
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T16:07:08.872Z] retour a l'etat sain : OK
+[2026-11-09T16:07:08.884Z] === S4-b repetition 1 (observation 120s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 2 s
+[2026-11-09T16:07:14.287Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:07:14.293Z] INJECTION
+869ce60852d539edaa88fac7f594763a0c9e1144
+✔ applied revision test@sha1:869ce60852d539edaa88fac7f594763a0c9e1144
+[2026-11-09T16:07:21.018Z] injection terminee a 2026-11-09T16:07:14.291Z
+[2026-11-09T16:09:31.174Z] ANNULATION
+7b5a80bcdde68ff1451adbab5b771af6383d340c
+✔ applied revision test@sha1:7b5a80bcdde68ff1451adbab5b771af6383d340c
+SAIN (revision test@sha1:7b5a80bcdde68ff1451adbab5b771af6383d340c) apres 1 s
+[2026-11-09T16:10:04.086Z] retour a l'etat sain : OK
+[2026-11-09T16:10:04.097Z] === S4-b repetition 2 (observation 120s, periode 15s)
+SAIN (revision test@sha1:7b5a80bcdde68ff1451adbab5b771af6383d340c) apres 1 s
+[2026-11-09T16:10:09.520Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:10:09.527Z] INJECTION
+c8396fef93731599f4787e9d366c4bb935037875
+✔ applied revision test@sha1:c8396fef93731599f4787e9d366c4bb935037875
+[2026-11-09T16:10:15.739Z] injection terminee a 2026-11-09T16:10:09.524Z
+[2026-11-09T16:12:25.778Z] ANNULATION
+32cb98014a841dfd020d302b746e0924b1d749d1
+✔ applied revision test@sha1:32cb98014a841dfd020d302b746e0924b1d749d1
+SAIN (revision test@sha1:32cb98014a841dfd020d302b746e0924b1d749d1) apres 2 s
+[2026-11-09T16:12:58.670Z] retour a l'etat sain : OK
+[2026-11-09T16:12:58.682Z] === S4-b repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:32cb98014a841dfd020d302b746e0924b1d749d1) apres 2 s
+[2026-11-09T16:13:03.718Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:13:03.724Z] INJECTION
+ff22aed52683f6e6ee252bb32e325e464d0ba194
+✔ applied revision test@sha1:ff22aed52683f6e6ee252bb32e325e464d0ba194
+[2026-11-09T16:13:10.171Z] injection terminee a 2026-11-09T16:13:03.722Z
+[2026-11-09T16:15:20.208Z] ANNULATION
+058bb9837379935d56b104d2e8faeae4e1fb4ee8
+✔ applied revision test@sha1:058bb9837379935d56b104d2e8faeae4e1fb4ee8
+SAIN (revision test@sha1:058bb9837379935d56b104d2e8faeae4e1fb4ee8) apres 1 s
+[2026-11-09T16:15:53.100Z] retour a l'etat sain : OK
+[2026-11-09T16:15:53.180Z] preparation S1 : label puis nodeSelector
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+[2026-11-09T16:15:55.232Z] commit 4fcd072cc4137f30c601f891ce75d37a03b56ab2
+✔ applied revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2
+Waiting for deployment "bsf" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "bsf" rollout to finish: 1 old replicas are pending termination...
+deployment "bsf" successfully rolled out
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 8 s
+[2026-11-09T16:16:10.371Z] === S1 repetition 1 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 1 s
+[2026-11-09T16:16:17.530Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:16:17.536Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:16:17.628Z] injection terminee a 2026-11-09T16:16:17.534Z
+[2026-11-09T16:18:28.692Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:18:55.499Z] retour a l'etat sain : OK
+[2026-11-09T16:18:55.510Z] === S1 repetition 2 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:19:00.923Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:19:00.929Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:19:01.031Z] injection terminee a 2026-11-09T16:19:00.927Z
+[2026-11-09T16:21:12.024Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 1 s
+[2026-11-09T16:21:38.867Z] retour a l'etat sain : OK
+[2026-11-09T16:21:38.880Z] === S1 repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:21:44.097Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:21:44.106Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:21:44.204Z] injection terminee a 2026-11-09T16:21:44.103Z
+[2026-11-09T16:23:55.391Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:24:22.261Z] retour a l'etat sain : OK
+[2026-11-09T16:24:22.345Z] === S3-c repetition 1 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 1 s
+[2026-11-09T16:24:27.606Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:24:27.613Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:24:27.711Z] injection terminee a 2026-11-09T16:24:27.611Z
+[2026-11-09T16:26:38.866Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:27:05.669Z] retour a l'etat sain : OK
+[2026-11-09T16:27:05.681Z] === S3-c repetition 2 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:27:10.962Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:27:10.970Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:27:11.061Z] injection terminee a 2026-11-09T16:27:10.968Z
+[2026-11-09T16:29:22.393Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:29:49.242Z] retour a l'etat sain : OK
+[2026-11-09T16:29:49.254Z] === S3-c repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 1 s
+[2026-11-09T16:29:54.565Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:29:54.572Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:29:54.670Z] injection terminee a 2026-11-09T16:29:54.569Z
+[2026-11-09T16:32:05.743Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:32:32.583Z] retour a l'etat sain : OK
+CAMPAGNE TERMINEE 2026-11-09T16:32:32.585Z
+FIN

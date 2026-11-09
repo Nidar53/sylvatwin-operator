@@ -1,0 +1,21 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5503 derives=map[FunctionImpactDrift:9 GitOpsSyncDrift:1] verdicts=map[ConfirmedViolation:10] duree=2.779s
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm
+  derive  : FunctionImpactDrift FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr
+  derive  : GitOpsSyncDrift GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/ausf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nssf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/pcf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm
+  verdict : ConfirmedViolation FunctionImpactDrift/GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udr
+  verdict : ConfirmedViolation GitOpsSyncDrift/management-cluster/sylvatwin-flux/Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc

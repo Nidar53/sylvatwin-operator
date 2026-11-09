@@ -1,0 +1,11 @@
+NAME   READY   UP-TO-DATE   AVAILABLE   AGE
+udm    0/1     1            0           13d
+NAME                   READY   STATUS     RESTARTS   AGE
+udm-7cf6c5b78d-6czcs   0/1     Init:0/1   0          2m36s
+Events:
+  Type     Reason       Age                  From               Message
+  ----     ------       ----                 ----               -------
+  Normal   Scheduled    2m36s                default-scheduler  Successfully assigned sylvatwin-5gc/udm-7cf6c5b78d-6czcs to my-workload-kubeadm-capd-control-plane-6w58l
+  Warning  FailedMount  28s (x9 over 2m36s)  kubelet            MountVolume.SetUp failed for volume "udm-keys" : secret "udm-keys" not found
+--- diff
+(fin du diff)

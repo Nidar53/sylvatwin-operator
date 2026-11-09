@@ -1,0 +1,120 @@
+### 2026-11-09T14:25:56.377Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-wflfd 1/1 Terminating;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=0 ready=
+### 2026-11-09T14:26:06.723Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=0 ready=
+### 2026-11-09T14:26:17.074Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       0     <none> nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=0 ready=
+### 2026-11-09T14:26:27.419Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:26:37.766Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:26:48.098Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:26:58.470Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:27:08.825Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:27:19.223Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:27:29.568Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:27:39.913Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:27:50.271Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:28:00.610Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:28:10.959Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:28:21.306Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:28:31.659Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:28:42.007Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:28:52.381Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:29:02.725Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:29:13.067Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:29:23.413Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:29:33.766Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:29:44.118Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1
+### 2026-11-09T14:29:54.458Z
+True ReconciliationSucceeded test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099 suspend=false
+amf       1     1 ausf      1     1 bsf       1     1 mongodb   1     1 nrf       1     1 nssf      1     1 pcf       1     1 scp       1     1 smf       1     1 udm       1     1 udr       1     1 
+amf-76894b88b5-njbl9 1/1 Running;ausf-695f864d8c-t54bv 1/1 Running;bsf-78db7b6587-8wkqn 1/1 Running;mongodb-8648df4dd6-zt6k4 1/1 Running;nrf-57b6849ccd-ngcq8 1/1 Running;nssf-56b5dddb99-2lczg 1/1 Running;pcf-5c95554586-8t7d2 1/1 Running;scp-655fff6949-728xb 1/1 Running;smf-6d7f6658f7-gfrqw 1/1 Running;udm-7cf6c5b78d-rw6fk 1/1 Running;udr-77dc4c9586-5snt7 1/1 Running;
+nrf spec=1 ready=1

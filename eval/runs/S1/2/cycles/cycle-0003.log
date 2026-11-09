@@ -1,0 +1,5 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5539 derives=map[FunctionImpactDrift:1 PlacementDrift:1] verdicts=map[ConfirmedViolation:2] duree=2.884s
+  derive  : FunctionImpactDrift FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf
+  derive  : PlacementDrift PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf
+  verdict : ConfirmedViolation FunctionImpactDrift/PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/bsf
+  verdict : ConfirmedViolation PlacementDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Pod/bsf-755b4c9bd4-6tssf

@@ -1,0 +1,53 @@
+{
+  "start": "2026-11-09T14:52:33.715930589Z",
+  "end": "2026-11-09T14:52:36.315095086Z",
+  "clusters": {
+    "management-cluster": "ok",
+    "my-workload-kubeadm-capd": "ok"
+  },
+  "objects": {
+    "management-cluster": 353,
+    "my-workload-kubeadm-capd": 66
+  },
+  "desired": [
+    {
+      "kustomization": "sylvatwin-flux/sylvatwin-5gc",
+      "revision": "test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099",
+      "known": true,
+      "objects": 35
+    }
+  ],
+  "facts": 5488,
+  "drifts": {
+    "BrokenReferenceDrift": 1,
+    "ConvergenceDrift": 1,
+    "FunctionImpactDrift": 2
+  },
+  "verdicts": {
+    "ConfirmedViolation": 2,
+    "SuspectedViolation": 2
+  },
+  "driftList": [
+    "BrokenReferenceDrift BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys",
+    "ConvergenceDrift ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm",
+    "FunctionImpactDrift FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm",
+    "FunctionImpactDrift FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm"
+  ],
+  "verdictList": [
+    "ConfirmedViolation BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys",
+    "ConfirmedViolation FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm",
+    "SuspectedViolation ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm",
+    "SuspectedViolation FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm"
+  ],
+  "timingsMs": {
+    "desired": 48,
+    "judge_lifecycle": 164,
+    "judge_load": 1110,
+    "judge_passe1": 206,
+    "judge_passe2": 198,
+    "judge_passe3": 192,
+    "judge_verdict": 2,
+    "map": 119,
+    "observe": 552
+  }
+}

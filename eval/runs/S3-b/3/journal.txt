@@ -1,0 +1,10 @@
+[2026-11-09T15:20:59.358Z] === S3-b repetition 3 (observation 240s, periode 15s)
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:21:04.798Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T15:21:04.805Z] INJECTION
+deployment.apps/nrf scaled
+[2026-11-09T15:21:04.882Z] injection terminee a 2026-11-09T15:21:04.802Z
+[2026-11-09T15:25:19.099Z] ANNULATION
+✔ applied revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+SAIN (revision test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099) apres 1 s
+[2026-11-09T15:25:50.107Z] retour a l'etat sain : OK

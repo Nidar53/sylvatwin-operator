@@ -1,0 +1,10 @@
+[2026-11-09T16:29:49.254Z] === S3-c repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 1 s
+[2026-11-09T16:29:54.565Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:29:54.572Z] INJECTION
+node/my-workload-kubeadm-capd-control-plane-6w58l unlabeled
+[2026-11-09T16:29:54.670Z] injection terminee a 2026-11-09T16:29:54.569Z
+[2026-11-09T16:32:05.743Z] ANNULATION
+node/my-workload-kubeadm-capd-control-plane-6w58l labeled
+SAIN (revision test@sha1:4fcd072cc4137f30c601f891ce75d37a03b56ab2) apres 2 s
+[2026-11-09T16:32:32.583Z] retour a l'etat sain : OK

@@ -1,0 +1,5 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5488 derives=map[BrokenReferenceDrift:1 FunctionImpactDrift:1] verdicts=map[ConfirmedViolation:2] duree=2.99s
+  derive  : BrokenReferenceDrift BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys
+  derive  : FunctionImpactDrift FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm
+  verdict : ConfirmedViolation BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys
+  verdict : ConfirmedViolation FunctionImpactDrift/BrokenReferenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm

@@ -1,0 +1,48 @@
+== S0-A
+  rep 1 : detecte en 14.8 s ; derives ['FunctionImpactDrift', 'SpecDrift'] ; NF [('amf', 'dependance'), ('ausf', 'dependance'), ('bsf', 'dependance'), ('nrf', 'direct'), ('nssf', 'dependance'), ('pcf', 'dependance'), ('smf', 'dependance'), ('udm', 'dependance'), ('udr', 'dependance')] ; verdict SuspectedViolation ; seq [(15, 'SuspectedViolation')] ; resolu 31.9 s ; flux reconf ['Deployment/sylvatwin-5gc/nrf'] ; sain True
+  rep 2 : detecte en 14.4 s ; derives ['FunctionImpactDrift', 'SpecDrift'] ; NF [('amf', 'dependance'), ('ausf', 'dependance'), ('bsf', 'dependance'), ('nrf', 'direct'), ('nssf', 'dependance'), ('pcf', 'dependance'), ('smf', 'dependance'), ('udm', 'dependance'), ('udr', 'dependance')] ; verdict SuspectedViolation ; seq [(14, 'SuspectedViolation')] ; resolu 85.4 s ; flux reconf ['Deployment/sylvatwin-5gc/nrf'] ; sain True
+  rep 3 : detecte en 14.3 s ; derives ['FunctionImpactDrift', 'SpecDrift'] ; NF [('amf', 'dependance'), ('ausf', 'dependance'), ('bsf', 'dependance'), ('nrf', 'direct'), ('nssf', 'dependance'), ('pcf', 'dependance'), ('smf', 'dependance'), ('udm', 'dependance'), ('udr', 'dependance')] ; verdict SuspectedViolation ; seq [(14, 'SuspectedViolation')] ; resolu 85.4 s ; flux reconf ['Deployment/sylvatwin-5gc/nrf'] ; sain True
+== S3-b
+  rep 1 : detecte en 14.8 s ; derives ['FunctionImpactDrift', 'SpecDrift'] ; NF [('amf', 'dependance'), ('ausf', 'dependance'), ('bsf', 'dependance'), ('nrf', 'direct'), ('nssf', 'dependance'), ('pcf', 'dependance'), ('smf', 'dependance'), ('udm', 'dependance'), ('udr', 'dependance')] ; verdict SuspectedViolation ; seq [(15, 'SuspectedViolation')] ; resolu 51.9 s ; flux reconf ['Deployment/sylvatwin-5gc/nrf'] ; sain True
+  rep 2 : detecte en 14.4 s ; derives ['FunctionImpactDrift', 'SpecDrift'] ; NF [('amf', 'dependance'), ('ausf', 'dependance'), ('bsf', 'dependance'), ('nrf', 'direct'), ('nssf', 'dependance'), ('pcf', 'dependance'), ('smf', 'dependance'), ('udm', 'dependance'), ('udr', 'dependance')] ; verdict SuspectedViolation ; seq [(14, 'SuspectedViolation')] ; resolu 92.4 s ; flux reconf ['Deployment/sylvatwin-5gc/nrf'] ; sain True
+  rep 3 : detecte en 14.7 s ; derives ['FunctionImpactDrift', 'SpecDrift'] ; NF [('amf', 'dependance'), ('ausf', 'dependance'), ('bsf', 'dependance'), ('nrf', 'direct'), ('nssf', 'dependance'), ('pcf', 'dependance'), ('smf', 'dependance'), ('udm', 'dependance'), ('udr', 'dependance')] ; verdict SuspectedViolation ; seq [(15, 'SuspectedViolation')] ; resolu 90.1 s ; flux reconf ['Deployment/sylvatwin-5gc/nrf'] ; sain True
+== S0-B
+  rep 1 : detecte en 14.7 s ; derives ['BrokenReferenceDrift', 'ConvergenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict SuspectedViolation ; seq [(15, 'SuspectedViolation')] ; resolu 177.0 s ; flux reconf [] ; sain True
+  rep 2 : detecte en 14.6 s ; derives ['BrokenReferenceDrift', 'ConvergenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict SuspectedViolation ; seq [(15, 'SuspectedViolation')] ; resolu 176.6 s ; flux reconf [] ; sain True
+  rep 3 : detecte en 14.5 s ; derives ['BrokenReferenceDrift', 'ConvergenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict SuspectedViolation ; seq [(14, 'SuspectedViolation')] ; resolu 176.2 s ; flux reconf [] ; sain True
+== S2
+  rep 1 : detecte en 14.5 s ; derives ['BrokenReferenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 141.1 s ; flux reconf [] ; sain True
+  rep 2 : detecte en 14.2 s ; derives ['BrokenReferenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 137.0 s ; flux reconf [] ; sain True
+  rep 3 : detecte en 14.0 s ; derives ['BrokenReferenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 137.4 s ; flux reconf [] ; sain True
+== S3-a
+  rep 1 : detecte en 14.3 s ; derives ['BrokenReferenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 138.7 s ; flux reconf [] ; sain True
+  rep 2 : detecte en 14.4 s ; derives ['BrokenReferenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 139.8 s ; flux reconf [] ; sain True
+  rep 3 : detecte en 14.4 s ; derives ['BrokenReferenceDrift', 'FunctionImpactDrift'] ; NF [('udm', 'direct')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 141.0 s ; flux reconf [] ; sain True
+== S1
+  rep 1 : detecte en 14.7 s ; derives ['FunctionImpactDrift', 'PlacementDrift'] ; NF [('bsf', 'direct')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 139.5 s ; flux reconf [] ; sain True
+  rep 2 : detecte en 14.7 s ; derives ['FunctionImpactDrift', 'PlacementDrift'] ; NF [('bsf', 'direct')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 139.1 s ; flux reconf [] ; sain True
+  rep 3 : detecte en 14.1 s ; derives ['FunctionImpactDrift', 'PlacementDrift'] ; NF [('bsf', 'direct')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 137.4 s ; flux reconf [] ; sain True
+== S3-c
+  rep 1 : detecte en 14.5 s ; derives ['FunctionImpactDrift', 'PlacementDrift'] ; NF [('bsf', 'direct')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 140.4 s ; flux reconf [] ; sain True
+  rep 2 : detecte en 14.8 s ; derives ['FunctionImpactDrift', 'PlacementDrift'] ; NF [('bsf', 'direct')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 143.2 s ; flux reconf [] ; sain True
+  rep 3 : detecte en 14.8 s ; derives ['FunctionImpactDrift', 'PlacementDrift'] ; NF [('bsf', 'direct')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 145.0 s ; flux reconf [] ; sain True
+== S4-a
+  rep 1 : detecte en 14.8 s ; derives ['InterNFConsistencyDrift'] ; NF [] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 107.8 s ; flux reconf ['ConfigMap/sylvatwin-5gc/nrf-config'] ; sain True
+  rep 2 : detecte en 14.8 s ; derives ['InterNFConsistencyDrift'] ; NF [] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 89.7 s ; flux reconf ['ConfigMap/sylvatwin-5gc/nrf-config'] ; sain True
+  rep 3 : detecte en 14.9 s ; derives ['InterNFConsistencyDrift'] ; NF [] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 101.0 s ; flux reconf ['ConfigMap/sylvatwin-5gc/nrf-config'] ; sain True
+== S4-b
+  rep 1 : detecte en 14.7 s ; derives ['InterNFConsistencyDrift'] ; NF [] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 143.9 s ; flux reconf ['ConfigMap/sylvatwin-5gc/smf-config'] ; sain True
+  rep 2 : detecte en 14.4 s ; derives ['InterNFConsistencyDrift'] ; NF [] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 145.1 s ; flux reconf ['ConfigMap/sylvatwin-5gc/smf-config'] ; sain True
+  rep 3 : detecte en 14.4 s ; derives ['InterNFConsistencyDrift'] ; NF [] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 140.5 s ; flux reconf ['ConfigMap/sylvatwin-5gc/smf-config'] ; sain True
+== S5
+  rep 1 : detecte en 14.2 s ; derives ['FunctionImpactDrift', 'GitOpsSyncDrift'] ; NF [('amf', 'flux'), ('ausf', 'flux'), ('bsf', 'flux'), ('nrf', 'flux'), ('nssf', 'flux'), ('pcf', 'flux'), ('smf', 'flux'), ('udm', 'flux'), ('udr', 'flux')] ; verdict ConfirmedViolation ; seq [(14, 'ConfirmedViolation')] ; resolu 172.6 s ; flux reconf [] ; sain True
+  rep 2 : detecte en 14.7 s ; derives ['FunctionImpactDrift', 'GitOpsSyncDrift'] ; NF [('amf', 'flux'), ('ausf', 'flux'), ('bsf', 'flux'), ('nrf', 'flux'), ('nssf', 'flux'), ('pcf', 'flux'), ('smf', 'flux'), ('udm', 'flux'), ('udr', 'flux')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 157.7 s ; flux reconf [] ; sain True
+  rep 3 : detecte en 14.6 s ; derives ['FunctionImpactDrift', 'GitOpsSyncDrift'] ; NF [('amf', 'flux'), ('ausf', 'flux'), ('bsf', 'flux'), ('nrf', 'flux'), ('nssf', 'flux'), ('pcf', 'flux'), ('smf', 'flux'), ('udm', 'flux'), ('udr', 'flux')] ; verdict ConfirmedViolation ; seq [(15, 'ConfirmedViolation')] ; resolu 162.1 s ; flux reconf [] ; sain True
+== B1
+  rep 1 : non detecte ; derives vues [] ; confirmees 0 suspectees 0 ; sain True
+  rep 2 : non detecte ; derives vues [] ; confirmees 0 suspectees 0 ; sain True
+  rep 3 : non detecte ; derives vues [] ; confirmees 0 suspectees 0 ; sain True
+== B2
+  rep 1 : non detecte ; derives vues [] ; confirmees 0 suspectees 0 ; sain True
+  rep 2 : non detecte ; derives vues [] ; confirmees 0 suspectees 0 ; sain True
+  rep 3 : non detecte ; derives vues [] ; confirmees 0 suspectees 0 ; sain True

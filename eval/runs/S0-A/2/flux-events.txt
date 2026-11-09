@@ -1,0 +1,3 @@
+LAST SEEN               TYPE     REASON                    OBJECT                        MESSAGE
+12m (x9353 over 13d)    Normal   ReconciliationSucceeded   Kustomization/sylvatwin-5gc   (combined from similar events): Reconciliation finished in 385.565259ms, next run in 2m0s
+2m47s (x2 over 8m30s)   Normal   Progressing               Kustomization/sylvatwin-5gc   Deployment/sylvatwin-5gc/nrf configured

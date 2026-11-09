@@ -1,0 +1,49 @@
+LAST SEEN   TYPE      REASON              OBJECT                       MESSAGE
+60m         Normal    Created             pod/udm-7cf6c5b78d-w7cls     Container created
+60m         Normal    Pulled              pod/udm-7cf6c5b78d-w7cls     Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+60m         Normal    Started             pod/udm-7cf6c5b78d-w7cls     Container started
+60m         Normal    Started             pod/udm-7cf6c5b78d-w7cls     Container started
+60m         Normal    Created             pod/udm-7cf6c5b78d-w7cls     Container created
+60m         Normal    Pulled              pod/udm-7cf6c5b78d-w7cls     Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+44m         Warning   FailedMount         pod/udm-7cf6c5b78d-w7cls     MountVolume.SetUp failed for volume "udm-keys" : secret "udm-keys" not found
+43m         Normal    SuccessfulDelete    replicaset/nrf-57b6849ccd    Deleted pod: nrf-57b6849ccd-88pjb
+43m         Normal    Killing             pod/nrf-57b6849ccd-88pjb     Stopping container nrf
+42m         Normal    SuccessfulCreate    replicaset/nrf-57b6849ccd    Created pod: nrf-57b6849ccd-7rk8r
+42m         Normal    Scheduled           pod/nrf-57b6849ccd-7rk8r     Successfully assigned sylvatwin-5gc/nrf-57b6849ccd-7rk8r to my-workload-kubeadm-capd-control-plane-6w58l
+42m         Normal    Created             pod/nrf-57b6849ccd-7rk8r     Container created
+42m         Normal    Pulled              pod/nrf-57b6849ccd-7rk8r     Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+42m         Normal    Started             pod/nrf-57b6849ccd-7rk8r     Container started
+38m         Normal    SuccessfulDelete    replicaset/nrf-57b6849ccd    Deleted pod: nrf-57b6849ccd-7rk8r
+38m         Normal    Killing             pod/nrf-57b6849ccd-7rk8r     Stopping container nrf
+36m         Normal    Scheduled           pod/nrf-57b6849ccd-qhh5r     Successfully assigned sylvatwin-5gc/nrf-57b6849ccd-qhh5r to my-workload-kubeadm-capd-control-plane-6w58l
+36m         Normal    SuccessfulCreate    replicaset/nrf-57b6849ccd    Created pod: nrf-57b6849ccd-qhh5r
+36m         Normal    Created             pod/nrf-57b6849ccd-qhh5r     Container created
+36m         Normal    Pulled              pod/nrf-57b6849ccd-qhh5r     Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+36m         Normal    Started             pod/nrf-57b6849ccd-qhh5r     Container started
+33m         Normal    Killing             pod/nrf-57b6849ccd-qhh5r     Stopping container nrf
+33m         Normal    SuccessfulDelete    replicaset/nrf-57b6849ccd    Deleted pod: nrf-57b6849ccd-qhh5r
+33m         Normal    ScalingReplicaSet   deployment/nrf               Scaled down replica set nrf-57b6849ccd from 1 to 0
+32m         Normal    Scheduled           pod/nrf-57b6849ccd-fvbbj     Successfully assigned sylvatwin-5gc/nrf-57b6849ccd-fvbbj to my-workload-kubeadm-capd-control-plane-6w58l
+32m         Normal    ScalingReplicaSet   deployment/nrf               Scaled up replica set nrf-57b6849ccd from 0 to 1
+32m         Normal    SuccessfulCreate    replicaset/nrf-57b6849ccd    Created pod: nrf-57b6849ccd-fvbbj
+32m         Normal    Created             pod/nrf-57b6849ccd-fvbbj     Container created
+32m         Normal    Started             pod/nrf-57b6849ccd-fvbbj     Container started
+32m         Normal    Pulled              pod/nrf-57b6849ccd-fvbbj     Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+4m42s       Normal    Killing             pod/ausf-695f864d8c-t54bv    Stopping container ausf
+4m42s       Normal    SuccessfulCreate    replicaset/ausf-695f864d8c   Created pod: ausf-695f864d8c-42v7l
+4m42s       Normal    Scheduled           pod/ausf-695f864d8c-42v7l    Successfully assigned sylvatwin-5gc/ausf-695f864d8c-42v7l to my-workload-kubeadm-capd-control-plane-6w58l
+4m41s       Normal    Created             pod/ausf-695f864d8c-42v7l    Container created
+4m41s       Normal    Pulled              pod/ausf-695f864d8c-42v7l    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+4m39s       Normal    Started             pod/ausf-695f864d8c-42v7l    Container started
+4m38s       Normal    Pulled              pod/ausf-695f864d8c-42v7l    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+4m38s       Normal    Created             pod/ausf-695f864d8c-42v7l    Container created
+4m38s       Normal    Started             pod/ausf-695f864d8c-42v7l    Container started
+2m5s        Normal    Scheduled           pod/ausf-695f864d8c-hjc6c    Successfully assigned sylvatwin-5gc/ausf-695f864d8c-hjc6c to my-workload-kubeadm-capd-control-plane-6w58l
+2m5s        Normal    Killing             pod/ausf-695f864d8c-42v7l    Stopping container ausf
+2m5s        Normal    SuccessfulCreate    replicaset/ausf-695f864d8c   Created pod: ausf-695f864d8c-hjc6c
+2m4s        Normal    Pulled              pod/ausf-695f864d8c-hjc6c    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+2m4s        Normal    Created             pod/ausf-695f864d8c-hjc6c    Container created
+2m2s        Normal    Started             pod/ausf-695f864d8c-hjc6c    Container started
+2m1s        Normal    Pulled              pod/ausf-695f864d8c-hjc6c    Container image "gradiant/open5gs:2.7.2" already present on machine and can be accessed by the pod
+2m1s        Normal    Created             pod/ausf-695f864d8c-hjc6c    Container created
+2m          Normal    Started             pod/ausf-695f864d8c-hjc6c    Container started

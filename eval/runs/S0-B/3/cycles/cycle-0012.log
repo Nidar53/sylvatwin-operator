@@ -1,0 +1,5 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5503 derives=map[ConvergenceDrift:1 FunctionImpactDrift:1] verdicts=map[SuspectedViolation:2] duree=2.961s
+  derive  : ConvergenceDrift ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm
+  derive  : FunctionImpactDrift FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm
+  verdict : SuspectedViolation ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm
+  verdict : SuspectedViolation FunctionImpactDrift/ConvergenceDrift/my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/udm/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/udm

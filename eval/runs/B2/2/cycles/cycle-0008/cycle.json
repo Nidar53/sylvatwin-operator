@@ -1,0 +1,36 @@
+{
+  "start": "2026-11-09T16:03:01.675177346Z",
+  "end": "2026-11-09T16:03:04.814996473Z",
+  "clusters": {
+    "management-cluster": "ok",
+    "my-workload-kubeadm-capd": "ok"
+  },
+  "objects": {
+    "management-cluster": 353,
+    "my-workload-kubeadm-capd": 69
+  },
+  "desired": [
+    {
+      "kustomization": "sylvatwin-flux/sylvatwin-5gc",
+      "revision": "test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099",
+      "known": true,
+      "objects": 35
+    }
+  ],
+  "facts": 5519,
+  "drifts": {},
+  "verdicts": {},
+  "driftList": null,
+  "verdictList": null,
+  "timingsMs": {
+    "desired": 56,
+    "judge_lifecycle": 155,
+    "judge_load": 1202,
+    "judge_passe1": 366,
+    "judge_passe2": 306,
+    "judge_passe3": 320,
+    "judge_verdict": 2,
+    "map": 118,
+    "observe": 608
+  }
+}

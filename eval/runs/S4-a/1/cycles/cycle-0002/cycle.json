@@ -1,0 +1,46 @@
+{
+  "start": "2026-11-09T15:26:10.487308436Z",
+  "end": "2026-11-09T15:26:14.041220185Z",
+  "clusters": {
+    "management-cluster": "ok",
+    "my-workload-kubeadm-capd": "ok"
+  },
+  "objects": {
+    "management-cluster": 353,
+    "my-workload-kubeadm-capd": 67
+  },
+  "desired": [
+    {
+      "kustomization": "sylvatwin-flux/sylvatwin-5gc",
+      "revision": "test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099",
+      "known": true,
+      "objects": 35
+    }
+  ],
+  "facts": 5506,
+  "drifts": {
+    "InterNFConsistencyDrift": 2
+  },
+  "verdicts": {
+    "ConfirmedViolation": 2
+  },
+  "driftList": [
+    "InterNFConsistencyDrift InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf",
+    "InterNFConsistencyDrift InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf"
+  ],
+  "verdictList": [
+    "ConfirmedViolation InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf",
+    "ConfirmedViolation InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf"
+  ],
+  "timingsMs": {
+    "desired": 49,
+    "judge_lifecycle": 304,
+    "judge_load": 1351,
+    "judge_passe1": 439,
+    "judge_passe2": 383,
+    "judge_passe3": 345,
+    "judge_verdict": 3,
+    "map": 98,
+    "observe": 573
+  }
+}

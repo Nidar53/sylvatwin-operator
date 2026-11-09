@@ -1,0 +1,5 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5506 derives=map[InterNFConsistencyDrift:2] verdicts=map[ConfirmedViolation:2] duree=1.906s
+  derive  : InterNFConsistencyDrift InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf
+  derive  : InterNFConsistencyDrift InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf
+  verdict : ConfirmedViolation InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/amf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf
+  verdict : ConfirmedViolation InterNFConsistencyDrift/plmn/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/nrf/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf

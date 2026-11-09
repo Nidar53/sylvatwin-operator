@@ -1,0 +1,12 @@
+[2026-11-09T16:12:58.682Z] === S4-b repetition 3 (observation 120s, periode 15s)
+SAIN (revision test@sha1:32cb98014a841dfd020d302b746e0924b1d749d1) apres 2 s
+[2026-11-09T16:13:03.718Z] cycle temoin (avant injection) : derives={}
+[2026-11-09T16:13:03.724Z] INJECTION
+ff22aed52683f6e6ee252bb32e325e464d0ba194
+✔ applied revision test@sha1:ff22aed52683f6e6ee252bb32e325e464d0ba194
+[2026-11-09T16:13:10.171Z] injection terminee a 2026-11-09T16:13:03.722Z
+[2026-11-09T16:15:20.208Z] ANNULATION
+058bb9837379935d56b104d2e8faeae4e1fb4ee8
+✔ applied revision test@sha1:058bb9837379935d56b104d2e8faeae4e1fb4ee8
+SAIN (revision test@sha1:058bb9837379935d56b104d2e8faeae4e1fb4ee8) apres 1 s
+[2026-11-09T16:15:53.100Z] retour a l'etat sain : OK

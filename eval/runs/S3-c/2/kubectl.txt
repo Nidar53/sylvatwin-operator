@@ -1,0 +1,6 @@
+0
+NAME                   READY   STATUS    RESTARTS   AGE   IP               NODE                                           NOMINATED NODE   READINESS GATES
+bsf-755b4c9bd4-6tssf   1/1     Running   0          13m   100.72.149.184   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+{"sylvatwin.orange.com/zone":"a"}
+--- diff
+(fin du diff)

@@ -1,0 +1,12 @@
+NAME                       READY   STATUS    RESTARTS   AGE     IP               NODE                                           NOMINATED NODE   READINESS GATES
+amf-76894b88b5-njbl9       1/1     Running   0          3d4h    100.72.149.155   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+ausf-695f864d8c-t54bv      1/1     Running   0          11m     100.72.149.156   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+bsf-78db7b6587-8wkqn       1/1     Running   0          13d     100.72.149.185   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+mongodb-8648df4dd6-zt6k4   1/1     Running   0          13d     100.72.149.134   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+nrf-57b6849ccd-tr8th       1/1     Running   0          3m26s   100.72.149.163   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+nssf-56b5dddb99-2lczg      1/1     Running   0          13d     100.72.149.186   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+pcf-5c95554586-8t7d2       1/1     Running   0          13d     100.72.149.137   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+scp-655fff6949-728xb       1/1     Running   0          3d4h    100.72.149.153   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+smf-6d7f6658f7-gfrqw       1/1     Running   0          13d     100.72.149.152   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+udm-7cf6c5b78d-rw6fk       1/1     Running   0          13d     100.72.149.150   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>
+udr-77dc4c9586-5snt7       1/1     Running   0          13d     100.72.149.142   my-workload-kubeadm-capd-control-plane-6w58l   <none>           <none>

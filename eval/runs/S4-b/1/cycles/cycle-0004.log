@@ -1,0 +1,3 @@
+clusters=map[management-cluster:ok my-workload-kubeadm-capd:ok] faits=5530 derives=map[InterNFConsistencyDrift:1] verdicts=map[ConfirmedViolation:1] duree=3.115s
+  derive  : InterNFConsistencyDrift InterNFConsistencyDrift/slice/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf/sst-2
+  verdict : ConfirmedViolation InterNFConsistencyDrift/slice/my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf/sst-2

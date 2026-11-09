@@ -1,0 +1,4 @@
+NAME            AGE   READY   STATUS
+sylvatwin-5gc   13d   True    Applied revision: test@sha1:ce6ecc70445353863b2b165eb68583f0fb296099
+NAME         	REVISION          	SUSPENDED	READY	MESSAGE                              
+sylvatwin-5gc	test@sha1:ce6ecc70	True     	True 	Applied revision: test@sha1:ce6ecc70	
