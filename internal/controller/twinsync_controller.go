@@ -39,7 +39,8 @@ import (
 
 	sylvatwinv1alpha1 "github.com/orange/sylvatwin-operator/api/v1alpha1"
 	"github.com/orange/sylvatwin-operator/internal/desired"
-	"github.com/orange/sylvatwin-operator/internal/rdf"
+	rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
+	"github.com/orange/sylvatwin-operator/internal/legacyv0"
 )
 
 type TwinSyncReconciler struct {
@@ -124,7 +125,7 @@ func (r *TwinSyncReconciler) buildGraph(
 		return nil, c, fmt.Errorf("lecture du cote desired : %w", err)
 	}
 	for _, d := range deps {
-		mapDesiredDeployment(g, d)
+		legacyv0.MapDesiredDeployment(g, d)
 	}
 
 	listOpts := r.listOptions(ts)
@@ -135,7 +136,7 @@ func (r *TwinSyncReconciler) buildGraph(
 		return nil, c, fmt.Errorf("list deployments : %w", err)
 	}
 	for i := range depList.Items {
-		mapActualDeployment(g, &depList.Items[i], now)
+		legacyv0.MapActualDeployment(g, &depList.Items[i], now)
 	}
 	c.deployments = len(depList.Items)
 
@@ -146,7 +147,7 @@ func (r *TwinSyncReconciler) buildGraph(
 	}
 	for i := range podList.Items {
 		pod := &podList.Items[i]
-		mapPod(g, pod, r.resolveOwnerDeployment(ctx, pod), now)
+		legacyv0.MapPod(g, pod, r.resolveOwnerDeployment(ctx, pod), now)
 	}
 	c.pods = len(podList.Items)
 
@@ -156,7 +157,7 @@ func (r *TwinSyncReconciler) buildGraph(
 		return nil, c, fmt.Errorf("list nodes : %w", err)
 	}
 	for i := range nodeList.Items {
-		mapNode(g, &nodeList.Items[i], now)
+		legacyv0.MapNode(g, &nodeList.Items[i], now)
 	}
 	c.nodes = len(nodeList.Items)
 

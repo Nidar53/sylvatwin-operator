@@ -10,7 +10,7 @@ Les proprietes ecrites sont exactement celles de la TBox v0 :
 	Pod        : partOf, runsOn, observedAt
 	Node       : offersLabel, observedAt
 */
-package controller
+package legacyv0
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 
 	"github.com/orange/sylvatwin-operator/internal/desired"
-	"github.com/orange/sylvatwin-operator/internal/rdf"
+	rdf "github.com/orange/sylvatwin-operator/internal/legacyv0/rdfv0"
 )
 
 // labelTerm aplatit une paire cle/valeur en "cle=valeur".
@@ -35,7 +35,7 @@ func labelTerm(k, v string) rdf.Term {
 }
 
 // mapDesiredDeployment ecrit le cote DESIRED (source : Git).
-func mapDesiredDeployment(g *rdf.Graph, d desired.Deployment) {
+func MapDesiredDeployment(g *rdf.Graph, d desired.Deployment) {
 	subj := rdf.IRI("", d.Name) // pas de prefixe : point de rencontre avec le cluster
 
 	g.Add(subj, rdf.A, rdf.Class("Deployment"))
@@ -48,7 +48,7 @@ func mapDesiredDeployment(g *rdf.Graph, d desired.Deployment) {
 // mapActualDeployment ecrit le cote ACTUAL (source : cluster).
 // Note l'URI : rdf.IRI("", name) — la MEME que ci-dessus. C'est ce qui fait
 // atterrir desiredReplicas et actualReplicas sur un individu unique (Option C).
-func mapActualDeployment(g *rdf.Graph, dep *appsv1.Deployment, now time.Time) {
+func MapActualDeployment(g *rdf.Graph, dep *appsv1.Deployment, now time.Time) {
 	subj := rdf.IRI("", dep.Name)
 
 	g.Add(subj, rdf.A, rdf.Class("Deployment"))
@@ -61,7 +61,7 @@ func mapActualDeployment(g *rdf.Graph, dep *appsv1.Deployment, now time.Time) {
 // ownerName : nom du Deployment resolu via ownerReferences (Pod -> ReplicaSet
 // -> Deployment). Chaine vide si non resolu : on retombe alors sur le label
 // "app", comme en v1.
-func mapPod(g *rdf.Graph, pod *corev1.Pod, ownerName string, now time.Time) {
+func MapPod(g *rdf.Graph, pod *corev1.Pod, ownerName string, now time.Time) {
 	subj := rdf.IRI("pod", pod.Name)
 
 	g.Add(subj, rdf.A, rdf.Class("Pod"))
@@ -86,7 +86,7 @@ func mapPod(g *rdf.Graph, pod *corev1.Pod, ownerName string, now time.Time) {
 
 // mapNode ecrit TOUS les labels du noeud, sans filtrage.
 // Le greffier ne decide pas quel fait est pertinent : filtrer, c'est deja juger.
-func mapNode(g *rdf.Graph, node *corev1.Node, now time.Time) {
+func MapNode(g *rdf.Graph, node *corev1.Node, now time.Time) {
 	subj := rdf.IRI("node", node.Name)
 
 	g.Add(subj, rdf.A, rdf.Class("Node"))

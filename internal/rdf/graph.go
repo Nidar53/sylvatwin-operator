@@ -1,10 +1,14 @@
 /*
-Package rdf : ecriture Turtle minimale.
+Package rdf : ecriture RDF minimale pour l'ontologie SylvaTwin v1 (espace core#).
 
-Pourquoi pas une bibliotheque RDF Go ? L'ecosysteme Go n'a pas d'equivalent
-mature de rdflib. Comme l'operateur n'a besoin QUE d'ecrire (jamais de parser
-ni de raisonner), 150 lignes suffisent et suppriment tout risque de dependance.
-Le raisonnement reste en Python (detect.py + rdflib + SPARQL).
+Pourquoi pas une bibliotheque RDF Go ? L'operateur n'a besoin QUE d'ecrire des
+triplets (jamais de parser ni de raisonner) : le juge (moteur SPARQL externe)
+fait le reste. Ce paquet produit du N-Triples (une ligne par triplet, format
+canonique, sans prefixe : ideal pour le Graph Store Protocol) et du Turtle
+lisible.
+
+Invariant greffier/juge : ce paquet ne connait QUE des termes. Aucune logique de
+detection ici, ni nulle part dans l'operateur.
 */
 package rdf
 
@@ -17,181 +21,292 @@ import (
 	"time"
 )
 
-// Term : un terme RDF deja serialise en syntaxe Turtle.
-type Term string
+// Espaces de noms de la v1.
+const (
+	Core   = "https://w3id.org/sylvatwin/core#"
+	XSD    = "http://www.w3.org/2001/XMLSchema#"
+	RDFNS  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	RDFSNS = "http://www.w3.org/2000/01/rdf-schema#"
+)
 
-// Namespace du projet, identique a fact_writer.py v1.
-const NS = "https://w3id.org/sylvatwin/k8s#"
+// Kind de terme.
+type kind uint8
 
-// sanitize applique la convention v1 : tirets et points -> underscores.
-// Indispensable : detect.py et la TBox dependent de ces noms exacts.
-func sanitize(s string) string {
-	r := strings.NewReplacer("-", "_", ".", "_", "/", "_", ":", "_")
-	return r.Replace(s)
+const (
+	kIRI kind = iota
+	kLiteral
+)
+
+// Term : un terme RDF (IRI ou litteral type). Comparable : sert de cle de map.
+type Term struct {
+	k     kind
+	value string // IRI complete, ou forme lexicale du litteral
+	dt    string // datatype (IRI complete) pour un litteral ; "" = xsd:string
 }
 
-// IRI construit un individu du namespace projet.
-// kind vide => pas de prefixe (convention des Deployments : :webapp).
-//
-// C'est la fonction d'identite deterministe : deux sources independantes
-// (Git et Watch API) doivent converger sur la MEME URI.
-func IRI(kind, name string) Term {
-	if kind == "" {
-		return Term(":" + sanitize(name))
+// IRI construit un terme IRI a partir d'une IRI COMPLETE.
+func IRI(full string) Term { return Term{k: kIRI, value: full} }
+
+// C : un terme de l'ontologie (classe ou propriete) dans l'espace core#.
+func C(local string) Term { return IRI(Core + local) }
+
+// Type : rdf:type.
+var Type = IRI(RDFNS + "type")
+
+// Label : rdfs:label.
+var Label = IRI(RDFSNS + "label")
+
+// Str : litteral chaine (xsd:string, forme simple en Turtle/N-Triples).
+func Str(s string) Term { return Term{k: kLiteral, value: s} }
+
+// Int : litteral xsd:integer. Le datatype est OBLIGATOIRE : sans lui, SPARQL
+// comparerait la chaine "3" a l'entier 3.
+func Int(i int64) Term { return Term{k: kLiteral, value: strconv.FormatInt(i, 10), dt: XSD + "integer"} }
+
+// Dec : litteral xsd:decimal (secondes des parametres Flux, par ex.).
+func Dec(f float64) Term {
+	s := strconv.FormatFloat(f, 'f', -1, 64)
+	if !strings.Contains(s, ".") {
+		s += ".0"
 	}
-	return Term(":" + kind + "_" + sanitize(name))
+	return Term{k: kLiteral, value: s, dt: XSD + "decimal"}
 }
 
-// Class reference une classe de la TBox.
-func Class(local string) Term { return Term(":" + local) }
+// Bool : litteral xsd:boolean.
+func Bool(b bool) Term { return Term{k: kLiteral, value: strconv.FormatBool(b), dt: XSD + "boolean"} }
 
-// Prop reference une propriete de la TBox.
-func Prop(local string) Term { return Term(":" + local) }
+// AnyURI : litteral xsd:anyURI (URL Git).
+func AnyURI(s string) Term { return Term{k: kLiteral, value: s, dt: XSD + "anyURI"} }
 
-// Str : litteral chaine.
-func Str(s string) Term {
-	esc := strings.NewReplacer(`\`, `\\`, `"`, `\"`, "\n", `\n`, "\r", `\r`, "\t", `\t`)
-	return Term(`"` + esc.Replace(s) + `"`)
-}
-
-// Int : litteral entier type. Le datatype est OBLIGATOIRE :
-// sans lui, SPARQL comparerait la chaine "3" a l'entier 3 dans Q0.
-func Int(i int) Term {
-	return Term(`"` + strconv.Itoa(i) + `"^^xsd:integer`)
-}
-
-// DateTime : litteral xsd:dateTime.
+// DateTime : litteral xsd:dateTime en UTC, precision a la seconde.
 func DateTime(t time.Time) Term {
-	return Term(`"` + t.UTC().Format(time.RFC3339) + `"^^xsd:dateTime`)
+	return Term{k: kLiteral, value: t.UTC().Format("2006-01-02T15:04:05Z"), dt: XSD + "dateTime"}
 }
 
-// A est rdf:type, ecrit "a" en Turtle.
-const A Term = "a"
+// IsIRI indique si le terme est une IRI.
+func (t Term) IsIRI() bool { return t.k == kIRI }
+
+// Value renvoie l'IRI complete ou la forme lexicale.
+func (t Term) Value() string { return t.value }
+
+// Datatype renvoie le datatype ("" pour xsd:string ou une IRI).
+func (t Term) Datatype() string { return t.dt }
+
+// NT serialise le terme en N-Triples.
+func (t Term) NT() string {
+	if t.k == kIRI {
+		return "<" + escapeIRI(t.value) + ">"
+	}
+	lex := `"` + escapeLiteral(t.value) + `"`
+	if t.dt == "" {
+		return lex
+	}
+	return lex + "^^<" + t.dt + ">"
+}
+
+// escapeLiteral : echappements N-Triples / Turtle d'un litteral court.
+func escapeLiteral(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		switch r {
+		case '\\':
+			b.WriteString(`\\`)
+		case '"':
+			b.WriteString(`\"`)
+		case '\n':
+			b.WriteString(`\n`)
+		case '\r':
+			b.WriteString(`\r`)
+		case '\t':
+			b.WriteString(`\t`)
+		default:
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+// escapeIRI : une IRI ne peut contenir ni espace, ni <>"{}|^`\ ; les IRI SylvaTwin
+// sont deja encodees par le paquet iri, ceci n'est qu'un garde-fou.
+func escapeIRI(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		if r <= 0x20 || strings.ContainsRune("<>\"{}|^`\\", r) {
+			fmt.Fprintf(&b, "%%%02X", r)
+			continue
+		}
+		b.WriteRune(r)
+	}
+	return b.String()
+}
 
 type triple struct{ s, p, o Term }
 
-// Graph : ensemble de triplets, sans doublon.
+// Graph : ensemble de triplets, sans doublon (RDF est un ensemble).
 type Graph struct {
 	set map[triple]struct{}
 }
 
+// New cree un graphe vide.
 func New() *Graph { return &Graph{set: make(map[triple]struct{})} }
 
-// Add insere un triplet. RDF est un ENSEMBLE : reinserer le meme triplet
-// est sans effet, d'ou l'absence de set_single() ici (voir le controleur :
-// le graphe est reconstruit entierement a chaque reconciliation).
+// Add insere un triplet. Sujet et predicat doivent etre des IRI ; un terme vide
+// est ignore (champ Kubernetes absent = pas de fait).
 func (g *Graph) Add(s, p, o Term) {
-	if s == "" || p == "" || o == "" {
+	if s.value == "" || p.value == "" || !s.IsIRI() || !p.IsIRI() {
+		return
+	}
+	if o.k == kIRI && o.value == "" {
 		return
 	}
 	g.set[triple{s, p, o}] = struct{}{}
 }
 
+// Merge ajoute tous les triplets de h.
+func (g *Graph) Merge(h *Graph) {
+	for t := range h.set {
+		g.set[t] = struct{}{}
+	}
+}
+
+// Len : nombre de triplets.
 func (g *Graph) Len() int { return len(g.set) }
 
-// Serialize ecrit le graphe en Turtle, groupe par sujet et trie
-// (sortie deterministe : deux reconciliations identiques donnent
-// deux fichiers identiques, donc pas de churn Git ni de diff parasite).
-func (g *Graph) Serialize(w io.Writer, tbox []byte) error {
-	if _, err := fmt.Fprintf(w,
-		"@prefix : <%s> .\n@prefix owl: <http://www.w3.org/2002/07/owl#> .\n"+
-			"@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n"+
-			"@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n\n", NS); err != nil {
-		return err
-	}
+// Has : test d'appartenance (tests unitaires).
+func (g *Graph) Has(s, p, o Term) bool { _, ok := g.set[triple{s, p, o}]; return ok }
 
-	if len(tbox) > 0 {
-		already := map[string]bool{":": true, "owl:": true, "rdfs:": true, "xsd:": true}
-		pfx, body := splitTBox(tbox, already)
-		if len(pfx) > 0 {
-			if _, err := w.Write(append(pfx, '\n', '\n')); err != nil {
-				return err
-			}
-		}
-		if _, err := w.Write([]byte("### ---- TBox ----\n")); err != nil {
-			return err
-		}
-		if _, err := w.Write(body); err != nil {
-			return err
-		}
-		if _, err := w.Write([]byte("\n### ---- ABox (faits observes) ----\n")); err != nil {
-			return err
-		}
-	}
-
-	bySubject := map[Term]map[Term][]Term{}
+// Objects : objets de (s, p) (tests unitaires et status).
+func (g *Graph) Objects(s, p Term) []Term {
+	var out []Term
 	for t := range g.set {
-		if bySubject[t.s] == nil {
-			bySubject[t.s] = map[Term][]Term{}
+		if t.s == s && t.p == p {
+			out = append(out, t.o)
 		}
-		bySubject[t.s][t.p] = append(bySubject[t.s][t.p], t.o)
 	}
+	sort.Slice(out, func(i, j int) bool { return out[i].NT() < out[j].NT() })
+	return out
+}
 
-	subjects := make([]string, 0, len(bySubject))
-	for s := range bySubject {
-		subjects = append(subjects, string(s))
-	}
-	sort.Strings(subjects)
-
-	for _, ss := range subjects {
-		s := Term(ss)
-		preds := make([]string, 0, len(bySubject[s]))
-		for p := range bySubject[s] {
-			preds = append(preds, string(p))
+// SubjectsOfType : sujets ayant rdf:type c.
+func (g *Graph) SubjectsOfType(c Term) []Term {
+	var out []Term
+	for t := range g.set {
+		if t.p == Type && t.o == c {
+			out = append(out, t.s)
 		}
-		// "a" (rdf:type) toujours en premier, comme dans la sortie rdflib.
-		sort.Slice(preds, func(i, j int) bool {
-			if preds[i] == string(A) {
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].value < out[j].value })
+	return out
+}
+
+func (g *Graph) sorted() []triple {
+	ts := make([]triple, 0, len(g.set))
+	for t := range g.set {
+		ts = append(ts, t)
+	}
+	sort.Slice(ts, func(i, j int) bool {
+		a, b := ts[i], ts[j]
+		if a.s.value != b.s.value {
+			return a.s.value < b.s.value
+		}
+		if a.p != b.p {
+			if a.p == Type {
 				return true
 			}
-			if preds[j] == string(A) {
+			if b.p == Type {
 				return false
 			}
-			return preds[i] < preds[j]
-		})
-
-		if _, err := fmt.Fprintf(w, "%s ", s); err != nil {
-			return err
+			return a.p.value < b.p.value
 		}
-		for i, ps := range preds {
-			objs := bySubject[s][Term(ps)]
-			strs := make([]string, 0, len(objs))
-			for _, o := range objs {
-				strs = append(strs, string(o))
-			}
-			sort.Strings(strs)
+		return a.o.NT() < b.o.NT()
+	})
+	return ts
+}
 
-			sep := " ;\n    "
-			if i == len(preds)-1 {
-				sep = " .\n\n"
-			}
-			if _, err := fmt.Fprintf(w, "%s %s%s", ps, strings.Join(strs, ", "), sep); err != nil {
-				return err
-			}
+// WriteNTriples : sortie deterministe (triee), une ligne par triplet.
+func (g *Graph) WriteNTriples(w io.Writer) error {
+	for _, t := range g.sorted() {
+		if _, err := fmt.Fprintf(w, "%s %s %s .\n", t.s.NT(), t.p.NT(), t.o.NT()); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-// splitTBox separe les declarations @prefix du corps de la TBox.
-//
-// Les prefixes de la TBox sont CONSERVES (et non supprimes) : sans cela, tout
-// vocabulaire ajoute a l'ontologie (dcterms, skos, prov...) produirait un
-// fichier syntaxiquement invalide. Seuls les prefixes deja ecrits en tete
-// sont ignores, pour eviter les doublons.
-func splitTBox(b []byte, already map[string]bool) (prefixes, body []byte) {
-	var pfx, rest []string
-	for _, line := range strings.Split(string(b), "\n") {
-		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, "@prefix") || strings.HasPrefix(trimmed, "@base") {
-			fields := strings.Fields(trimmed)
-			if len(fields) >= 2 && already[fields[1]] {
-				continue // deja declare en tete
+// WriteTurtle : Turtle lisible (groupe par sujet, prefixes core/xsd), deterministe.
+func (g *Graph) WriteTurtle(w io.Writer, header string) error {
+	if header != "" {
+		for _, l := range strings.Split(strings.TrimRight(header, "\n"), "\n") {
+			if _, err := fmt.Fprintf(w, "# %s\n", l); err != nil {
+				return err
 			}
-			pfx = append(pfx, trimmed)
-			continue
 		}
-		rest = append(rest, line)
 	}
-	return []byte(strings.Join(pfx, "\n")), []byte(strings.Join(rest, "\n"))
+	if _, err := fmt.Fprintf(w, "@prefix : <%s> .\n@prefix xsd: <%s> .\n@prefix rdfs: <%s> .\n\n", Core, XSD, RDFSNS); err != nil {
+		return err
+	}
+	short := func(t Term) string {
+		if t.k == kIRI {
+			if t == Type {
+				return "a"
+			}
+			if strings.HasPrefix(t.value, Core) && isPN(t.value[len(Core):]) {
+				return ":" + t.value[len(Core):]
+			}
+			if strings.HasPrefix(t.value, RDFSNS) && isPN(t.value[len(RDFSNS):]) {
+				return "rdfs:" + t.value[len(RDFSNS):]
+			}
+			return t.NT()
+		}
+		lex := `"` + escapeLiteral(t.value) + `"`
+		if t.dt == "" {
+			return lex
+		}
+		if strings.HasPrefix(t.dt, XSD) {
+			return lex + "^^xsd:" + t.dt[len(XSD):]
+		}
+		return lex + "^^<" + t.dt + ">"
+	}
+	ts := g.sorted()
+	for i := 0; i < len(ts); {
+		s := ts[i].s
+		if _, err := fmt.Fprintf(w, "%s", short(s)); err != nil {
+			return err
+		}
+		first := true
+		for i < len(ts) && ts[i].s == s {
+			p := ts[i].p
+			var objs []string
+			for i < len(ts) && ts[i].s == s && ts[i].p == p {
+				objs = append(objs, short(ts[i].o))
+				i++
+			}
+			sep := " ;\n    "
+			if first {
+				sep = "\n    "
+				first = false
+			}
+			if _, err := fmt.Fprintf(w, "%s%s %s", sep, short(p), strings.Join(objs, " , ")); err != nil {
+				return err
+			}
+		}
+		if _, err := fmt.Fprint(w, " .\n\n"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// isPN : nom local utilisable en notation prefixee sans echappement.
+func isPN(s string) bool {
+	if s == "" {
+		return false
+	}
+	for i, r := range s {
+		ok := r == '_' || (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (i > 0 && (r >= '0' && r <= '9'))
+		if !ok {
+			return false
+		}
+	}
+	return true
 }
