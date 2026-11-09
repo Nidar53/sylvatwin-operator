@@ -46,6 +46,11 @@ type Twin struct {
 	CacheDir       string // clones Git
 	OutDir         string
 	Judge          *judge.Pipeline // nil : greffier seul
+	// Discovered : clusters CAPI decouverts (convention <cluster>-kubeconfig).
+	Discovered []source.Discovered
+	// KubeconfigTargets : correspondances declarees ns/secret -> cluster
+	// (aucun Secret n'est lu pour les deduire).
+	KubeconfigTargets map[string]string
 }
 
 // CycleReport : journal d'un cycle (ecrit en JSON, sert a l'evaluation).
@@ -96,7 +101,7 @@ func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 	rep.TimingsMS["observe"] = time.Since(t0).Milliseconds()
 
 	t0 = time.Now()
-	fc := source.FluxContext(ctx, t.Management, mgmtSnap, endpoints)
+	fc := source.FluxContext(mgmtSnap, t.Discovered, t.KubeconfigTargets)
 	var des []*mapper.Desired
 	for _, tr := range t.Tracked {
 		d, dr := t.desired(ctx, mgmtSnap, fc, tr)

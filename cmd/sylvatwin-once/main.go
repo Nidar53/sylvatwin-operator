@@ -37,16 +37,17 @@ import (
 
 func main() {
 	var (
-		mgmtKC   = flag.String("mgmt-kubeconfig", "", "kubeconfig du cluster de management (lecture seule)")
-		mgmtName = flag.String("mgmt-name", "", "nom du Cluster CAPI qui decrit le management (defaut : decouvert par endpoint)")
-		rules    = flag.String("rules", "", "dossier rules/ de sylvatwin-poc (vide : greffier seul)")
-		sparql   = flag.String("sparql", "http://127.0.0.1:7878", "endpoint SPARQL 1.1 (boucle locale uniquement)")
-		track    = flag.String("track", "sylvatwin-flux/sylvatwin-5gc", "Kustomizations suivies (ns/nom, separees par des virgules)")
-		nfNS     = flag.String("nf-namespace", "sylvatwin-5gc", "namespace des fonctions reseau dans les workloads")
-		out      = flag.String("out", "sylvatwin-out", "dossier de sortie")
-		cache    = flag.String("cache", "/opt/nidar/cache-desired", "cache des clones Git")
-		validity = flag.Float64("validity", 600, "horizon de validite de l'information (s), pour le verdict")
-		timeout  = flag.Duration("timeout", 5*time.Minute, "duree maximale du cycle")
+		mgmtKC    = flag.String("mgmt-kubeconfig", "", "kubeconfig du cluster de management (lecture seule)")
+		mgmtName  = flag.String("mgmt-name", "", "nom du Cluster CAPI qui decrit le management (defaut : decouvert par endpoint)")
+		rules     = flag.String("rules", "", "dossier rules/ de sylvatwin-poc (vide : greffier seul)")
+		sparql    = flag.String("sparql", "http://127.0.0.1:7878", "endpoint SPARQL 1.1 (boucle locale uniquement)")
+		track     = flag.String("track", "sylvatwin-flux/sylvatwin-5gc", "Kustomizations suivies (ns/nom, separees par des virgules)")
+		nfNS      = flag.String("nf-namespace", "sylvatwin-5gc", "namespace des fonctions reseau dans les workloads")
+		out       = flag.String("out", "sylvatwin-out", "dossier de sortie")
+		cache     = flag.String("cache", "/opt/nidar/cache-desired", "cache des clones Git")
+		validity  = flag.Float64("validity", 600, "horizon de validite de l'information (s), pour le verdict")
+		timeout   = flag.Duration("timeout", 5*time.Minute, "duree maximale du cycle")
+		kcTargets = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd", "cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster, separes par des virgules) : leur contenu n est jamais lu")
 	)
 	flag.Parse()
 	if *mgmtKC == "" {
@@ -102,7 +103,8 @@ func main() {
 		srcs = append(srcs, ws)
 	}
 
-	t := &twin.Twin{Management: mgmt, ManagementName: name, Sources: srcs, CacheDir: *cache, OutDir: *out}
+	t := &twin.Twin{Management: mgmt, ManagementName: name, Sources: srcs, CacheDir: *cache, OutDir: *out,
+		Discovered: found, KubeconfigTargets: source.ParseTargets(*kcTargets)}
 	for _, s := range strings.Split(*track, ",") {
 		if p := strings.SplitN(strings.TrimSpace(s), "/", 2); len(p) == 2 {
 			t.Tracked = append(t.Tracked, twin.Tracked{Namespace: p[0], Name: p[1]})

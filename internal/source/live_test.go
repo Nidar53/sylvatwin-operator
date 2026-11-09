@@ -57,3 +57,13 @@ func TestHostPort(t *testing.T) {
 		}
 	}
 }
+
+func TestFluxContextSansLireDeSecret(t *testing.T) {
+	fc := FluxContext(nil, []Discovered{{Name: "wl", Namespace: "wl-ns"}}, ParseTargets("f/k=wl2, mauvais ,a/b="))
+	if fc.KubeconfigTargets["wl-ns/wl-kubeconfig"] != "wl" {
+		t.Error("convention CAPI <cluster>-kubeconfig non appliquee")
+	}
+	if fc.KubeconfigTargets["f/k"] != "wl2" || len(fc.KubeconfigTargets) != 2 {
+		t.Errorf("correspondances declarees : %v", fc.KubeconfigTargets)
+	}
+}
