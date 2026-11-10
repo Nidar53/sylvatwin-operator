@@ -47,6 +47,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	crcluster "sigs.k8s.io/controller-runtime/pkg/cluster"
+	"sigs.k8s.io/controller-runtime/pkg/config"
+	crcontroller "sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	mcbuilder "sigs.k8s.io/multicluster-runtime/pkg/builder"
@@ -202,7 +204,17 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 		},
 	})
 
-	mgr, err := mcmanager.New(o.ManagementConfig, w.provider, mcmanager.Options{Scheme: scheme})
+	// SkipNameValidation : true uniquement pour permettre aux tests envtest de
+	// cette suite de creer plusieurs Watcher dans le MEME process Go (chaque
+	// TestXxx cree son propre manager "cluster"/"sylvatwin-trigger", et
+	// controller-runtime refuse par defaut deux controllers de meme nom dans
+	// le registre de metriques global du process). Sans consequence en
+	// production : H0 n'a qu'un seul Watcher par process.
+	skipNameValidation := true
+	mgr, err := mcmanager.New(o.ManagementConfig, w.provider, mcmanager.Options{
+		Scheme:     scheme,
+		Controller: config.Controller{SkipNameValidation: &skipNameValidation},
+	})
 	if err != nil {
 		return nil, fmt.Errorf("manager multi-cluster : %w", err)
 	}
@@ -212,7 +224,14 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 		return nil, fmt.Errorf("provider cluster-api : %w", err)
 	}
 
-	bld := mcbuilder.ControllerManagedBy(mgr).Named("sylvatwin-trigger")
+	// WithOptions(SkipNameValidation) : meme remarque que pour le manager
+	// ci-dessus (voir commentaire sur Controller.SkipNameValidation) — le
+	// reglage du Manager n'est PAS herite automatiquement par ce controller
+	// (controller.NewTypedUnmanaged n'a pas acces au manager), donc il faut le
+	// repeter ici explicitement, sinon un 2e Watcher dans le meme process
+	// (tests envtest) echoue a la creation avec "controller ... already exists".
+	bld := mcbuilder.ControllerManagedBy(mgr).Named("sylvatwin-trigger").
+		WithOptions(crcontroller.TypedOptions[mcreconcile.Request]{SkipNameValidation: &skipNameValidation})
 	handlerFor := func() mchandler.TypedEventHandlerFunc[client.Object, mcreconcile.Request] {
 		return mchandler.TypedEnqueueRequestsFromMapFunc[client.Object](
 			func(ctx context.Context, _ client.Object) []mcreconcile.Request { return []mcreconcile.Request{{}} })
