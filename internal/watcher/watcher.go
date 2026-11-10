@@ -117,6 +117,16 @@ type Watcher struct {
 	witMu   sync.Mutex
 	witness *source.Witness
 	witFor  string // nom du cluster workload auquel le temoin est attache
+
+	// srcMu/sources : UNE *source.Live par cluster, reutilisee a CHAQUE cycle
+	// (pas recreee). Necessaire pour la garantie P3 (source.go : "si le
+	// cluster est injoignable, renvoie le DERNIER instantane reussi") : une
+	// *Live toute neuve a chaque cycle a l.last == nil, donc un cluster qui
+	// tombe juste apres le premier cycle reussi ne "se souviendrait" jamais
+	// du dernier succes (bug trouve en ecrivant le test envtest "cluster
+	// injoignable", partie 1.4, cf. HANDOFF).
+	srcMu   sync.Mutex
+	sources map[string]*source.Live
 }
 
 // specsFor : la portee Watch pour un cluster (management ou workload). Memes
@@ -148,7 +158,7 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 	if o.Debounce <= 0 {
 		o.Debounce = 2 * time.Second
 	}
-	w := &Watcher{opts: o, longCtx: ctx}
+	w := &Watcher{opts: o, longCtx: ctx, sources: map[string]*source.Live{}}
 
 	// Scheme : le manager multi-cluster en a besoin pour TOUS les types
 	// utilises, y compris par le provider CAPI (capiv1beta2.Cluster), sans
@@ -329,13 +339,31 @@ func (w *Watcher) runCycle(trigger string, evtAt time.Time) {
 	}
 }
 
+// liveSource : renvoie la *source.Live DEJA CONNUE pour ce nom de cluster, ou
+// en cree une et la memorise. Reutilisee a chaque cycle (voir Watcher.sources)
+// pour que la garantie P3 (dernier instantane reussi conserve) fonctionne
+// reellement d'un cycle a l'autre.
+func (w *Watcher) liveSource(name string, cfg *rest.Config, specs []source.Spec) (*source.Live, error) {
+	w.srcMu.Lock()
+	defer w.srcMu.Unlock()
+	if ls, ok := w.sources[name]; ok {
+		return ls, nil
+	}
+	ls, err := source.NewLive(name, cfg, specs)
+	if err != nil {
+		return nil, err
+	}
+	w.sources[name] = ls
+	return ls, nil
+}
+
 // buildTwin : reconstruit un twin.Twin a partir des FactSource actuelles.
 func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 	t := &twin.Twin{Management: w.opts.ManagementConfig, ManagementName: w.opts.ManagementName,
 		Tracked: w.opts.Tracked, CacheDir: w.opts.CacheDir, OutDir: w.opts.OutDir, Judge: w.opts.JudgePipeline.Judge}
 
 	if local, err := w.mgr.GetCluster(ctx, mcmanager.LocalCluster); err == nil {
-		if ls, e := source.NewLive(w.opts.ManagementName, local.GetConfig(), specsFor(true, w.opts.NFNamespace)); e == nil {
+		if ls, e := w.liveSource(w.opts.ManagementName, local.GetConfig(), specsFor(true, w.opts.NFNamespace)); e == nil {
 			t.Sources = append(t.Sources, ls)
 		}
 	}
@@ -344,7 +372,7 @@ func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 		if err != nil {
 			continue
 		}
-		ws, err := source.NewLive(string(name), cl.GetConfig(), specsFor(false, w.opts.NFNamespace))
+		ws, err := w.liveSource(string(name), cl.GetConfig(), specsFor(false, w.opts.NFNamespace))
 		if err != nil {
 			continue
 		}
