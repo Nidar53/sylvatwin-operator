@@ -36,10 +36,15 @@ import (
 
 	capiv1beta2 "sigs.k8s.io/cluster-api/api/core/v1beta2"
 
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	crcluster "sigs.k8s.io/controller-runtime/pkg/cluster"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -95,6 +100,13 @@ type Watcher struct {
 	opts     Options
 	mgr      mcmanager.Manager
 	provider *capiprovider.Provider
+	// longCtx : contexte de VIE DU WATCHER (celui passe a New/Start), PAS le
+	// contexte d'un cycle (2 minutes, annule a la fin). Le Watch temoin doit
+	// survivre aux cycles : demarre avec le ctx d'un cycle, sa goroutine est
+	// tuee des la fin de CE cycle et lastWitnessRenewTime se fige
+	// silencieusement (bug reproduit le 10/11 : verdicts passes a tort en
+	// UnknownVerdict apres la premiere Cycle, cf. HANDOFF).
+	longCtx context.Context
 
 	mu       sync.Mutex
 	pending  bool
@@ -136,14 +148,19 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 	if o.Debounce <= 0 {
 		o.Debounce = 2 * time.Second
 	}
-	w := &Watcher{opts: o}
+	w := &Watcher{opts: o, longCtx: ctx}
 
-	mgr, err := mcmanager.New(o.ManagementConfig, nil, mcmanager.Options{})
-	if err != nil {
-		return nil, fmt.Errorf("manager multi-cluster : %w", err)
-	}
-	w.mgr = mgr
+	// Scheme : le manager multi-cluster en a besoin pour TOUS les types
+	// utilises, y compris par le provider CAPI (capiv1beta2.Cluster), sans
+	// quoi "no kind is registered for the type v1beta2.Cluster" au demarrage.
+	scheme := runtime.NewScheme()
+	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
+	utilruntime.Must(capiv1beta2.AddToScheme(scheme))
 
+	// Le provider CAPI doit exister AVANT le manager : mcmanager.New prend le
+	// provider en 2e argument (sans lui, GetCluster(name) echoue avec "no
+	// multicluster provider set", meme si le provider est branche plus tard
+	// via SetupWithManager — l'erreur rencontree en essai reel du 10/11).
 	localHost := hostPort(o.ManagementConfig.Host)
 	w.provider = capiprovider.New(capiprovider.Options{
 		IsReady: func(_ context.Context, ccl client.Object) bool {
@@ -158,9 +175,29 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 			cfg = rest.CopyConfig(cfg)
 			cfg.Impersonate = rest.ImpersonationConfig{UserName: source.ReaderUser()}
 			cfg.UserAgent = "sylvatwin-watcher"
+			// sylvatwin-reader n'a les droits "secrets" que dans le namespace
+			// des NF (Role sylvatwin-reader-secrets-meta), PAS cluster-wide :
+			// sans restreindre le cache ici, l'informer Secret tente un LIST
+			// cluster-scope et echoue en boucle ("forbidden ... at the cluster
+			// scope") — erreur reproduite et corrigee le 10/11 (cf. HANDOFF).
+			opts = append(opts, func(co *crcluster.Options) {
+				if co.Cache.ByObject == nil {
+					co.Cache.ByObject = map[client.Object]cache.ByObject{}
+				}
+				co.Cache.ByObject[&corev1.Secret{}] = cache.ByObject{
+					Namespaces: map[string]cache.Config{o.NFNamespace: {}},
+				}
+			})
 			return crcluster.New(cfg, opts...)
 		},
 	})
+
+	mgr, err := mcmanager.New(o.ManagementConfig, w.provider, mcmanager.Options{Scheme: scheme})
+	if err != nil {
+		return nil, fmt.Errorf("manager multi-cluster : %w", err)
+	}
+	w.mgr = mgr
+
 	if err := w.provider.SetupWithManager(mgr); err != nil {
 		return nil, fmt.Errorf("provider cluster-api : %w", err)
 	}
@@ -170,38 +207,62 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 		return mchandler.TypedEnqueueRequestsFromMapFunc[client.Object](
 			func(ctx context.Context, _ client.Object) []mcreconcile.Request { return []mcreconcile.Request{{}} })
 	}
-	// Union des GVK du management et des workloads. Le premier devient le
-	// type "For" (ancrage obligatoire du builder) ; le reste passe par
-	// Watches/WatchesMetadata. Un GVK absent d'un cluster (CRD non installee,
-	// ex. Kustomization sur un workload) ne bloque pas les autres : chaque
-	// informer echoue independamment (log, pas de panique du manager).
+	// Union des GVK du management et des workloads, avec la portee
+	// d'engagement DECLAREE explicitement par GVK (onManagement / onWorkload) :
+	// sans cela, multicluster-runtime applique un defaut surprenant des que
+	// SON PROVIDER est configure (forked_controller.go) : engageWithLocalCluster
+	// vaut false et engageWithProviderClusters vaut true PAR DEFAUT, meme pour
+	// un GVK qui n'existe QUE sur le management (Cluster CAPI, Kustomization,
+	// HelmRelease, GitRepository, Machine). Sans cette correction, le manager
+	// tente d'engager ces GVK sur le cluster workload et echoue en boucle
+	// ("no matches for kind ... in version ...") — bug reproduit et corrige le
+	// 10/11, cf. essai reel en tmux (voir HANDOFF).
+	// Le premier GVK devient le type "For" (ancrage obligatoire du builder) ;
+	// le reste passe par Watches/WatchesMetadata.
 	type entry struct {
 		gvk          schema.GroupVersionKind
 		metadataOnly bool
+		onManagement bool
+		onWorkload   bool
 	}
-	seen := map[schema.GroupVersionKind]bool{}
-	var all []entry
+	merged := map[schema.GroupVersionKind]*entry{}
+	var order []schema.GroupVersionKind
 	for _, local := range []bool{true, false} {
 		for _, sp := range specsFor(local, o.NFNamespace) {
 			g := gvkOf(sp)
-			if seen[g] {
-				continue
+			e, ok := merged[g]
+			if !ok {
+				e = &entry{gvk: g, metadataOnly: sp.MetadataOnly}
+				merged[g] = e
+				order = append(order, g)
 			}
-			seen[g] = true
-			all = append(all, entry{gvk: g, metadataOnly: sp.MetadataOnly})
+			if local {
+				e.onManagement = true
+			} else {
+				e.onWorkload = true
+			}
 		}
 	}
-	for i, e := range all {
+	for i, g := range order {
+		e := merged[g]
 		obj := &unstructured.Unstructured{}
 		obj.SetGroupVersionKind(e.gvk)
+		engage := []mcbuilder.WatchesOption{
+			mcbuilder.WithEngageWithLocalCluster(e.onManagement),
+			mcbuilder.WithEngageWithProviderClusters(e.onWorkload),
+		}
 		if i == 0 {
-			bld = bld.For(obj)
+			forOpts := make([]mcbuilder.ForOption, len(engage))
+			for j, o := range engage {
+				forOpts[j] = o.(mcbuilder.ForOption)
+			}
+			bld = bld.For(obj, forOpts...)
 			continue
 		}
 		if e.metadataOnly {
-			bld = bld.WatchesMetadata(obj, handlerFor())
+			bld = bld.WatchesMetadata(obj, handlerFor(), engage...)
 		} else {
-			bld = bld.Watches(obj, handlerFor())
+			bld = bld.Watches(obj, handlerFor(), engage...)
 		}
 	}
 
@@ -287,7 +348,9 @@ func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 		if err != nil {
 			continue
 		}
-		if wit := w.witnessFor(ctx, string(name), cl.GetConfig()); wit != nil {
+		// w.longCtx (PAS ctx, qui expire a la fin de CE cycle) : le Watch
+		// temoin doit survivre a la duree de vie du Watcher, pas d'un cycle.
+		if wit := w.witnessFor(w.longCtx, string(name), cl.GetConfig()); wit != nil {
 			ws.SetWitness(wit)
 		}
 		t.Sources = append(t.Sources, ws)
