@@ -50,6 +50,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/config"
 	crcontroller "sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	mcbuilder "sigs.k8s.io/multicluster-runtime/pkg/builder"
 	mchandler "sigs.k8s.io/multicluster-runtime/pkg/handler"
@@ -85,6 +86,21 @@ type Options struct {
 	// Instrument recoit les trois instants d'un cycle declenche par un
 	// evenement Watch (partie 1.3).
 	Instrument func(ev Timing)
+	// MetricsBindAddress : adresse d'ecoute des metriques Prometheus du
+	// manager. "0" ou ":0" = port libre choisi par l'OS (utile pour lancer
+	// plusieurs instances sur la meme machine, ex. tests manuels paralleles
+	// a un Watcher deja en cours). "" = defaut controller-runtime (:8080).
+	MetricsBindAddress string
+	// HostOverride (OUTIL DE TEST/DIAGNOSTIC UNIQUEMENT, partie 2) : si non
+	// nil, remplace le "host:port" d'un cluster workload DECOUVERT (jamais le
+	// management) par la valeur renvoyee, AVANT la connexion. Sert a simuler
+	// une coupure reseau EN LECTURE SEULE, sans toucher au cluster : on fait
+	// pointer le Watcher vers un proxy TCP local (127.0.0.1) que l'on coupe a
+	// volonte, au lieu du vrai control-plane. Si HostOverride renvoie "", pas
+	// de changement. Ne jamais utiliser en dehors d'un test : le Secret
+	// kubeconfig original reste la seule source d'authentification (CA, certs
+	// client), seul le host:port de connexion change.
+	HostOverride func(endpoint string) string
 }
 
 // Timing : les trois instants demandes (injection -> Watch -> fin du jugement).
@@ -187,6 +203,14 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 			cfg = rest.CopyConfig(cfg)
 			cfg.Impersonate = rest.ImpersonationConfig{UserName: source.ReaderUser()}
 			cfg.UserAgent = "sylvatwin-watcher"
+			if o.HostOverride != nil {
+				if h := o.HostOverride(cfg.Host); h != "" {
+					cfg.Host = h
+					// Le proxy relaie vers le VRAI control-plane (meme CA, meme
+					// certificat serveur, qui couvre localhost/127.0.0.1) : pas
+					// besoin de desactiver la verification TLS.
+				}
+			}
 			// sylvatwin-reader n'a les droits "secrets" que dans le namespace
 			// des NF (Role sylvatwin-reader-secrets-meta), PAS cluster-wide :
 			// sans restreindre le cache ici, l'informer Secret tente un LIST
@@ -214,6 +238,7 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 	mgr, err := mcmanager.New(o.ManagementConfig, w.provider, mcmanager.Options{
 		Scheme:     scheme,
 		Controller: config.Controller{SkipNameValidation: &skipNameValidation},
+		Metrics:    metricsserver.Options{BindAddress: o.MetricsBindAddress},
 	})
 	if err != nil {
 		return nil, fmt.Errorf("manager multi-cluster : %w", err)

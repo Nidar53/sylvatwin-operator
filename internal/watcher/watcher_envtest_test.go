@@ -233,13 +233,14 @@ func TestControleurContinu_DeclenchementParEvenement(t *testing.T) {
 	var gotCycle chan struct{} = make(chan struct{}, 10)
 	var lastErr error
 	opts := Options{
-		ManagementConfig: mgmtCfg,
-		ManagementName:   "management-cluster",
-		NFNamespace:      "sylvatwin-5gc",
-		CacheDir:         t.TempDir(),
-		OutDir:           outDir,
-		JudgePipeline:    twin.Twin{Judge: &judge.Pipeline{E: oxE, RulesDir: rulesDir, Validity: 600}},
-		Debounce:         500 * time.Millisecond,
+		MetricsBindAddress: "0",
+		ManagementConfig:   mgmtCfg,
+		ManagementName:     "management-cluster",
+		NFNamespace:        "sylvatwin-5gc",
+		CacheDir:           t.TempDir(),
+		OutDir:             outDir,
+		JudgePipeline:      twin.Twin{Judge: &judge.Pipeline{E: oxE, RulesDir: rulesDir, Validity: 600}},
+		Debounce:           500 * time.Millisecond,
 		OnReport: func(trigger string, rep *twin.CycleReport, err error) {
 			lastErr = err
 			gotCycle <- struct{}{}
@@ -386,14 +387,15 @@ func TestControleurContinu_ClusterInjoignable(t *testing.T) {
 	outDir := t.TempDir()
 	reports := make(chan *twin.CycleReport, 20)
 	opts := Options{
-		ManagementConfig: mgmtCfg,
-		ManagementName:   "management-cluster",
-		NFNamespace:      "sylvatwin-5gc",
-		CacheDir:         t.TempDir(),
-		OutDir:           outDir,
-		JudgePipeline:    twin.Twin{Judge: &judge.Pipeline{E: oxE, RulesDir: rulesDir, Validity: 600}},
-		Debounce:         300 * time.Millisecond,
-		ResyncSafetyNet:  2 * time.Second, // filet de securite : pas d'evenement possible sur un cluster mort
+		MetricsBindAddress: "0",
+		ManagementConfig:   mgmtCfg,
+		ManagementName:     "management-cluster",
+		NFNamespace:        "sylvatwin-5gc",
+		CacheDir:           t.TempDir(),
+		OutDir:             outDir,
+		JudgePipeline:      twin.Twin{Judge: &judge.Pipeline{E: oxE, RulesDir: rulesDir, Validity: 600}},
+		Debounce:           300 * time.Millisecond,
+		ResyncSafetyNet:    2 * time.Second, // filet de securite : pas d'evenement possible sur un cluster mort
 		OnReport: func(trigger string, rep *twin.CycleReport, err error) {
 			if err == nil {
 				reports <- rep

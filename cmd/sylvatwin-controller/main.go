@@ -60,9 +60,12 @@ func main() {
 		resyncNet = flag.Duration("resync-safety-net", 0, "filet de securite (0 = desactive ; N'EST PAS le mode normal)")
 		kcTargets = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
 			"cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster) : leur contenu n'est jamais lu")
-		witnessNode = flag.String("witness-node", "", "nom du Node workload dont la Lease sert de temoin (vide = pas de temoin)")
-		freshness   = flag.Duration("freshness-horizon", 30*time.Second, "H_frais (theta) : age maximal du temoin avant verdict inconnu")
-		journalFile = flag.String("journal", "", "fichier JSONL des cycles et des timings (vide = stdout seulement)")
+		witnessNode  = flag.String("witness-node", "", "nom du Node workload dont la Lease sert de temoin (vide = pas de temoin)")
+		freshness    = flag.Duration("freshness-horizon", 30*time.Second, "H_frais (theta) : age maximal du temoin avant verdict inconnu")
+		journalFile  = flag.String("journal", "", "fichier JSONL des cycles et des timings (vide = stdout seulement)")
+		metricsAddr  = flag.String("metrics-bind-address", "", "adresse d'ecoute des metriques (0 ou :0 = port libre, utile pour plusieurs instances)")
+		hostOverride = flag.String("test-host-override", "",
+			"OUTIL DE TEST (partie 2, fraicheur) UNIQUEMENT : remplace le host:port du cluster workload DECOUVERT par cette valeur (ex. 127.0.0.1:19443, un proxy TCP local). Vide = desactive (comportement normal).")
 	)
 	flag.Parse()
 	if *mgmtKC == "" {
@@ -117,17 +120,24 @@ func main() {
 	}
 
 	opts := watcher.Options{
-		ManagementConfig: mgmt,
-		ManagementName:   *mgmtName,
-		NFNamespace:      *nfNS,
-		Tracked:          tracked,
-		CacheDir:         *cache,
-		OutDir:           *out,
-		JudgePipeline:    twin.Twin{Judge: jp},
-		Debounce:         *debounce,
-		ResyncSafetyNet:  *resyncNet,
-		WitnessNode:      *witnessNode,
-		FreshnessHorizon: *freshness,
+		ManagementConfig:   mgmt,
+		ManagementName:     *mgmtName,
+		NFNamespace:        *nfNS,
+		Tracked:            tracked,
+		CacheDir:           *cache,
+		OutDir:             *out,
+		JudgePipeline:      twin.Twin{Judge: jp},
+		Debounce:           *debounce,
+		ResyncSafetyNet:    *resyncNet,
+		WitnessNode:        *witnessNode,
+		FreshnessHorizon:   *freshness,
+		MetricsBindAddress: *metricsAddr,
+		HostOverride: func(endpoint string) string {
+			if *hostOverride == "" {
+				return ""
+			}
+			return "https://" + *hostOverride
+		},
 		OnReport: func(trigger string, rep *twin.CycleReport, err error) {
 			rec := map[string]any{"trigger": trigger, "time": time.Now().UTC().Format(time.RFC3339Nano)}
 			if err != nil {
