@@ -82,10 +82,13 @@ func TestAucuneLectureDeSecretHorsKubeconfigCAPI(t *testing.T) {
 			bad = append(bad, pos.String()+" : "+text)
 			return true
 		})
-		// Acces generique a la ressource "secrets" par le client dynamique
-		// (contournement possible du controle ci-dessus).
-		if strings.Contains(string(src), `Resource: "secrets"`) && filepath.Base(p) != "source.go" {
-			bad = append(bad, p+" : ressource \"secrets\" lue par le client dynamique")
+		// Toute occurrence de Resource: "secrets" (Spec declarative, utilisee par
+		// source.go et watcher.go) doit porter MetadataOnly: true sur la MEME
+		// ligne : jamais d'acces au contenu, meme via une Spec dynamique.
+		for _, line := range strings.Split(string(src), "\n") {
+			if strings.Contains(line, `Resource: "secrets"`) && !strings.Contains(line, "MetadataOnly: true") {
+				bad = append(bad, p+" : "+strings.TrimSpace(line))
+			}
 		}
 		return nil
 	})
