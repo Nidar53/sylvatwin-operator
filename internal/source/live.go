@@ -31,10 +31,14 @@ type Live struct {
 	specs    []Spec
 	dyn      dynamic.Interface
 	meta     metadata.Interface
+	witness  *Witness // Watch temoin (partie 2), optionnel
 
 	mu   sync.Mutex
 	last *mapper.Snapshot // dernier instantane REUSSI
 }
+
+// SetWitness attache un Watch temoin (P1). A appeler avant le premier Snapshot.
+func (l *Live) SetWitness(w *Witness) { l.witness = w }
 
 // NewLive construit une source a partir d'un rest.Config deja pret (identite et
 // impersonation reglees par l'appelant). cfg n'est jamais journalise.
@@ -104,6 +108,11 @@ func (l *Live) Snapshot(ctx context.Context) *mapper.Snapshot {
 	}
 	s := &mapper.Snapshot{Cluster: l.name, Endpoint: l.endpoint, Status: status,
 		LastSync: now, ObservedAt: now, Scopes: scopes, Objects: objs}
+	if l.witness != nil {
+		s.WitnessLeaseName = l.witness.Name()
+		s.LastWitnessRenew = l.witness.LastSeen()
+		s.FreshnessHorizon = l.witness.Theta().Seconds()
+	}
 	l.last = s
 	return s
 }
@@ -161,7 +170,13 @@ func (l *Live) list(ctx context.Context, sp Spec) ([]*unstructured.Unstructured,
 		if o.GetKind() == "" {
 			o.SetKind(sp.Kind)
 		}
-		unstructured.RemoveNestedField(o.Object, "metadata", "managedFields")
+		// managedFields est verbeux : on l'enleve, SAUF pour ConfigMap, dont le
+		// greffier a besoin du champ "time" le plus recent (StaleConfigDrift, D4).
+		// Jamais de contenu sensible ici : managedFields ne contient aucune donnee,
+		// seulement des metadonnees de gestion (manager, operation, time, champs).
+		if sp.Kind != "ConfigMap" {
+			unstructured.RemoveNestedField(o.Object, "metadata", "managedFields")
+		}
 		out = append(out, &o)
 	}
 	return out, nil

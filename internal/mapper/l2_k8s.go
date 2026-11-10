@@ -40,11 +40,24 @@ func mapL2(g *rdf.Graph, s *Snapshot) {
 			if ph := str(o.Object, "status", "phase"); ph != "" {
 				g.Add(p, rdf.C("podPhase"), rdf.Str(ph))
 			}
+			if start := str(o.Object, "status", "startTime"); start != "" {
+				if t, err := time.Parse(time.RFC3339, start); err == nil {
+					g.Add(p, rdf.C("startedAt"), rdf.DateTime(t))
+				}
+			}
 		case "Secret":
 			// METADONNEES SEULEMENT : on n'accede jamais a o.Object["data"].
 			sec := identity(g, s.Cluster, o, at)
 			g.Add(sec, rdf.Type, rdf.C("Secret"))
 			labels(g, sec, o.GetLabels())
+		case "ConfigMap":
+			// Jamais o.Object["data"] : seulement l'existence et la derniere
+			// modification (managedFields), pour StaleConfigDrift (D4).
+			cm := identity(g, s.Cluster, o, at)
+			g.Add(cm, rdf.Type, rdf.C("ConfigMap"))
+			if mt := lastManagedFieldTime(o); !mt.IsZero() {
+				g.Add(cm, rdf.C("lastModifiedAt"), rdf.DateTime(mt))
+			}
 		}
 	}
 }
@@ -66,6 +79,58 @@ func mapDeployment(g *rdf.Graph, cluster string, o *unstructured.Unstructured, a
 	for _, sn := range secretRefs(o.Object, "spec", "template", "spec") {
 		g.Add(d, rdf.C("referencesSecret"), rdf.IRI(iri.Resource(cluster, o.GetNamespace(), "Secret", "", sn)))
 	}
+	for _, cn := range configMapRefs(o.Object) {
+		g.Add(d, rdf.C("mountsConfigMap"), rdf.IRI(iri.Resource(cluster, o.GetNamespace(), "ConfigMap", "", cn)))
+	}
+	// progressDeadlineSeconds : defaut Kubernetes 600 s si absent (D4/horizon).
+	pd, ok := i64(o.Object, "spec", "progressDeadlineSeconds")
+	if !ok {
+		pd = 600
+	}
+	g.Add(d, rdf.C("progressDeadlineSeconds"), rdf.Dec(float64(pd)))
+}
+
+// configMapRefs : ConfigMaps montees en volume par le pod template (base de D4 ;
+// on se limite aux volumes, comme pour les Secrets de reference).
+func configMapRefs(obj map[string]any) []string {
+	set := map[string]bool{}
+	ps, _, _ := unstructured.NestedMap(obj, "spec", "template", "spec")
+	vols, _, _ := unstructured.NestedSlice(ps, "volumes")
+	for _, v := range vols {
+		if m, ok := v.(map[string]any); ok {
+			if n := str(m, "configMap", "name"); n != "" {
+				set[n] = true
+			}
+		}
+	}
+	out := make([]string, 0, len(set))
+	for n := range set {
+		out = append(out, n)
+	}
+	sort.Strings(out)
+	return out
+}
+
+// lastManagedFieldTime : le plus recent champ "time" de metadata.managedFields,
+// tous gestionnaires confondus (fait brut : "quand" la ConfigMap a change pour
+// la derniere fois, pas "qui" ni "quoi" exactement).
+func lastManagedFieldTime(o *unstructured.Unstructured) time.Time {
+	mf, _, _ := unstructured.NestedSlice(o.Object, "metadata", "managedFields")
+	var max time.Time
+	for _, e := range mf {
+		m, ok := e.(map[string]any)
+		if !ok {
+			continue
+		}
+		ts, _ := m["time"].(string)
+		if ts == "" {
+			continue
+		}
+		if t, err := time.Parse(time.RFC3339, ts); err == nil && t.After(max) {
+			max = t
+		}
+	}
+	return max
 }
 
 // owners : copie fidele de metadata.ownerReferences (Pod -> ReplicaSet,

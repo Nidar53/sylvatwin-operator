@@ -20,6 +20,16 @@ func mapCluster(g *rdf.Graph, s *Snapshot) {
 	if !s.LastSync.IsZero() {
 		g.Add(kc, rdf.C("lastSyncTime"), rdf.DateTime(s.LastSync))
 	}
+	// Watch temoin et fraicheur (partie 2) : u_c(t), theta.
+	if s.WitnessLeaseName != "" {
+		g.Add(kc, rdf.C("witnessLeaseName"), rdf.Str(s.WitnessLeaseName))
+	}
+	if !s.LastWitnessRenew.IsZero() {
+		g.Add(kc, rdf.C("lastWitnessRenewTime"), rdf.DateTime(s.LastWitnessRenew))
+	}
+	if s.FreshnessHorizon > 0 {
+		g.Add(kc, rdf.C("freshnessHorizon"), rdf.Dec(s.FreshnessHorizon))
+	}
 	for _, sc := range s.Scopes {
 		ns := sc.Namespace
 		if ns == "" {

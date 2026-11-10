@@ -50,6 +50,17 @@ type Snapshot struct {
 	// Objects : objets observes. Les Secrets sont des PartialObjectMetadata
 	// (metadonnees seulement) : le mapper n'accede jamais a .data.
 	Objects []*unstructured.Unstructured
+
+	// --- Watch temoin et fraicheur (partie 2) ---------------------------------
+	// WitnessLeaseName : nom de la Lease de noeud surveillee comme temoin de vie
+	// du canal (ex. "<node>" dans kube-node-lease). Vide = pas de temoin configure.
+	WitnessLeaseName string
+	// LastWitnessRenew : u_c(t), dernier renouvellement OBSERVE PAR WATCH de
+	// cette Lease (independant de LastSync : c'est la preuve de vie du canal,
+	// pas la derniere reconstruction du graphe).
+	LastWitnessRenew time.Time
+	// FreshnessHorizon : H_frais (theta), secondes.
+	FreshnessHorizon float64
 }
 
 // Desired : le cote desire (Git a la revision exacte) pour un cluster cible.

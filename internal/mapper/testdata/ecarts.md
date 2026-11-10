@@ -29,3 +29,13 @@ L'exemple est un sous-ensemble choisi à la main. L'opérateur écrit en plus :
 - l'interface N3.
 
 `compare.py` en donne le décompte, sans les comparer.
+
+## v1.3.0 (partie 3, 10/11/2026) : StaleConfigDrift (D4)
+
+| Fait | Preuve dans la photo |
+|---|---|
+| `mountsConfigMap` (5 NF → leur ConfigMap) | `spec.template.spec.volumes[].configMap.name` |
+| `progressDeadlineSeconds 600.0` (5 NF) | champ absent dans la photo → défaut Kubernetes 600 s |
+| `startedAt` (3 pods) | `status.startTime`, non retenu dans l'exemple écrit à la main |
+
+Ces faits alimentent la règle `StaleConfigDrift` (D4) et le nouvel horizon de `ConvergenceDrift` (`progressDeadlineSeconds`, au lieu de l'horizon Flux).

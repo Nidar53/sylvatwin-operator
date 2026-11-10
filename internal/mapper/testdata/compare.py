@@ -42,6 +42,16 @@ DOCUMENTED = [
     ("res:management-cluster/sylvatwin-flux/GitRepository.source.toolkit.fluxcd.io/sylvatwin-poc", ":reconcileTimeout", "60.0"),
     ("res:my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf", ":exposesInterface", "res:my-workload-kubeadm-capd/sylvatwin-5gc/NetworkFunction/smf/interface/N3"),
     ("res:my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys", ":hasLabel", "res:my-workload-kubeadm-capd/sylvatwin-5gc/Secret/udm-keys/label/app.kubernetes.io%2Fpart-of"),
+    # v1.3.0 (partie 3, 10/11/2026) : mountsConfigMap, progressDeadlineSeconds, startedAt
+] + [
+    (f"res:my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/{nf}", ":mountsConfigMap", f"res:my-workload-kubeadm-capd/sylvatwin-5gc/ConfigMap/{nf}-config")
+    for nf in ("amf", "bsf", "nrf", "smf", "udm")
+] + [
+    (f"res:my-workload-kubeadm-capd/sylvatwin-5gc/Deployment/{nf}", ":progressDeadlineSeconds", "600.0")
+    for nf in ("amf", "bsf", "nrf", "smf", "udm")
+] + [
+    (f"res:my-workload-kubeadm-capd/sylvatwin-5gc/Pod/{pod}", ":startedAt", "2026-10-27T13:40:28+00:00")
+    for pod in ("bsf-78db7b6587-8wkqn", "nrf-57b6849ccd-wflfd", "udm-7cf6c5b78d-rw6fk")
 ]
 subjects = set(ex.subjects())
 

@@ -19,7 +19,7 @@ const NFLabel = "sylvatwin.orange.com/nf"
 // Classe 3GPP de l'ontologie pour chaque valeur du label.
 var nfClass = map[string]string{
 	"amf": "AMF", "smf": "SMF", "upf": "UPF", "nrf": "NRF", "ausf": "AUSF",
-	"udm": "UDM", "udr": "UDR", "pcf": "PCF", "nssf": "NSSF", "bsf": "BSF",
+	"udm": "UDM", "udr": "UDR", "pcf": "PCF", "nssf": "NSSF", "bsf": "BSF", "scp": "SCP",
 }
 
 // Ports par defaut d'Open5GS v2.7.2 quand la configuration ne les donne pas
