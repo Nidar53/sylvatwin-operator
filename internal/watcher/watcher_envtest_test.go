@@ -395,7 +395,6 @@ func TestControleurContinu_ClusterInjoignable(t *testing.T) {
 		OutDir:             outDir,
 		JudgePipeline:      twin.Twin{Judge: &judge.Pipeline{E: oxE, RulesDir: rulesDir, Validity: 600}},
 		Debounce:           300 * time.Millisecond,
-		ResyncSafetyNet:    2 * time.Second, // filet de securite : pas d'evenement possible sur un cluster mort
 		OnReport: func(trigger string, rep *twin.CycleReport, err error) {
 			if err == nil {
 				reports <- rep

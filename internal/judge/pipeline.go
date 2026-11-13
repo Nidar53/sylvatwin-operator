@@ -3,6 +3,7 @@ package judge
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -142,6 +143,43 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 	res.Timings["verdict"] = time.Since(t)
 	res.Verdicts = verdicts.Bytes()
 	return res, nil
+}
+
+// NextDeadline : prochaine echeance utile (rules/deadline/*.rq), calculee par
+// SPARQL sur l'etat courant (history + facts). Zero si aucune. L'appelant
+// programme UNE minuterie a cette date (A3).
+func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (time.Time, error) {
+	q, err := os.ReadFile(filepath.Join(p.RulesDir, "deadline", "01-prochaine-echeance.rq"))
+	if err != nil {
+		return time.Time{}, err
+	}
+	seconds, err := os.ReadFile(filepath.Join(p.RulesDir, "verdict", "seconds.sparql"))
+	if err != nil {
+		return time.Time{}, err
+	}
+	nowLit := now.UTC().Format("2006-01-02T15:04:05Z")
+	out, err := p.E.Select(ctx, Prepare(string(q), nowLit, p.Validity, strings.TrimSpace(string(seconds))))
+	if err != nil {
+		return time.Time{}, err
+	}
+	var r struct {
+		Results struct {
+			Bindings []map[string]struct {
+				Value string `json:"value"`
+			} `json:"bindings"`
+		} `json:"results"`
+	}
+	if err := json.Unmarshal(out, &r); err != nil {
+		return time.Time{}, err
+	}
+	if len(r.Results.Bindings) == 0 {
+		return time.Time{}, nil
+	}
+	v, ok := r.Results.Bindings[0]["echeance"]
+	if !ok || v.Value == "" {
+		return time.Time{}, nil
+	}
+	return time.Parse(time.RFC3339, v.Value)
 }
 
 var secondsRe = regexp.MustCompile(`__SECONDS__\((\?\w+),\s*(\?\w+)\)`)

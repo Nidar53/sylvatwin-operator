@@ -10,6 +10,7 @@ import (
 const (
 	CauseEvent    = "evenement" // au moins un evenement Watch a ete recu
 	CauseDeadline = "echeance"  // reveil programme (A3) : jugement seul, sans lecture du cluster
+	CauseRetry    = "reprise"   // reprise apres un cycle en echec (attente croissante bornee)
 )
 
 // Trigger : ce qui a declenche un cycle.
@@ -60,6 +61,11 @@ type scheduler struct {
 	// minuterie DEJA sonnee dont le callback attend le verrou : le callback
 	// compare donc son numero a dlGen et s'efface s'il est perime.
 	dlGen uint64
+
+	// minuterie de reprise (cycle en echec) : une seule, annulee des qu'un cycle
+	// complet part (il couvre la reprise : s'il echoue, il en reprogramme une).
+	rtTimer *time.Timer
+	rtGen   uint64
 
 	kick chan struct{} // capacite 1 : les signaux se fusionnent
 }
@@ -143,6 +149,45 @@ func (s *scheduler) SetDeadline(at time.Time) {
 	s.dlTimer = time.AfterFunc(d, func() { s.deadlineReached(gen) })
 }
 
+// Retry : programme UNE reprise dans `after` (cycle complet, cause "reprise").
+// Remplace la precedente. Ce n'est pas une periode : l'appelant ne la
+// reprogramme que si le cycle echoue, et l'arrete au premier succes (CancelRetry).
+func (s *scheduler) Retry(after time.Duration) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.rtTimer != nil {
+		s.rtTimer.Stop()
+	}
+	s.rtGen++
+	gen := s.rtGen
+	s.rtTimer = time.AfterFunc(after, func() { s.retryReached(gen) })
+}
+
+// CancelRetry : annule la reprise en attente.
+func (s *scheduler) CancelRetry() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.rtTimer != nil {
+		s.rtTimer.Stop()
+		s.rtTimer = nil
+	}
+	s.rtGen++
+}
+
+func (s *scheduler) retryReached(gen uint64) {
+	s.mu.Lock()
+	if gen != s.rtGen {
+		s.mu.Unlock()
+		return
+	}
+	s.rtTimer = nil
+	if s.ready == nil && !s.evPending { // sinon un cycle d'evenement va partir et couvre la reprise
+		s.ready = &Trigger{Cause: CauseRetry, ScheduledAt: time.Now()}
+	}
+	s.mu.Unlock()
+	s.signal()
+}
+
 // Deadline : echeance actuellement programmee (zero = aucune).
 func (s *scheduler) Deadline() time.Time {
 	s.mu.Lock()
@@ -177,6 +222,12 @@ func (s *scheduler) take() (Trigger, bool) {
 	if s.ready != nil {
 		t := *s.ready
 		s.ready, s.dlReady = nil, nil
+		// cycle complet : il couvre aussi la reprise en attente
+		if s.rtTimer != nil {
+			s.rtTimer.Stop()
+			s.rtTimer = nil
+		}
+		s.rtGen++
 		// Ce cycle juge : il couvre l'echeance en attente, et l'appelant en
 		// reprogramme une nouvelle des qu'il a juge (SetDeadline). Sans cela, une
 		// echeance qui sonne entre le depart et la fin de ce cycle provoquerait
@@ -229,5 +280,8 @@ func (s *scheduler) stop() {
 	}
 	if s.dlTimer != nil {
 		s.dlTimer.Stop()
+	}
+	if s.rtTimer != nil {
+		s.rtTimer.Stop()
 	}
 }

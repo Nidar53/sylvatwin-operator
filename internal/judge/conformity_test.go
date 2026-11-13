@@ -311,3 +311,59 @@ func mustReadFile(t *testing.T, p string) []byte {
 	}
 	return b
 }
+
+// A3 : la prochaine echeance (SPARQL) est dans le futur, et le verdict change
+// effectivement a cette date (et pas avant), sur les memes faits.
+func TestProchaineEcheance(t *testing.T) {
+	poc := os.Getenv("SYLVATWIN_POC")
+	bin := os.Getenv("OXIGRAPH_BIN")
+	if poc == "" || bin == "" {
+		t.Skip("SYLVATWIN_POC / OXIGRAPH_BIN non definis")
+	}
+	ref := t.TempDir()
+	if out, err := exec.Command("python3", filepath.Join(poc, "tests", "export_reference.py"), ref).CombinedOutput(); err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	e, stop := startOxigraph(t, bin)
+	defer stop()
+	ctx := context.Background()
+	p := &Pipeline{E: e, RulesDir: filepath.Join(poc, "rules"), Validity: 600}
+	facts := mustReadFile(t, filepath.Join(ref, "facts-t60.nt"))
+	t0 := time.Date(2026, 11, 9, 12, 1, 0, 0, time.UTC)
+	res0, err := p.Run(ctx, facts, t0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dl, err := p.NextDeadline(ctx, t0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !dl.After(t0) {
+		t.Fatalf("echeance %v non future (now=%v)", dl, t0)
+	}
+	before, err := p.Run(ctx, facts, dl.Add(-2*time.Second))
+	if err != nil {
+		t.Fatal(err)
+	}
+	at, err := p.Run(ctx, facts, dl)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cls := func(b []byte) string {
+		var rows []string
+		for _, l := range strings.Split(string(b), "\n") {
+			if s, pr, o, ok := splitNT(l); ok && strings.HasSuffix(pr, "22-rdf-syntax-ns#type") {
+				rows = append(rows, s+" "+o)
+			}
+		}
+		sort.Strings(rows)
+		return strings.Join(rows, "\n")
+	}
+	if cls(before.Verdicts) != cls(res0.Verdicts) {
+		t.Fatalf("le verdict a change AVANT l'echeance %v", dl)
+	}
+	if cls(at.Verdicts) == cls(res0.Verdicts) {
+		t.Fatalf("le verdict n'a pas change a l'echeance %v", dl)
+	}
+	t.Logf("echeance %v (t0 + %v) : verdict change a cette date", dl, dl.Sub(t0))
+}

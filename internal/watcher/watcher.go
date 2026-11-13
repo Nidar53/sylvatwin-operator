@@ -49,7 +49,6 @@ import (
 	crcluster "sigs.k8s.io/controller-runtime/pkg/cluster"
 	"sigs.k8s.io/controller-runtime/pkg/config"
 	crcontroller "sigs.k8s.io/controller-runtime/pkg/controller"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	mcbuilder "sigs.k8s.io/multicluster-runtime/pkg/builder"
@@ -84,8 +83,6 @@ type Options struct {
 	// depart du cycle, meme si les evenements continuent d'arriver (A2).
 	// Defaut : 5 x Debounce.
 	MaxDelay time.Duration
-	// ResyncSafetyNet : filet de securite. 0 = desactive.
-	ResyncSafetyNet time.Duration
 	// WitnessNode : nom du Node DANS LE WORKLOAD dont la Lease sert de temoin
 	// de fraicheur (partie 2, P1). Vide = pas de temoin. Attache automatiquement
 	// a la premiere source workload engagee (H0 : un seul workload en pratique).
@@ -140,6 +137,11 @@ type Watcher struct {
 	// sched : l'UNIQUE executeur de cycles (A1 : un cycle a la fois ; A2 :
 	// fusion des rafales bornee ; A3 : minuterie d'echeance). Voir scheduler.go.
 	sched *scheduler
+
+	// memo, deadline, failures : etat de l'executeur unique (pas de verrou).
+	memo     twin.Memo
+	deadline time.Time
+	failures int
 
 	witMu   sync.Mutex
 	witness *source.Witness
@@ -361,13 +363,21 @@ func (w *Watcher) runTrigger(tr Trigger) {
 	if tr.Cluster != "" {
 		label = "watch:" + tr.Cluster
 	}
-	if tr.Cause == CauseDeadline {
-		label = CauseDeadline
+	if tr.Cause == CauseDeadline || tr.Cause == CauseRetry {
+		label = tr.Cause
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	judgeStart := time.Now()
-	rep, err := w.buildTwin(ctx).Cycle(ctx)
+	tw := w.buildTwin(ctx)
+	tw.Cause = tr.Cause
+	var rep *twin.CycleReport
+	var err error
+	if tr.Cause == CauseDeadline && w.memo.OK {
+		rep, err = tw.Rejudge(ctx) // sans relire le cluster
+	} else {
+		rep, err = tw.Cycle(ctx)
+	}
 	judgeEnd := time.Now()
 	if w.opts.Instrument != nil && !tr.FirstEventAt.IsZero() {
 		w.opts.Instrument(Timing{Cluster: label, EventAt: tr.FirstEventAt, JudgeStartAt: judgeStart, JudgeEndAt: judgeEnd})
@@ -375,6 +385,37 @@ func (w *Watcher) runTrigger(tr Trigger) {
 	if w.opts.OnReport != nil {
 		w.opts.OnReport(label, rep, err)
 	}
+	w.afterCycle(rep, err)
+}
+
+// afterCycle : programme la suite. Succes -> UNE minuterie a la prochaine
+// echeance (calculee par le juge) et fin des reprises. Echec (juge ou cluster
+// indisponible) -> reprise a attente croissante bornee, et l'echeance connue
+// est conservee (le cycle qui vient de partir l'avait annulee).
+func (w *Watcher) afterCycle(rep *twin.CycleReport, err error) {
+	failed := err != nil
+	if rep != nil {
+		for _, st := range rep.Clusters {
+			if st != "ok" {
+				failed = true
+			}
+		}
+	}
+	if err == nil && rep != nil {
+		w.deadline = rep.NextDeadline
+	}
+	w.sched.SetDeadline(w.deadline)
+	if !failed {
+		w.failures = 0
+		w.sched.CancelRetry()
+		return
+	}
+	wait := 5 * time.Second << min(w.failures, 4) // 5, 10, 20, 40, 60 s
+	if wait > 60*time.Second {
+		wait = 60 * time.Second
+	}
+	w.failures++
+	w.sched.Retry(wait)
 }
 
 // liveSource : renvoie la *source.Live DEJA CONNUE pour ce nom de cluster, ou
@@ -405,7 +446,7 @@ func (w *Watcher) liveSource(name string, cfg *rest.Config, specs []source.Spec)
 func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 	t := &twin.Twin{Management: w.opts.ManagementConfig, ManagementName: w.opts.ManagementName,
 		Tracked: w.opts.Tracked, CacheDir: w.opts.CacheDir, OutDir: w.opts.OutDir, Judge: w.opts.JudgePipeline.Judge,
-		KubeconfigTargets: w.opts.KubeconfigTargets}
+		KubeconfigTargets: w.opts.KubeconfigTargets, Memo: &w.memo}
 
 	if local, err := w.mgr.GetCluster(ctx, mcmanager.LocalCluster); err == nil {
 		if ls, e := w.liveSource(w.opts.ManagementName, local.GetConfig(), specsFor(true, w.opts.NFNamespace)); e == nil {
@@ -469,23 +510,7 @@ func (w *Watcher) EngagedClusters() []string {
 
 // Start bloque jusqu'a ce que le contexte soit annule.
 func (w *Watcher) Start(ctx context.Context) error {
-	logger := log.FromContext(ctx)
 	go w.sched.Run(ctx, w.runTrigger)
-	if w.opts.ResyncSafetyNet > 0 {
-		go func() {
-			t := time.NewTicker(w.opts.ResyncSafetyNet)
-			defer t.Stop()
-			for {
-				select {
-				case <-ctx.Done():
-					return
-				case <-t.C:
-					logger.Info("filet de securite : resync periodique (aucun evenement Watch recent)")
-					w.sched.Event("resync-safety-net") // passe par l'executeur unique
-				}
-			}
-		}()
-	}
 	return w.mgr.Start(ctx)
 }
 

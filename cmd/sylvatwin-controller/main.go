@@ -58,7 +58,6 @@ func main() {
 		validity  = flag.Float64("validity", 600, "horizon de validite par defaut (s), si aucun Watch temoin")
 		debounce  = flag.Duration("debounce", 2*time.Second, "fenetre de fusion (glissante) des evenements Watch avant un cycle")
 		maxDelay  = flag.Duration("max-delay", 10*time.Second, "delai MAXIMAL entre le premier evenement en attente et le depart du cycle, meme sous flux continu (A2)")
-		resyncNet = flag.Duration("resync-safety-net", 0, "filet de securite (0 = desactive ; N'EST PAS le mode normal)")
 		kcTargets = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
 			"cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster) : leur contenu n'est jamais lu")
 		witnessNode  = flag.String("witness-node", "", "nom du Node workload dont la Lease sert de temoin (vide = pas de temoin)")
@@ -131,7 +130,6 @@ func main() {
 		KubeconfigTargets:  source.ParseTargets(*kcTargets),
 		Debounce:           *debounce,
 		MaxDelay:           *maxDelay,
-		ResyncSafetyNet:    *resyncNet,
 		WitnessNode:        *witnessNode,
 		FreshnessHorizon:   *freshness,
 		MetricsBindAddress: *metricsAddr,
@@ -199,7 +197,7 @@ func main() {
 	if *witnessNode != "" {
 		logger.Info("Watch temoin configure", "node", *witnessNode, "theta", freshness.String())
 	}
-	logger.Info("sylvatwin-controller demarre", "debounce", debounce.String(), "resyncSafetyNet", resyncNet.String())
+	logger.Info("sylvatwin-controller demarre", "debounce", debounce.String())
 	if err := w.Start(ctx); err != nil {
 		fail(err.Error())
 	}

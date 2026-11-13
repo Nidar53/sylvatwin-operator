@@ -171,3 +171,64 @@ func TestScheduler_EvenementCouvreEcheance(t *testing.T) {
 		t.Fatalf("cause attendue evenement, obtenue %s", r.triggers[0].Cause)
 	}
 }
+
+// R1 : une reprise (attente donnee) donne UN cycle de cause "reprise", une seule fois.
+func TestScheduler_Reprise_UneSeuleFois(t *testing.T) {
+	s := newScheduler(50*time.Millisecond, time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	r := &recorder{}
+	go s.Run(ctx, r.fn(0))
+	s.Retry(100 * time.Millisecond)
+	time.Sleep(600 * time.Millisecond)
+	if r.count() != 1 || r.triggers[0].Cause != CauseRetry {
+		t.Fatalf("attendu 1 cycle 'reprise', obtenu %+v", r.triggers)
+	}
+}
+
+// R1 : un cycle d'evenement couvre la reprise en attente (pas de cycle de trop) ;
+// CancelRetry l'annule.
+func TestScheduler_EvenementCouvreReprise(t *testing.T) {
+	s := newScheduler(20*time.Millisecond, time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	r := &recorder{}
+	go s.Run(ctx, r.fn(0))
+	s.Retry(300 * time.Millisecond)
+	s.Event("x")
+	time.Sleep(700 * time.Millisecond)
+	if r.count() != 1 || r.triggers[0].Cause != CauseEvent {
+		t.Fatalf("attendu 1 cycle 'evenement', obtenu %+v", r.triggers)
+	}
+	s.Retry(100 * time.Millisecond)
+	s.CancelRetry()
+	time.Sleep(400 * time.Millisecond)
+	if r.count() != 1 {
+		t.Fatalf("la reprise annulee a tout de meme tourne : %+v", r.triggers)
+	}
+}
+
+// R1 : si le cycle qui vient de partir echoue, l'echeance connue n'est pas perdue
+// et une reprise est programmee (attente 5 s, puis croissante, plafond 60 s).
+func TestAfterCycle_EchecConserveEcheanceEtReprogrammeReprise(t *testing.T) {
+	w := &Watcher{sched: newScheduler(time.Second, 5*time.Second)}
+	dl := time.Now().Add(time.Hour)
+	w.deadline = dl
+	w.afterCycle(nil, context.DeadlineExceeded)
+	if !w.sched.Deadline().Equal(dl) {
+		t.Fatalf("echeance perdue : %v", w.sched.Deadline())
+	}
+	if w.sched.rtTimer == nil || w.failures != 1 {
+		t.Fatalf("reprise non programmee (failures=%d)", w.failures)
+	}
+	for i := 0; i < 10; i++ {
+		w.afterCycle(nil, context.DeadlineExceeded)
+	}
+	if w.failures != 11 {
+		t.Fatalf("failures=%d", w.failures)
+	}
+	w.afterCycle(nil, nil) // un succes arrete tout
+	if w.failures != 0 || w.sched.rtTimer != nil {
+		t.Fatalf("la reprise doit s'arreter au premier succes")
+	}
+}

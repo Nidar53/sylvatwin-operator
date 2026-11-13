@@ -117,6 +117,22 @@ func (l *Live) Snapshot(ctx context.Context) *mapper.Snapshot {
 	return s
 }
 
+// Cached : le dernier instantane reussi, SANS aucun appel reseau, avec l'age du
+// temoin relu en memoire (le Watch temoin vit hors des cycles). nil si jamais lu.
+// Sert au rejugement par echeance (A3).
+func (l *Live) Cached() *mapper.Snapshot {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	if l.last == nil {
+		return nil
+	}
+	s := *l.last
+	if l.witness != nil {
+		s.LastWitnessRenew = l.witness.LastSeen()
+	}
+	return &s
+}
+
 func (l *Live) list(ctx context.Context, sp Spec) ([]*unstructured.Unstructured, error) {
 	gvr := schema.GroupVersionResource{Group: sp.Group, Version: sp.Version, Resource: sp.Resource}
 	ns := sp.Namespace

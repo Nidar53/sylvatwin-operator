@@ -51,6 +51,19 @@ type Twin struct {
 	// KubeconfigTargets : correspondances declarees ns/secret -> cluster
 	// (aucun Secret n'est lu pour les deduire).
 	KubeconfigTargets map[string]string
+	// Memo : memoire du dernier cycle (cote desire + flux), partagee entre les
+	// Twin successifs du Watcher. Permet Rejudge sans relire le cluster ni Git.
+	Memo *Memo
+	// Cause : ce qui a declenche le cycle (journal, A7).
+	Cause string
+}
+
+// Memo : entrees du mapper conservees d'un cycle a l'autre (instantanes inclus
+// par les sources). Pas de verrou : seul l'executeur unique l'utilise.
+type Memo struct {
+	Des []*mapper.Desired
+	FC  mapper.FluxContext
+	OK  bool
 }
 
 // CycleReport : journal d'un cycle (ecrit en JSON, sert a l'evaluation).
@@ -66,7 +79,11 @@ type CycleReport struct {
 	DriftList []string          `json:"driftList"`
 	Verdict   []string          `json:"verdictList"`
 	TimingsMS map[string]int64  `json:"timingsMs"`
-	Errors    []string          `json:"errors,omitempty"`
+	// Cause : evenement | echeance | reprise (A7). Une echeance ne relit pas le cluster.
+	Cause string `json:"cause,omitempty"`
+	// NextDeadline : prochaine echeance utile calculee par SPARQL (zero = aucune).
+	NextDeadline time.Time `json:"nextDeadline,omitempty"`
+	Errors       []string  `json:"errors,omitempty"`
 }
 
 // DesiredReport : etat du cote desire pour une Kustomization.
@@ -80,7 +97,7 @@ type DesiredReport struct {
 
 // Cycle : une synchronisation complete.
 func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
-	rep := &CycleReport{Start: time.Now().UTC(), Clusters: map[string]string{}, Objects: map[string]int{},
+	rep := &CycleReport{Cause: t.Cause, Start: time.Now().UTC(), Clusters: map[string]string{}, Objects: map[string]int{},
 		Drifts: map[string]int{}, Verdicts: map[string]int{}, TimingsMS: map[string]int64{}}
 	t0 := time.Now()
 	var snaps []*mapper.Snapshot
@@ -133,8 +150,41 @@ func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 		}
 	}
 	rep.TimingsMS["desired"] = time.Since(t0).Milliseconds()
+	if t.Memo != nil {
+		t.Memo.Des, t.Memo.FC, t.Memo.OK = des, fc, true
+	}
+	return t.finish(ctx, rep, snaps, des, fc)
+}
 
-	t0 = time.Now()
+// Rejudge : rejuge SANS relire le cluster ni Git (reveil par echeance, A3).
+// Les instantanes sont ceux du dernier cycle (Cached), le cote desire vient de
+// Memo ; seul l'instant du jugement change (et l'age du temoin, lu en memoire).
+func (t *Twin) Rejudge(ctx context.Context) (*CycleReport, error) {
+	rep := &CycleReport{Cause: t.Cause, Start: time.Now().UTC(), Clusters: map[string]string{}, Objects: map[string]int{},
+		Drifts: map[string]int{}, Verdicts: map[string]int{}, TimingsMS: map[string]int64{}}
+	if t.Memo == nil || !t.Memo.OK {
+		return rep, fmt.Errorf("rejugement impossible : aucun cycle complet precedent")
+	}
+	var snaps []*mapper.Snapshot
+	for _, s := range t.Sources {
+		c, ok := s.(interface{ Cached() *mapper.Snapshot })
+		if !ok {
+			return rep, fmt.Errorf("rejugement impossible : source %s sans cache", s.Name())
+		}
+		sn := c.Cached()
+		if sn == nil {
+			return rep, fmt.Errorf("rejugement impossible : source %s jamais lue", s.Name())
+		}
+		snaps = append(snaps, sn)
+		rep.Clusters[sn.Cluster] = sn.Status
+		rep.Objects[sn.Cluster] = len(sn.Objects)
+	}
+	return t.finish(ctx, rep, snaps, t.Memo.Des, t.Memo.FC)
+}
+
+// finish : faits (mapper pur) -> juge -> journal. Commun a Cycle et Rejudge.
+func (t *Twin) finish(ctx context.Context, rep *CycleReport, snaps []*mapper.Snapshot, des []*mapper.Desired, fc mapper.FluxContext) (*CycleReport, error) {
+	t0 := time.Now()
 	g := mapper.Build(mapper.Input{Snapshots: snaps, Desired: des, Flux: fc})
 	rep.Facts = g.Len()
 	var nt bytes.Buffer
@@ -163,6 +213,11 @@ func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 		}
 		_ = writeAtomic(filepath.Join(t.OutDir, "drifts.nt"), res.Drifts)
 		_ = writeAtomic(filepath.Join(t.OutDir, "verdicts.nt"), res.Verdicts)
+		if dl, err := t.Judge.NextDeadline(ctx, rep.Start); err != nil {
+			rep.Errors = append(rep.Errors, "echeance : "+err.Error())
+		} else {
+			rep.NextDeadline = dl
+		}
 		rep.Drifts, rep.DriftList = classes(res.Drifts, "https://w3id.org/sylvatwin/drift/")
 		rep.Verdicts, rep.Verdict = classes(res.Verdicts, "https://w3id.org/sylvatwin/verdict/")
 	}
