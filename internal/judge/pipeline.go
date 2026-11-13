@@ -318,6 +318,10 @@ type FreshDeadline struct {
 type Deadlines struct {
 	Horizon time.Time // prochaine fin d'horizon de convergence (zero = aucune)
 	Fresh   []FreshDeadline
+	// Stale : clusters A TEMOIN deja perimes alors qu'une derive est ouverte (genre
+	// "perime"). Le retour d'une Lease pour l'un d'eux doit provoquer un rejugement
+	// immediat : le verdict repasse de inconnu a normal.
+	Stale []string
 }
 
 // Min : la plus proche des echeances (zero = aucune).
@@ -372,6 +376,10 @@ func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (Deadlines, 
 		return time.Duration(math.Ceil(f)) * time.Second, true
 	}
 	for _, b := range r.Results.Bindings {
+		if b["genre"].Value == "perime" {
+			out.Stale = append(out.Stale, b["cluster"].Value)
+			continue
+		}
 		d, ok := secs(b, "delai")
 		if !ok {
 			continue

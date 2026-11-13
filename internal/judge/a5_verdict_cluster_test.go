@@ -35,6 +35,7 @@ func TestVerdictParCluster_DeuxClusters(t *testing.T) {
 	f := func(s, p, o string) { fmt.Fprintf(&facts, "<%s> <%s%s> %s .\n", s, c, p, o) }
 	cl := func(name string, witnessAge time.Duration) {
 		fmt.Fprintf(&facts, "<%s%s> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <%sKubernetesCluster> .\n", r, name, c)
+		fmt.Fprintf(&facts, "<%s%s> <http://www.w3.org/2000/01/rdf-schema#label> %q .\n", r, name, name)
 		f(r+name, "observationStatus", `"ok"`)
 		f(r+name, "lastSyncTime", dt(ts(5*time.Second)))
 		f(r+name, "lastWitnessRenewTime", dt(ts(witnessAge)))
@@ -96,6 +97,26 @@ func TestVerdictParCluster_DeuxClusters(t *testing.T) {
 	want := map[string]string{"dA": "UnknownVerdict", "dB": "ConfirmedViolation", "dNF": "UnknownVerdict",
 		"dPLMN": "ConfirmedViolation", "dZ": "UnknownVerdict", "dAB": "UnknownVerdict",
 		"iB": "ConfirmedViolation", "iA": "UnknownVerdict", "dP3": "UnknownVerdict"}
+	// echeances : A (temoin perime) est "perime", B (frais) a une echeance de fraicheur
+	dls, err := (&Pipeline{E: e, RulesDir: filepath.Join(poc, "rules"), Validity: 600}).NextDeadline(ctx, now)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(dls.Stale) != 1 || dls.Stale[0] != "A" {
+		t.Errorf("clusters perimes : %v, attendu [A]", dls.Stale)
+	}
+	foundB := false
+	for _, fd := range dls.Fresh {
+		if fd.Cluster == "A" {
+			t.Errorf("A est perime : pas d'echeance de fraicheur (%+v)", fd)
+		}
+		if fd.Cluster == "B" && fd.Witness && fd.Window == 30*time.Second && fd.At.After(now) {
+			foundB = true
+		}
+	}
+	if !foundB {
+		t.Errorf("echeance de fraicheur de B introuvable : %+v", dls.Fresh)
+	}
 	var keys []string
 	for k := range want {
 		keys = append(keys, k)

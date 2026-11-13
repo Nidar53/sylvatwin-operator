@@ -255,7 +255,7 @@ func TestFraicheur_LeaseRepousseEcheance(t *testing.T) {
 		mu.Lock()
 		seen = time.Now()
 		mu.Unlock()
-		if at, ok := st.renewed(); ok {
+		if at, ok := st.renewed("c"); ok {
 			s.SetDeadline(at)
 		}
 	}
@@ -274,7 +274,28 @@ func TestFraicheur_PendantUnCycleRienNeEstArme(t *testing.T) {
 	st := &deadlineState{lastSeen: func(string) time.Time { return time.Now() }}
 	st.set(judge.Deadlines{Fresh: []judge.FreshDeadline{{Cluster: "c", At: time.Now().Add(time.Hour), Window: time.Second, Witness: true}}})
 	st.hold()
-	if _, ok := st.renewed(); ok {
+	if _, ok := st.renewed("c"); ok {
 		t.Fatal("une Lease pendant un cycle ne doit rien armer")
+	}
+}
+
+// Le temoin d'un cluster perime revient : rejugement immediat (une seule fois), que la
+// Lease arrive apres le jugement ou pendant le cycle qui l'a juge perime.
+func TestFraicheur_RetourDuTemoinRejugeToutDeSuite(t *testing.T) {
+	st := &deadlineState{}
+	st.set(judge.Deadlines{Stale: []string{"c"}})
+	at, ok := st.renewed("c")
+	if !ok || time.Since(at) > time.Second {
+		t.Fatalf("la Lease d'un cluster perime doit rejuger tout de suite (ok=%v at=%v)", ok, at)
+	}
+	if _, ok := st.renewed("c"); ok {
+		t.Fatal("un seul rejugement par retour du temoin")
+	}
+	// Lease recue PENDANT le cycle qui juge le cluster perime
+	st.hold()
+	st.renewed("c")
+	at = st.set(judge.Deadlines{Stale: []string{"c"}})
+	if time.Since(at) > time.Second {
+		t.Fatalf("Lease arrivee pendant le cycle : rejuger tout de suite, obtenu %v", at)
 	}
 }

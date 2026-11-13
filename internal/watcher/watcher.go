@@ -500,7 +500,7 @@ func (w *Watcher) witnessFor(ctx context.Context, cluster string, cfg *rest.Conf
 	w.witnesses[cluster] = wit
 	// Chaque Lease recue repousse la minuterie de fraicheur : pas de cycle, pas de jugement.
 	wit.OnRenew(func() {
-		if at, ok := w.dls.renewed(); ok {
+		if at, ok := w.dls.renewed(cluster); ok {
 			w.sched.SetDeadline(at)
 		}
 	})

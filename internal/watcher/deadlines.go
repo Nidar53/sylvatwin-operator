@@ -21,6 +21,8 @@ type deadlineState struct {
 	mu     sync.Mutex
 	active bool // faux pendant un cycle : il reprogrammera lui-meme
 	dl     judge.Deadlines
+	stale  map[string]bool // clusters a temoin perimes au dernier jugement (SPARQL)
+	seen   map[string]bool // Lease recues PENDANT un cycle (pas de reprogrammation possible)
 	// lastSeen : instant du dernier evenement de Lease d'un cluster (nil/zero : inconnu)
 	lastSeen func(cluster string) time.Time
 }
@@ -30,13 +32,26 @@ func (s *deadlineState) set(d judge.Deadlines) time.Time {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.dl, s.active = d, true
+	s.stale = map[string]bool{}
+	again := false
+	for _, c := range d.Stale {
+		s.stale[c] = true
+		if s.seen[c] { // la Lease est revenue pendant ce cycle : rejuger tout de suite
+			delete(s.stale, c)
+			again = true
+		}
+	}
+	s.seen = nil
+	if again {
+		return time.Now()
+	}
 	return s.next()
 }
 
 // hold : un cycle part, il reprogrammera ; les Lease recues d'ici la ne touchent a rien.
 func (s *deadlineState) hold() {
 	s.mu.Lock()
-	s.active = false
+	s.active, s.seen = false, map[string]bool{}
 	s.mu.Unlock()
 }
 
@@ -48,11 +63,24 @@ func (s *deadlineState) resume() time.Time {
 	return s.next()
 }
 
-// renewed : une Lease est arrivee. Renvoie la nouvelle echeance a armer et ok=false si rien a faire.
-func (s *deadlineState) renewed() (time.Time, bool) {
+// renewed : une Lease est arrivee pour `cluster`. Renvoie l'echeance a armer, ok=false si rien a faire.
+//   - cluster perime au dernier jugement (SPARQL) : le temoin est de retour, on rejuge tout de suite
+//     (le verdict doit repasser de inconnu a normal sans attendre un autre evenement) ;
+//   - sinon : l'echeance de fraicheur est repoussee, sans jugement.
+func (s *deadlineState) renewed(cluster string) (time.Time, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if !s.active || len(s.dl.Fresh) == 0 {
+	if !s.active {
+		if s.seen != nil {
+			s.seen[cluster] = true
+		}
+		return time.Time{}, false
+	}
+	if s.stale[cluster] {
+		delete(s.stale, cluster)
+		return time.Now(), true
+	}
+	if len(s.dl.Fresh) == 0 {
 		return time.Time{}, false
 	}
 	return s.next(), true
