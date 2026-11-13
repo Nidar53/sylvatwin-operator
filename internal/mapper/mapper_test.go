@@ -35,10 +35,23 @@ func load(t *testing.T, cluster string) []*unstructured.Unstructured {
 	return out
 }
 
+// wlCanon : nom CANONIQUE (D2) du cluster workload de la photo reelle, SOUS LA
+// MEME FORME que le provider cluster-api de multicluster-runtime (namespace du
+// Cluster CAPI "my-workload-kubeadm-capd" + son nom "my-workload-kubeadm-capd",
+// cf. testdata/snapshot-20261108/management-cluster.json). Avant la correction
+// D2, la photo utilisait a tort le nom NU comme Snapshot.Cluster du workload :
+// cela "marchait" par COINCIDENCE sur ce banc (namespace == nom du Cluster
+// CAPI), masquant le bug reellement present en production (cf. HANDOFF.md,
+// 2 MachineNodeMismatchDrift observes avant ce fix). Le nom canonique est celui
+// qu'un VRAI watcher (internal/watcher) donne a la *source.Live engagee
+// (multicluster.ClusterName = "namespace/nom", meme chose que
+// iri.CanonicalCluster) : la photo doit refleter cette realite.
+var wlCanon = iri.CanonicalCluster("my-workload-kubeadm-capd", "my-workload-kubeadm-capd")
+
 // photo : entrees du mapper telles que la source live les produirait.
 func photo(t *testing.T) Input {
 	at := time.Date(2026, 11, 8, 15, 2, 17, 0, time.UTC)
-	wl := &Snapshot{Cluster: "my-workload-kubeadm-capd", Endpoint: "172.30.0.2:6443", Status: StatusOK,
+	wl := &Snapshot{Cluster: wlCanon, Endpoint: "172.30.0.2:6443", Status: StatusOK,
 		LastSync: at, ObservedAt: at, Objects: load(t, "my-workload-kubeadm-capd"),
 		Scopes: []Scope{{"Node", "*"}, {"Namespace", "*"}, {"Pod", "sylvatwin-5gc"}, {"ReplicaSet", "sylvatwin-5gc"},
 			{"Deployment", "sylvatwin-5gc"}, {"Secret", "sylvatwin-5gc"}}}
@@ -47,14 +60,14 @@ func photo(t *testing.T) Input {
 		Scopes: []Scope{{"Machine", "*"}, {"Cluster", "*"}, {"Namespace", "*"}, {"GitRepository", "*"},
 			{"Kustomization", "*"}, {"HelmRelease", "*"}}}
 	return Input{Snapshots: []*Snapshot{wl, mg}, Flux: FluxContext{
-		KubeconfigTargets:  map[string]string{"sylvatwin-flux/sylvatwin-5gc-kubeconfig": "my-workload-kubeadm-capd"},
+		KubeconfigTargets:  map[string]string{"sylvatwin-flux/sylvatwin-5gc-kubeconfig": wlCanon},
 		HelmChartRevisions: map[string]string{"my-workload-kubeadm-capd/my-workload-kubeadm-capd-cluster": "0.0.0+6cc241e1c3b7"},
 	}}
 }
 
 func TestChaineL2(t *testing.T) {
 	g := Build(photo(t))
-	w := "my-workload-kubeadm-capd"
+	w := wlCanon
 	pod := rdf.IRI(iri.Resource(w, "sylvatwin-5gc", "Pod", "", "udm-7cf6c5b78d-rw6fk"))
 	rs := rdf.IRI(iri.Resource(w, "sylvatwin-5gc", "ReplicaSet", "apps", "udm-7cf6c5b78d"))
 	dep := rdf.IRI(iri.Resource(w, "sylvatwin-5gc", "Deployment", "apps", "udm"))
@@ -82,6 +95,39 @@ func TestChaineL2(t *testing.T) {
 	}
 }
 
+// TestMachineHasNodeViseLeNodeObserve : D2/fix. L'IRI du Node vise par
+// machineHasNode (ecrit par mapL1 depuis le cluster de management, a partir
+// de Machine.spec.clusterName + Machine.namespace) doit etre EXACTEMENT
+// celle de l'individu Node produit par mapL2 pour le MEME instantane workload
+// (a partir de Node.metadata.name, avec Snapshot.Cluster = nom canonique).
+// Avant le fix D2, ces deux IRI ne coincidaient PAS en general (seulement par
+// accident sur ce banc precis ou namespace == nom du Cluster CAPI) : la regle
+// MachineNodeMismatchDrift (rules/derives/08-machine-node-drift.rq) considere
+// alors le Node comme "sans Machine qui le revendique" (ou vice versa) et
+// produit une derive ARTEFACT.
+func TestMachineHasNodeViseLeNodeObserve(t *testing.T) {
+	g := Build(photo(t))
+	machine := rdf.IRI(iri.Resource("management-cluster", "my-workload-kubeadm-capd", "Machine", "cluster.x-k8s.io", "my-workload-kubeadm-capd-control-plane-6w58l"))
+	targets := g.Objects(machine, rdf.C("machineHasNode"))
+	if len(targets) != 1 {
+		t.Fatalf("machineHasNode : attendu exactement 1 cible, trouve %d (%v)", len(targets), targets)
+	}
+	gotNodeIRI := targets[0]
+	// L'individu Node REELLEMENT produit par mapL2 pour cet instantane workload.
+	nodeIRI := rdf.IRI(iri.Resource(wlCanon, "", "Node", "", "my-workload-kubeadm-capd-control-plane-6w58l"))
+	if gotNodeIRI != nodeIRI {
+		t.Fatalf("machineHasNode vise %v, attendu EXACTEMENT l'IRI du Node observe %v", gotNodeIRI, nodeIRI)
+	}
+	// Et cette IRI doit bien exister comme individu :Node avec un :uid dans le
+	// graphe (sinon la garde P3 de la regle 08 resterait trompee autrement).
+	if !g.Has(nodeIRI, rdf.Type, rdf.C("Node")) {
+		t.Fatal("l'IRI visee par machineHasNode n'est pas un individu :Node du graphe")
+	}
+	if len(g.Objects(nodeIRI, rdf.C("uid"))) != 1 {
+		t.Fatal("l'individu Node vise par machineHasNode doit porter un :uid")
+	}
+}
+
 func TestSecretMetadonneesSeulement(t *testing.T) {
 	// La photo ne contient pas .data pour le Secret ; on verifie que le mapper
 	// ne produit aucun litteral qui viendrait d'un champ data, meme si present.
@@ -104,9 +150,9 @@ func TestDesireInconnu(t *testing.T) {
 	in := photo(t)
 	dep := &unstructured.Unstructured{Object: map[string]any{"apiVersion": "apps/v1", "kind": "Deployment",
 		"metadata": map[string]any{"name": "udm", "namespace": "sylvatwin-5gc"}, "spec": map[string]any{"replicas": int64(3)}}}
-	in.Desired = []*Desired{{Known: false, TargetCluster: "my-workload-kubeadm-capd", Objects: []*unstructured.Unstructured{dep}}}
+	in.Desired = []*Desired{{Known: false, TargetCluster: wlCanon, Objects: []*unstructured.Unstructured{dep}}}
 	g := Build(in)
-	d := rdf.IRI(iri.Resource("my-workload-kubeadm-capd", "sylvatwin-5gc", "Deployment", "apps", "udm"))
+	d := rdf.IRI(iri.Resource(wlCanon, "sylvatwin-5gc", "Deployment", "apps", "udm"))
 	if len(g.Objects(d, rdf.C("desiredReplicas"))) != 0 {
 		t.Fatal("desire 'inconnu' ne doit produire aucun fait desired*")
 	}
@@ -136,7 +182,7 @@ func TestIsomorphismeExemple(t *testing.T) {
 	}
 	in := photo(t)
 	// Le desire de reference : Git @ revision de l'exemple (replicas 1 partout).
-	in.Desired = []*Desired{{Known: true, TargetCluster: "my-workload-kubeadm-capd",
+	in.Desired = []*Desired{{Known: true, TargetCluster: wlCanon,
 		Revision: "test@sha1:9099eec76ea8836c3f5ed8d11f8b9ec28323e7d4", Objects: desiredFromSnapshot(in.Snapshots[0])}}
 	tmp := t.TempDir()
 	out := filepath.Join(tmp, "operateur.nt")

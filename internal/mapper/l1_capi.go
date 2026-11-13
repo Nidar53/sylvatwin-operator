@@ -79,10 +79,18 @@ func mapL1(g *rdf.Graph, s *Snapshot, endpoints map[string]string) {
 			if cn := str(o.Object, "spec", "clusterName"); cn != "" {
 				g.Add(m, rdf.C("machineOfCluster"),
 					rdf.IRI(iri.Resource(s.Cluster, o.GetNamespace(), "Cluster", "cluster.x-k8s.io", cn)))
-				// Le Node vit dans le cluster DECRIT : son nom logique est celui du
-				// Cluster CAPI (convention de la source CAPI : cluster = nom CAPI).
+				// Le Node vit dans le cluster DECRIT : son nom logique est le nom
+				// CANONIQUE du cluster workload, SOUS LA MEME FORME que celui utilise
+				// par le provider cluster-api de multicluster-runtime v0.24.1 pour
+				// engager ce cluster ("namespace/nom", cf. iri.CanonicalCluster) —
+				// PAS le seul nom nu du Cluster CAPI, qui ne correspond au nom logique
+				// du FactSource que par coincidence (quand namespace == nom). Le
+				// namespace du Cluster CAPI decrit est celui de la Machine qui le
+				// reference (convention CAPI : Machine et Cluster vivent dans le meme
+				// namespace).
 				if node := str(o.Object, "status", "nodeRef", "name"); node != "" {
-					g.Add(m, rdf.C("machineHasNode"), rdf.IRI(iri.Resource(cn, "", "Node", "", node)))
+					wl := iri.CanonicalCluster(o.GetNamespace(), cn)
+					g.Add(m, rdf.C("machineHasNode"), rdf.IRI(iri.Resource(wl, "", "Node", "", node)))
 				}
 			}
 			if ph := str(o.Object, "status", "phase"); ph != "" {
