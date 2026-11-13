@@ -40,6 +40,10 @@ type Pipeline struct {
 	// cycle (fichier temporaire puis rename) et recharge si le serveur l'a perdu
 	// (redemarrage). Vide = pas de persistance.
 	HistoryFile string
+	// TBoxFile : la TBox (Turtle). Vide = ../sylvatwin-core-v1.ttl a cote de RulesDir.
+	// Chargee dans <tbox> au premier cycle et a chaque fois que le serveur ne la
+	// porte plus (Oxigraph en memoire), avec controle de version.
+	TBoxFile string
 	// Validity : horizon de validite de l'information, en secondes (verdict).
 	Validity float64
 }
@@ -63,6 +67,9 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 	prep := func(q string) string { return Prepare(q, nowLit, p.Validity, strings.TrimSpace(string(seconds))) }
 
 	t0 := time.Now()
+	if err := p.ensureTBox(ctx); err != nil {
+		return nil, fmt.Errorf("TBox : %w", err)
+	}
 	if err := p.restoreHistory(ctx); err != nil {
 		return nil, fmt.Errorf("rechargement de l'historique : %w", err)
 	}
@@ -157,6 +164,92 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 	res.Timings["verdict"] = time.Since(t)
 	res.Verdicts = verdicts.Bytes()
 	return res, nil
+}
+
+// MinTBoxVersion : version minimale de la TBox exigee par les regles (les regles
+// lisent les classes meres de derive, apparues en 1.4.0).
+const MinTBoxVersion = "1.4.0"
+
+var versionInfoRe = regexp.MustCompile(`owl:versionInfo\s+"([^"]+)"`)
+
+func (p *Pipeline) tboxPath() string {
+	if p.TBoxFile != "" {
+		return p.TBoxFile
+	}
+	return filepath.Join(p.RulesDir, "..", "sylvatwin-core-v1.ttl")
+}
+
+// versionAtLeast : comparaison numerique "a.b.c" >= "x.y.z".
+func versionAtLeast(v, min string) bool {
+	parse := func(s string) [3]int {
+		var o [3]int
+		for i, f := range strings.SplitN(s, ".", 3) {
+			o[i], _ = strconv.Atoi(f)
+		}
+		return o
+	}
+	a, b := parse(v), parse(min)
+	for i := range a {
+		if a[i] != b[i] {
+			return a[i] > b[i]
+		}
+	}
+	return true
+}
+
+// ensureTBox : charge la TBox dans <tbox> si le serveur ne porte pas la bonne
+// version (premier cycle, ou serveur redemarre : Oxigraph est en memoire). Une
+// requete ASK suffit en regime normal. Erreur si le fichier est absent ou trop
+// ancien : sans TBox, les regles qui lisent la hierarchie ne trouveraient rien et
+// un horizon infini disparaitrait en silence.
+func (p *Pipeline) ensureTBox(ctx context.Context) error {
+	path := p.tboxPath()
+	ttl, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	m := versionInfoRe.FindSubmatch(ttl)
+	if m == nil {
+		return fmt.Errorf("%s : owl:versionInfo introuvable", path)
+	}
+	want := string(m[1])
+	if !versionAtLeast(want, MinTBoxVersion) {
+		return fmt.Errorf("%s : version %s, les regles exigent au moins %s", path, want, MinTBoxVersion)
+	}
+	have := func() (string, error) {
+		out, err := p.E.Select(ctx, `SELECT ?v WHERE { GRAPH <`+GraphTBox+`> { <https://w3id.org/sylvatwin/core> <http://www.w3.org/2002/07/owl#versionInfo> ?v } }`)
+		if err != nil {
+			return "", err
+		}
+		var r struct {
+			Results struct {
+				Bindings []map[string]struct {
+					Value string `json:"value"`
+				} `json:"bindings"`
+			} `json:"results"`
+		}
+		if err := json.Unmarshal(out, &r); err != nil {
+			return "", err
+		}
+		if len(r.Results.Bindings) == 0 {
+			return "", nil
+		}
+		return r.Results.Bindings[0]["v"].Value, nil
+	}
+	got, err := have()
+	if err != nil {
+		return err
+	}
+	if got == want {
+		return nil
+	}
+	if err := p.E.PutGraphTurtle(ctx, GraphTBox, ttl); err != nil {
+		return err
+	}
+	if got, err = have(); err != nil || got != want {
+		return fmt.Errorf("TBox %s chargee mais version lue %q (attendue %q) : %v", path, got, want, err)
+	}
+	return nil
 }
 
 // restoreHistory : si le serveur n'a plus de graphe history (demarrage a vide)

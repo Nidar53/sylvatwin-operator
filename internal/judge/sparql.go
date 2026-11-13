@@ -32,6 +32,9 @@ const (
 	GraphFacts   = "https://w3id.org/sylvatwin/graph/facts"
 	GraphDrifts  = "https://w3id.org/sylvatwin/graph/drifts"
 	GraphHistory = "https://w3id.org/sylvatwin/graph/history"
+	// GraphTBox : la TBox (sylvatwin-core-v1.ttl), chargee au demarrage. Les regles
+	// y lisent la hierarchie de classes de derive (rdfs:subClassOf*).
+	GraphTBox = "https://w3id.org/sylvatwin/graph/tbox"
 )
 
 // Endpoint : un serveur SPARQL 1.1 (Oxigraph : /query, /update, /store).
@@ -82,6 +85,12 @@ func (e *Endpoint) do(ctx context.Context, method, path, ctype, accept string, b
 // PutGraph : remplace le contenu d'un graphe nomme (Graph Store Protocol).
 func (e *Endpoint) PutGraph(ctx context.Context, graph string, ntriples []byte) error {
 	_, err := e.do(ctx, http.MethodPut, "/store?graph="+url.QueryEscape(graph), "application/n-triples", "", ntriples)
+	return err
+}
+
+// PutGraphTurtle : comme PutGraph, pour un document Turtle.
+func (e *Endpoint) PutGraphTurtle(ctx context.Context, graph string, ttl []byte) error {
+	_, err := e.do(ctx, http.MethodPut, "/store?graph="+url.QueryEscape(graph), "text/turtle", "", ttl)
 	return err
 }
 

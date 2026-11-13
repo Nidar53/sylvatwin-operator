@@ -56,6 +56,7 @@ func main() {
 		nfNS        = flag.String("nf-namespace", "sylvatwin-5gc", "namespace des fonctions reseau dans les workloads")
 		out         = flag.String("out", "sylvatwin-out", "dossier de sortie (dernier cycle)")
 		cache       = flag.String("cache", "/opt/nidar/cache-desired", "cache des clones Git")
+		tboxFile    = flag.String("tbox", "", "TBox (Turtle) chargee dans le graphe tbox a chaque demarrage d'Oxigraph ; defaut : <rules>/../sylvatwin-core-v1.ttl")
 		historyFile = flag.String("history", "", "copie durable du graphe history (age des derives) ; defaut : <out>/history.nt. Oxigraph tourne EN MEMOIRE : ce fichier est la seule persistance")
 		validity    = flag.Float64("validity", 600, "horizon de validite par defaut (s), si aucun Watch temoin")
 		debounce    = flag.Duration("debounce", 2*time.Second, "fenetre de fusion (glissante) des evenements Watch avant un cycle")
@@ -104,7 +105,7 @@ func main() {
 		}
 	}
 
-	jp := &judge.Pipeline{RulesDir: *rules, Validity: *validity, HistoryFile: *historyFile}
+	jp := &judge.Pipeline{RulesDir: *rules, Validity: *validity, HistoryFile: *historyFile, TBoxFile: *tboxFile}
 	if jp.HistoryFile == "" {
 		jp.HistoryFile = filepath.Join(*out, "history.nt")
 	}
