@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -102,6 +104,86 @@ func TestVerdictParCluster_DeuxClusters(t *testing.T) {
 	for _, k := range keys {
 		if got[k] != want[k] {
 			t.Errorf("%s : %q, attendu %q (tous : %v)", k, got[k], want[k], got)
+		}
+	}
+}
+
+// A4bis : Oxigraph en memoire perd tout au redemarrage, sauf <history> recharge
+// depuis le fichier : l'age d'une derive existante est conserve.
+func TestHistoriqueSurvitAuRedemarrage(t *testing.T) {
+	poc := os.Getenv("SYLVATWIN_POC")
+	bin := os.Getenv("OXIGRAPH_BIN")
+	if poc == "" || bin == "" {
+		t.Skip("SYLVATWIN_POC / OXIGRAPH_BIN non definis")
+	}
+	ref := t.TempDir()
+	if out, err := exec.Command("python3", filepath.Join(poc, "tests", "export_reference.py"), ref).CombinedOutput(); err != nil {
+		t.Fatalf("%v\n%s", err, out)
+	}
+	facts := mustReadFile(t, filepath.Join(ref, "facts-t60.nt"))
+	hist := filepath.Join(t.TempDir(), "history.nt")
+	t0 := time.Date(2026, 11, 9, 12, 0, 0, 0, time.UTC)
+	ages := func(res *Result) map[string]string {
+		m := map[string]string{}
+		for _, l := range strings.Split(string(res.Verdicts), "\n") {
+			if s, pr, o, ok := splitNT(l); ok && strings.HasSuffix(pr, "#driftAge") {
+				m[s] = strings.SplitN(strings.Trim(o, `"`), `"`, 2)[0]
+			}
+		}
+		return m
+	}
+	ctx := context.Background()
+	e1, stop1 := startOxigraph(t, bin)
+	p1 := &Pipeline{E: e1, RulesDir: filepath.Join(poc, "rules"), Validity: 600, HistoryFile: hist}
+	if _, err := p1.Run(ctx, facts, t0); err != nil {
+		t.Fatal(err)
+	}
+	r1, err := p1.Run(ctx, facts, t0.Add(100*time.Second))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stop1() // "redemarrage" : un Oxigraph tout neuf, vide
+	e2, stop2 := startOxigraph(t, bin)
+	defer stop2()
+	p2 := &Pipeline{E: e2, RulesDir: filepath.Join(poc, "rules"), Validity: 600, HistoryFile: hist}
+	r2, err := p2.Run(ctx, facts, t0.Add(200*time.Second))
+	if err != nil {
+		t.Fatal(err)
+	}
+	a1, a2 := ages(r1), ages(r2)
+	if len(a1) == 0 {
+		t.Fatal("aucune derive dans le scenario de reference")
+	}
+	for d, age1 := range a1 {
+		// 100 s plus tard : l'age a grandi de 100 s, il n'est pas reparti de 0
+		if age1 != "100" || a2[d] != "200" {
+			t.Errorf("%s : age avant redemarrage %q (attendu 100), apres %q (attendu 200)", d, age1, a2[d])
+		}
+	}
+}
+
+// R2 : avec default-graph-uri, une regle de rules/derives qui contiendrait une
+// clause GRAPH ne verrait plus rien, EN SILENCE (GRAPH <g> {...} cherche dans le
+// graphe nomme <g>, et le parametre ne change que le graphe PAR DEFAUT). Les
+// regles de derives/ doivent donc etre ecrites sans GRAPH.
+func TestDerivesSansClauseGRAPH(t *testing.T) {
+	poc := os.Getenv("SYLVATWIN_POC")
+	if poc == "" {
+		poc = filepath.Join("..", "..", "..", "sylvatwin-poc")
+	}
+	files, _ := filepath.Glob(filepath.Join(poc, "rules", "derives", "*.rq"))
+	if len(files) == 0 {
+		t.Skipf("aucune regle dans %s", poc)
+	}
+	re := regexp.MustCompile(`(?i)\bGRAPH\b`)
+	for _, f := range files {
+		for i, l := range strings.Split(string(mustReadFile(t, f)), "\n") {
+			if k := strings.Index(l, "#"); k >= 0 {
+				l = l[:k] // les commentaires peuvent en parler
+			}
+			if re.MatchString(l) {
+				t.Errorf("%s:%d contient GRAPH : interdit dans rules/derives. Le juge evalue ces regles sur l'union des graphes via default-graph-uri (A4, sans recopie) ; une clause GRAPH <g> ne regarde que le graphe nomme <g>, et la regle ne verrait plus rien, sans erreur. Ecrire le motif sans GRAPH.", filepath.Base(f), i+1)
+			}
 		}
 	}
 }

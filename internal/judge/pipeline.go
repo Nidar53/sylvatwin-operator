@@ -32,6 +32,12 @@ import (
 type Pipeline struct {
 	E        *Endpoint
 	RulesDir string // .../sylvatwin-poc/rules
+	// HistoryFile : copie durable du seul graphe <history> (A4bis). Oxigraph tourne
+	// EN MEMOIRE (sans --location) : le PUT de l'ABox ne grossit plus aucun journal
+	// d'ecriture. Le graphe history (age des derives) est exporte apres chaque
+	// cycle (fichier temporaire puis rename) et recharge si le serveur l'a perdu
+	// (redemarrage). Vide = pas de persistance.
+	HistoryFile string
 	// Validity : horizon de validite de l'information, en secondes (verdict).
 	Validity float64
 }
@@ -55,6 +61,9 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 	prep := func(q string) string { return Prepare(q, nowLit, p.Validity, strings.TrimSpace(string(seconds))) }
 
 	t0 := time.Now()
+	if err := p.restoreHistory(ctx); err != nil {
+		return nil, fmt.Errorf("rechargement de l'historique : %w", err)
+	}
 	if err := p.E.PutGraph(ctx, GraphFacts, facts); err != nil {
 		return nil, fmt.Errorf("chargement des faits : %w", err)
 	}
@@ -123,6 +132,9 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 		}
 	}
 	res.Timings["lifecycle"] = time.Since(t)
+	if err := p.saveHistory(ctx); err != nil {
+		return nil, fmt.Errorf("export de l'historique : %w", err)
+	}
 
 	// --- verdicts
 	t = time.Now()
@@ -143,6 +155,59 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 	res.Timings["verdict"] = time.Since(t)
 	res.Verdicts = verdicts.Bytes()
 	return res, nil
+}
+
+// restoreHistory : si le serveur n'a plus de graphe history (demarrage a vide)
+// et que le fichier existe, le recharge AVANT tout jugement.
+func (p *Pipeline) restoreHistory(ctx context.Context) error {
+	if p.HistoryFile == "" {
+		return nil
+	}
+	if has, err := p.historyNotEmpty(ctx); err != nil || has {
+		return err
+	}
+	b, err := os.ReadFile(p.HistoryFile)
+	if os.IsNotExist(err) || (err == nil && len(bytes.TrimSpace(b)) == 0) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	return p.E.PutGraph(ctx, GraphHistory, b)
+}
+
+func (p *Pipeline) historyNotEmpty(ctx context.Context) (bool, error) {
+	out, err := p.E.Select(ctx, "ASK { GRAPH <"+GraphHistory+"> { ?s ?p ?o } }")
+	if err != nil {
+		return false, err
+	}
+	var r struct {
+		Boolean bool `json:"boolean"`
+	}
+	if err := json.Unmarshal(out, &r); err != nil {
+		return false, err
+	}
+	return r.Boolean, nil
+}
+
+// saveHistory : exporte <history> (fichier temporaire, puis rename atomique).
+func (p *Pipeline) saveHistory(ctx context.Context) error {
+	if p.HistoryFile == "" {
+		return nil
+	}
+	has, err := p.historyNotEmpty(ctx)
+	if err != nil || !has {
+		return err // rien a exporter (GET sur un graphe absent = 404)
+	}
+	b, err := p.E.GetGraph(ctx, GraphHistory)
+	if err != nil {
+		return err
+	}
+	tmp := p.HistoryFile + ".tmp"
+	if err := os.WriteFile(tmp, b, 0o644); err != nil {
+		return err
+	}
+	return os.Rename(tmp, p.HistoryFile)
 }
 
 // NextDeadline : prochaine echeance utile (rules/deadline/*.rq), calculee par

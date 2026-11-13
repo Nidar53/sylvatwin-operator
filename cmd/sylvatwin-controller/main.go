@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -47,18 +48,19 @@ import (
 
 func main() {
 	var (
-		mgmtKC    = flag.String("mgmt-kubeconfig", "", "kubeconfig du cluster de management (lecture seule)")
-		mgmtName  = flag.String("mgmt-name", "management-cluster", "nom logique du cluster de management")
-		rules     = flag.String("rules", "", "dossier rules/ de sylvatwin-poc")
-		sparql    = flag.String("sparql", "http://127.0.0.1:7878", "endpoint SPARQL 1.1 (boucle locale uniquement)")
-		track     = flag.String("track", "sylvatwin-flux/sylvatwin-5gc", "Kustomizations suivies (ns/nom, separees par des virgules)")
-		nfNS      = flag.String("nf-namespace", "sylvatwin-5gc", "namespace des fonctions reseau dans les workloads")
-		out       = flag.String("out", "sylvatwin-out", "dossier de sortie (dernier cycle)")
-		cache     = flag.String("cache", "/opt/nidar/cache-desired", "cache des clones Git")
-		validity  = flag.Float64("validity", 600, "horizon de validite par defaut (s), si aucun Watch temoin")
-		debounce  = flag.Duration("debounce", 2*time.Second, "fenetre de fusion (glissante) des evenements Watch avant un cycle")
-		maxDelay  = flag.Duration("max-delay", 10*time.Second, "delai MAXIMAL entre le premier evenement en attente et le depart du cycle, meme sous flux continu (A2)")
-		kcTargets = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
+		mgmtKC      = flag.String("mgmt-kubeconfig", "", "kubeconfig du cluster de management (lecture seule)")
+		mgmtName    = flag.String("mgmt-name", "management-cluster", "nom logique du cluster de management")
+		rules       = flag.String("rules", "", "dossier rules/ de sylvatwin-poc")
+		sparql      = flag.String("sparql", "http://127.0.0.1:7878", "endpoint SPARQL 1.1 (boucle locale uniquement)")
+		track       = flag.String("track", "sylvatwin-flux/sylvatwin-5gc", "Kustomizations suivies (ns/nom, separees par des virgules)")
+		nfNS        = flag.String("nf-namespace", "sylvatwin-5gc", "namespace des fonctions reseau dans les workloads")
+		out         = flag.String("out", "sylvatwin-out", "dossier de sortie (dernier cycle)")
+		cache       = flag.String("cache", "/opt/nidar/cache-desired", "cache des clones Git")
+		historyFile = flag.String("history", "", "copie durable du graphe history (age des derives) ; defaut : <out>/history.nt. Oxigraph tourne EN MEMOIRE : ce fichier est la seule persistance")
+		validity    = flag.Float64("validity", 600, "horizon de validite par defaut (s), si aucun Watch temoin")
+		debounce    = flag.Duration("debounce", 2*time.Second, "fenetre de fusion (glissante) des evenements Watch avant un cycle")
+		maxDelay    = flag.Duration("max-delay", 10*time.Second, "delai MAXIMAL entre le premier evenement en attente et le depart du cycle, meme sous flux continu (A2)")
+		kcTargets   = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
 			"cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster) : leur contenu n'est jamais lu")
 		freshness    = flag.Duration("freshness-horizon", 30*time.Second, "H_frais (theta) : age maximal du temoin avant verdict inconnu")
 		journalFile  = flag.String("journal", "", "fichier JSONL des cycles et des timings (vide = stdout seulement)")
@@ -102,7 +104,10 @@ func main() {
 		}
 	}
 
-	jp := &judge.Pipeline{RulesDir: *rules, Validity: *validity}
+	jp := &judge.Pipeline{RulesDir: *rules, Validity: *validity, HistoryFile: *historyFile}
+	if jp.HistoryFile == "" {
+		jp.HistoryFile = filepath.Join(*out, "history.nt")
+	}
 	if *rules != "" {
 		e, err := judge.NewEndpoint(*sparql)
 		if err != nil {
