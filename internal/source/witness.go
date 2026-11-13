@@ -2,6 +2,7 @@ package source
 
 import (
 	"context"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 	"sync"
 	"time"
 
@@ -63,6 +64,7 @@ func (w *Witness) loop(ctx context.Context, dyn dynamic.Interface) {
 		// pas de Get a part, u_c(t) est connu des le demarrage.
 		res, err := dyn.Resource(gvrLease).Namespace(ns).Watch(ctx, metav1.ListOptions{})
 		if err != nil {
+			ctrllog.Log.WithName("temoin").Error(err, "Watch des Lease impossible (nouvel essai dans 5 s)", "cluster", w.cluster)
 			time.Sleep(5 * time.Second)
 			continue
 		}

@@ -5,10 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -210,8 +212,8 @@ func (p *Pipeline) saveHistory(ctx context.Context) error {
 	return os.Rename(tmp, p.HistoryFile)
 }
 
-// NextDeadline : prochaine echeance utile (rules/deadline/*.rq), calculee par
-// SPARQL sur l'etat courant (history + facts). Zero si aucune. L'appelant
+// NextDeadline : prochaine echeance utile (rules/deadline/*.rq) : le DELAI est
+// calcule par SPARQL, on y ajoute `now` sur l'etat courant (history + facts). Zero si aucune. L'appelant
 // programme UNE minuterie a cette date (A3).
 func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (time.Time, error) {
 	q, err := os.ReadFile(filepath.Join(p.RulesDir, "deadline", "01-prochaine-echeance.rq"))
@@ -244,7 +246,11 @@ func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (time.Time, 
 	if !ok || v.Value == "" {
 		return time.Time{}, nil
 	}
-	return time.Parse(time.RFC3339, v.Value)
+	secs, err := strconv.ParseFloat(v.Value, 64)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return now.Add(time.Duration(math.Ceil(secs)) * time.Second), nil
 }
 
 var secondsRe = regexp.MustCompile(`__SECONDS__\((\?\w+),\s*(\?\w+)\)`)

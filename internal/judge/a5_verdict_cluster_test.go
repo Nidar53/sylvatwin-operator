@@ -134,6 +134,7 @@ func TestHistoriqueSurvitAuRedemarrage(t *testing.T) {
 	}
 	ctx := context.Background()
 	e1, stop1 := startOxigraph(t, bin)
+	defer stop1()
 	p1 := &Pipeline{E: e1, RulesDir: filepath.Join(poc, "rules"), Validity: 600, HistoryFile: hist}
 	if _, err := p1.Run(ctx, facts, t0); err != nil {
 		t.Fatal(err)
