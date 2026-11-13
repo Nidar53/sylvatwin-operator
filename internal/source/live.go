@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -35,7 +36,13 @@ type Live struct {
 
 	mu   sync.Mutex
 	last *mapper.Snapshot // dernier instantane REUSSI
+
+	calls     atomic.Int64 // requetes API du Snapshot en cours
+	lastCalls atomic.Int64 // requetes API du dernier Snapshot termine
 }
+
+// LastAPIRequests : nombre de requetes API Kubernetes du dernier Snapshot (A7).
+func (l *Live) LastAPIRequests() int64 { return l.lastCalls.Load() }
 
 // SetWitness attache un Watch temoin (P1). A appeler avant le premier Snapshot.
 func (l *Live) SetWitness(w *Witness) { l.witness = w }
@@ -78,6 +85,8 @@ func (l *Live) Endpoint() string { return l.endpoint }
 // echoue, l'instantane precedent est renvoye avec le statut d'echec (P3).
 func (l *Live) Snapshot(ctx context.Context) *mapper.Snapshot {
 	now := time.Now().UTC().Truncate(time.Second)
+	l.calls.Store(0)
+	defer func() { l.lastCalls.Store(l.calls.Load()) }()
 	var objs []*unstructured.Unstructured
 	var scopes []mapper.Scope
 	status := mapper.StatusOK
@@ -134,6 +143,7 @@ func (l *Live) Cached() *mapper.Snapshot {
 }
 
 func (l *Live) list(ctx context.Context, sp Spec) ([]*unstructured.Unstructured, error) {
+	l.calls.Add(1)
 	gvr := schema.GroupVersionResource{Group: sp.Group, Version: sp.Version, Resource: sp.Resource}
 	ns := sp.Namespace
 	if ns == "*" {

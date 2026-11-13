@@ -79,6 +79,13 @@ type CycleReport struct {
 	DriftList []string          `json:"driftList"`
 	Verdict   []string          `json:"verdictList"`
 	TimingsMS map[string]int64  `json:"timingsMs"`
+	// FactsBytes : taille de l'ABox (faits) en N-Triples.
+	FactsBytes int `json:"factsBytes"`
+	// APIRequests : requetes API Kubernetes de ce cycle, par cluster (0 pour une echeance).
+	APIRequests map[string]int64 `json:"apiRequests"`
+	// DriftsByVerdict : classe de derive -> verdict -> nombre. Les causes racines
+	// et les impacts (FunctionImpactDrift) sont des classes distinctes.
+	DriftsByVerdict map[string]map[string]int `json:"driftsByVerdict"`
 	// Cause : evenement | echeance | reprise (A7). Une echeance ne relit pas le cluster.
 	Cause string `json:"cause,omitempty"`
 	// NextDeadline : prochaine echeance utile calculee par SPARQL (zero = aucune).
@@ -98,13 +105,16 @@ type DesiredReport struct {
 // Cycle : une synchronisation complete.
 func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 	rep := &CycleReport{Cause: t.Cause, Start: time.Now().UTC(), Clusters: map[string]string{}, Objects: map[string]int{},
-		Drifts: map[string]int{}, Verdicts: map[string]int{}, TimingsMS: map[string]int64{}}
+		Drifts: map[string]int{}, Verdicts: map[string]int{}, TimingsMS: map[string]int64{}, APIRequests: map[string]int64{}}
 	t0 := time.Now()
 	var snaps []*mapper.Snapshot
 	endpoints := map[string]string{}
 	var mgmtSnap *mapper.Snapshot
 	for _, s := range t.Sources {
 		sn := s.Snapshot(ctx)
+		if c, ok := s.(interface{ LastAPIRequests() int64 }); ok {
+			rep.APIRequests[sn.Cluster] = c.LastAPIRequests()
+		}
 		snaps = append(snaps, sn)
 		rep.Clusters[sn.Cluster] = sn.Status
 		rep.Objects[sn.Cluster] = len(sn.Objects)
@@ -161,7 +171,7 @@ func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 // Memo ; seul l'instant du jugement change (et l'age du temoin, lu en memoire).
 func (t *Twin) Rejudge(ctx context.Context) (*CycleReport, error) {
 	rep := &CycleReport{Cause: t.Cause, Start: time.Now().UTC(), Clusters: map[string]string{}, Objects: map[string]int{},
-		Drifts: map[string]int{}, Verdicts: map[string]int{}, TimingsMS: map[string]int64{}}
+		Drifts: map[string]int{}, Verdicts: map[string]int{}, TimingsMS: map[string]int64{}, APIRequests: map[string]int64{}}
 	if t.Memo == nil || !t.Memo.OK {
 		return rep, fmt.Errorf("rejugement impossible : aucun cycle complet precedent")
 	}
@@ -191,6 +201,7 @@ func (t *Twin) finish(ctx context.Context, rep *CycleReport, snaps []*mapper.Sna
 	if err := g.WriteNTriples(&nt); err != nil {
 		return rep, err
 	}
+	rep.FactsBytes = nt.Len()
 	if err := os.MkdirAll(t.OutDir, 0o755); err != nil {
 		return rep, err
 	}
@@ -220,6 +231,7 @@ func (t *Twin) finish(ctx context.Context, rep *CycleReport, snaps []*mapper.Sna
 		}
 		rep.Drifts, rep.DriftList = classes(res.Drifts, "https://w3id.org/sylvatwin/drift/")
 		rep.Verdicts, rep.Verdict = classes(res.Verdicts, "https://w3id.org/sylvatwin/verdict/")
+		rep.DriftsByVerdict = byClassAndVerdict(rep.Verdict)
 	}
 	rep.End = time.Now().UTC()
 	b, _ := json.MarshalIndent(rep, "", "  ")
@@ -298,6 +310,23 @@ func classes(nt []byte, base string) (map[string]int, []string) {
 	}
 	sort.Strings(list)
 	return count, list
+}
+
+// byClassAndVerdict : "<Verdict> <ClasseDeDerive>/..." -> classe -> verdict -> n.
+func byClassAndVerdict(list []string) map[string]map[string]int {
+	out := map[string]map[string]int{}
+	for _, e := range list {
+		v, rest, ok := strings.Cut(e, " ")
+		if !ok {
+			continue
+		}
+		cl, _, _ := strings.Cut(rest, "/")
+		if out[cl] == nil {
+			out[cl] = map[string]int{}
+		}
+		out[cl][v]++
+	}
+	return out
 }
 
 func writeAtomic(path string, b []byte) error {

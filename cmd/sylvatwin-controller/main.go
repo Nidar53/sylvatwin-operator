@@ -152,6 +152,16 @@ func main() {
 				rec["drifts"] = rep.Drifts
 				rec["verdicts"] = rep.Verdicts
 				rec["durationMs"] = rep.End.Sub(rep.Start).Milliseconds()
+				// A7 : mesures par cycle
+				rec["cause"] = rep.Cause // evenement | echeance | reprise
+				rec["timingsMs"] = rep.TimingsMS
+				rec["factsBytes"] = rep.FactsBytes
+				rec["apiRequests"] = rep.APIRequests
+				rec["driftsByVerdict"] = rep.DriftsByVerdict
+				rec["objects"] = rep.Objects
+				if !rep.NextDeadline.IsZero() {
+					rec["nextDeadline"] = rep.NextDeadline.UTC().Format(time.RFC3339)
+				}
 			}
 			// D3 : rep.Errors (erreurs PARTIELLES : desire inconnu, cible non
 			// resolue...) etait perdu quand err == nil (seul le champ "error" ci-

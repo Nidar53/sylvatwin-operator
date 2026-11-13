@@ -259,3 +259,15 @@ func TestCibleAmbigue(t *testing.T) {
 		t.Fatalf("erreur explicite 'ambigu' attendue, rep.Errors=%v", rep.Errors)
 	}
 }
+
+// A7 : causes racines et impacts sont comptes separement, par verdict.
+func TestByClassAndVerdict(t *testing.T) {
+	got := byClassAndVerdict([]string{
+		"ConfirmedViolation StaleConfigDrift/management-cluster/x/Pod/a",
+		"ConfirmedViolation StaleConfigDrift/management-cluster/x/Pod/b",
+		"UnknownVerdict FunctionImpactDrift/StaleConfigDrift/c/ns/Pod/a/c/ns/NetworkFunction/nrf",
+	})
+	if got["StaleConfigDrift"]["ConfirmedViolation"] != 2 || got["FunctionImpactDrift"]["UnknownVerdict"] != 1 || len(got) != 2 {
+		t.Fatalf("%v", got)
+	}
+}
