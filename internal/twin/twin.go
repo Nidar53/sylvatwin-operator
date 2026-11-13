@@ -101,7 +101,26 @@ func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 	rep.TimingsMS["observe"] = time.Since(t0).Milliseconds()
 
 	t0 = time.Now()
-	fc := source.FluxContext(mgmtSnap, t.Discovered, t.KubeconfigTargets)
+	// D1 : Discovered n'est pas toujours fourni explicitement (mode continu,
+	// watcher) ; il peut toujours etre deduit du Snapshot du management lui-
+	// meme (fonction pure, aucun appel reseau supplementaire). Si l'appelant
+	// l'a deja rempli (mode --once, qui l'obtient par un LIST a part), on
+	// GARDE sa valeur : elle peut porter des informations plus a jour.
+	discovered := t.Discovered
+	if discovered == nil {
+		discovered = source.DiscoveredFromSnapshot(mgmtSnap)
+	}
+	// D2 : les cibles DECLAREES (--kubeconfig-target) peuvent etre un nom NU
+	// ("my-workload-kubeadm-capd") ou deja la forme canonique ("ns/nom"). On
+	// resout les noms nus en cherchant le Cluster CAPI correspondant dans le
+	// management ; zero ou plusieurs correspondances -> erreur EXPLICITE dans
+	// le rapport, et la cible reste absente de resolvedTargets (le desire sera
+	// "inconnu" pour toute Kustomization qui la visait, on n'invente rien).
+	resolvedTargets, resolveErrs := source.ResolveTargets(mgmtSnap, t.KubeconfigTargets)
+	for _, e := range resolveErrs {
+		rep.Errors = append(rep.Errors, "kubeconfig-target "+e)
+	}
+	fc := source.FluxContext(mgmtSnap, discovered, resolvedTargets)
 	var des []*mapper.Desired
 	for _, tr := range t.Tracked {
 		d, dr := t.desired(ctx, mgmtSnap, fc, tr)
@@ -240,7 +259,12 @@ func writeAtomic(path string, b []byte) error {
 	return os.Rename(tmp.Name(), path)
 }
 
-// Summary : une ligne lisible pour les logs (aucune donnee sensible).
+// Summary : une ligne lisible pour les logs (aucune donnee sensible). D3 :
+// erreursPartielles = len(r.Errors) (desire inconnu, cible --kubeconfig-target
+// non resolue...), DISTINCT de l'erreur globale du cycle (celle-ci, si elle
+// existe, est journalisee a part par l'appelant : twin.Twin.Cycle la renvoie
+// en 2e valeur de retour, jamais dans r.Errors).
 func (r *CycleReport) Summary() string {
-	return fmt.Sprintf("clusters=%v faits=%d derives=%v verdicts=%v duree=%s", r.Clusters, r.Facts, r.Drifts, r.Verdicts, r.End.Sub(r.Start).Round(time.Millisecond))
+	return fmt.Sprintf("clusters=%v faits=%d derives=%v verdicts=%v erreursPartielles=%d duree=%s",
+		r.Clusters, r.Facts, r.Drifts, r.Verdicts, len(r.Errors), r.End.Sub(r.Start).Round(time.Millisecond))
 }

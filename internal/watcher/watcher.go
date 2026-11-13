@@ -71,6 +71,12 @@ type Options struct {
 	Tracked          []twin.Tracked
 	CacheDir         string
 	OutDir           string
+	// KubeconfigTargets : correspondances DECLAREES (--kubeconfig-target,
+	// "ns/secret=cluster") cote desire, transmises telles quelles au Twin (D1).
+	// "cluster" peut etre un nom NU (D2 : resolu vers le nom canonique par
+	// twin.Twin.Cycle, qui a acces a l'instantane du management) ou deja la
+	// forme canonique "namespace/nom".
+	KubeconfigTargets map[string]string
 	JudgePipeline    twin.Twin // gabarit : Judge, CacheDir, OutDir, Tracked recopies
 	Debounce         time.Duration
 	// ResyncSafetyNet : filet de securite. 0 = desactive.
@@ -402,9 +408,16 @@ func (w *Watcher) liveSource(name string, cfg *rest.Config, specs []source.Spec)
 }
 
 // buildTwin : reconstruit un twin.Twin a partir des FactSource actuelles.
+//
+// D1 : KubeconfigTargets (--kubeconfig-target) est transmis au Twin (jadis
+// jete par main.go). Discovered n'a PAS besoin d'etre rempli ici : twin.Twin.
+// Cycle le deduit lui-meme du Snapshot du management (source.DiscoveredFromSnapshot,
+// fonction pure) quand il est nil, ce qui est toujours le cas en mode continu
+// (le watcher n'a pas de LIST CAPI a part, il observe deja tout par Watch).
 func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 	t := &twin.Twin{Management: w.opts.ManagementConfig, ManagementName: w.opts.ManagementName,
-		Tracked: w.opts.Tracked, CacheDir: w.opts.CacheDir, OutDir: w.opts.OutDir, Judge: w.opts.JudgePipeline.Judge}
+		Tracked: w.opts.Tracked, CacheDir: w.opts.CacheDir, OutDir: w.opts.OutDir, Judge: w.opts.JudgePipeline.Judge,
+		KubeconfigTargets: w.opts.KubeconfigTargets}
 
 	if local, err := w.mgr.GetCluster(ctx, mcmanager.LocalCluster); err == nil {
 		if ls, e := w.liveSource(w.opts.ManagementName, local.GetConfig(), specsFor(true, w.opts.NFNamespace)); e == nil {

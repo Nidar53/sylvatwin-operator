@@ -127,6 +127,7 @@ func main() {
 		CacheDir:           *cache,
 		OutDir:             *out,
 		JudgePipeline:      twin.Twin{Judge: jp},
+		KubeconfigTargets:  source.ParseTargets(*kcTargets),
 		Debounce:           *debounce,
 		ResyncSafetyNet:    *resyncNet,
 		WitnessNode:        *witnessNode,
@@ -149,11 +150,28 @@ func main() {
 				rec["verdicts"] = rep.Verdicts
 				rec["durationMs"] = rep.End.Sub(rep.Start).Milliseconds()
 			}
+			// D3 : rep.Errors (erreurs PARTIELLES : desire inconnu, cible non
+			// resolue...) etait perdu quand err == nil (seul le champ "error" ci-
+			// dessus, l'erreur GLOBALE du cycle, etait journalise). rep peut etre
+			// nil si err != nil ET que Cycle a echoue avant de construire rep
+			// (twin.Twin.Cycle le renvoie toujours non-nil en pratique, mais on
+			// se protege). Champ DISTINCT ("partialErrors") de "error" (l'erreur
+			// globale) : les deux peuvent coexister (ex. cycle reussi, mais une
+			// Kustomization au desire inconnu).
+			if rep != nil {
+				rec["partialErrorCount"] = len(rep.Errors)
+				if len(rep.Errors) > 0 {
+					rec["partialErrors"] = rep.Errors
+				}
+			}
 			writeJournal(rec)
 			if err != nil {
 				logger.Error(err, "cycle en erreur", "trigger", trigger)
 			} else {
 				logger.Info("cycle termine", "trigger", trigger, "resume", rep.Summary())
+				for _, e := range rep.Errors {
+					logger.Info("cycle : erreur partielle", "trigger", trigger, "erreur", e)
+				}
 			}
 		},
 		Instrument: func(ev watcher.Timing) {
@@ -168,8 +186,6 @@ func main() {
 			})
 		},
 	}
-	_ = source.ParseTargets(*kcTargets) // reserve : KubeconfigTargets cote twin.Twin (desired), watcher ne l'utilise pas directement
-
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 

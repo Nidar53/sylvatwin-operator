@@ -29,6 +29,7 @@ import (
 
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/orange/sylvatwin-operator/internal/iri"
 	"github.com/orange/sylvatwin-operator/internal/judge"
 	"github.com/orange/sylvatwin-operator/internal/mapper"
 	"github.com/orange/sylvatwin-operator/internal/source"
@@ -96,7 +97,11 @@ func main() {
 			continue
 		}
 		cfg.UserAgent = "sylvatwin-once"
-		ws, err := source.NewLive(d.Name, cfg, source.WorkloadSpecs(*nfNS))
+		// D2 : nom CANONIQUE (namespace/nom), meme forme que le provider
+		// cluster-api de multicluster-runtime (mode continu) : une seule regle
+		// de nommage des deux cotes (internal/iri.CanonicalCluster).
+		wlName := iri.CanonicalCluster(d.Namespace, d.Name)
+		ws, err := source.NewLive(wlName, cfg, source.WorkloadSpecs(*nfNS))
 		if err != nil {
 			fail(err.Error())
 		}
