@@ -128,6 +128,57 @@ func TestMachineHasNodeViseLeNodeObserve(t *testing.T) {
 	}
 }
 
+// TestMachineHasNode_ClusterDeManagementLuiMeme : NON-REGRESSION (trouvee en
+// verifiant sur le vrai banc, 13/11/2026). Le cluster de management est
+// LUI-MEME decrit par un Cluster CAPI (ex. "sylva-system/management-cluster")
+// dont le nom CANONIQUE ("sylva-system/management-cluster") NE correspond
+// PAS au nom logique reel du FactSource management (--mgmt-name,
+// INDEPENDANT, ici "management-cluster" tout court). Un calcul aveugle
+// iri.CanonicalCluster(namespace, nom) pour TOUTE Machine casserait donc
+// machineHasNode pour la Machine qui decrit le management : elle viserait un
+// Node sous une IRI qui n'existe nulle part (faux MachineNodeMismatchDrift,
+// regression constatee lors de la verification sur le banc reel avant ce
+// test). resolveDescribedClusterName doit reconnaitre ce cas via
+// l'endpoint (host:port) du Cluster CAPI == celui du Snapshot courant.
+func TestMachineHasNode_ClusterDeManagementLuiMeme(t *testing.T) {
+	at := time.Now().UTC()
+	mgmtCAPICluster := &unstructured.Unstructured{Object: map[string]any{
+		"apiVersion": "cluster.x-k8s.io/v1beta2", "kind": "Cluster",
+		"metadata": map[string]any{"name": "management-cluster", "namespace": "sylva-system"},
+		"spec":     map[string]any{"controlPlaneEndpoint": map[string]any{"host": "172.30.0.3", "port": int64(6443)}},
+	}}
+	mgmtMachine := &unstructured.Unstructured{Object: map[string]any{
+		"apiVersion": "cluster.x-k8s.io/v1beta2", "kind": "Machine",
+		"metadata": map[string]any{"name": "management-cluster-control-plane-gn9sx", "namespace": "sylva-system"},
+		"spec":     map[string]any{"clusterName": "management-cluster"},
+		"status":   map[string]any{"nodeRef": map[string]any{"name": "management-cluster-control-plane-gn9sx"}},
+	}}
+	mgmtNode := &unstructured.Unstructured{Object: map[string]any{
+		"apiVersion": "v1", "kind": "Node",
+		"metadata": map[string]any{"name": "management-cluster-control-plane-gn9sx", "uid": "node-uid-1"},
+	}}
+	mg := &Snapshot{Cluster: "management-cluster", Endpoint: "172.30.0.3:6443", Status: StatusOK,
+		LastSync: at, ObservedAt: at,
+		Objects: []*unstructured.Unstructured{mgmtCAPICluster, mgmtMachine, mgmtNode},
+		Scopes:  []Scope{{"Machine", "*"}, {"Cluster", "*"}, {"Node", "*"}}}
+
+	g := Build(Input{Snapshots: []*Snapshot{mg}})
+	machine := rdf.IRI(iri.Resource("management-cluster", "sylva-system", "Machine", "cluster.x-k8s.io", "management-cluster-control-plane-gn9sx"))
+	targets := g.Objects(machine, rdf.C("machineHasNode"))
+	if len(targets) != 1 {
+		t.Fatalf("machineHasNode : attendu exactement 1 cible, trouve %d (%v)", len(targets), targets)
+	}
+	// L'IRI attendue utilise le nom LOGIQUE REEL du management ("management-cluster"),
+	// PAS le nom canonique "sylva-system/management-cluster" (qui serait un artefact).
+	wantNodeIRI := rdf.IRI(iri.Resource("management-cluster", "", "Node", "", "management-cluster-control-plane-gn9sx"))
+	if targets[0] != wantNodeIRI {
+		t.Fatalf("machineHasNode vise %v, attendu %v (nom logique reel du management, pas le nom canonique)", targets[0], wantNodeIRI)
+	}
+	if !g.Has(wantNodeIRI, rdf.Type, rdf.C("Node")) {
+		t.Fatal("l'IRI visee par machineHasNode n'est pas l'individu :Node reellement observe")
+	}
+}
+
 func TestSecretMetadonneesSeulement(t *testing.T) {
 	// La photo ne contient pas .data pour le Secret ; on verifie que le mapper
 	// ne produit aucun litteral qui viendrait d'un champ data, meme si present.

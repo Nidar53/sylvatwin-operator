@@ -45,9 +45,34 @@ func mapCluster(g *rdf.Graph, s *Snapshot) {
 
 // mapL1 : Cluster et Machine (CAPI), observes dans le cluster de management.
 // endpoints : "host:port" -> nom du cluster reel observe a cette adresse (pour
-// clusterDescribedBy, ecrit sur le cluster REEL).
+// clusterDescribedBy, ecrit sur le cluster REEL, ET pour machineHasNode : voir
+// resolveDescribedClusterName ci-dessous).
 func mapL1(g *rdf.Graph, s *Snapshot, endpoints map[string]string) {
 	at := s.ObservedAt
+	// 1ere passe : "namespace/nom" du Cluster CAPI -> son "host:port". Sert a
+	// resoudre machineHasNode (2e passe) vers le nom REEL du FactSource qui
+	// decrit ce cluster (comme clusterDescribedBy), PAS un calcul aveugle
+	// depuis namespace/nom : le cluster de MANAGEMENT lui-meme est decrit par
+	// un Cluster CAPI (ex. "sylva-system/management-cluster") dont le nom
+	// canonique NE correspond PAS a son nom logique reel (--mgmt-name,
+	// independant, fourni par l'utilisateur) — contrairement a un cluster
+	// workload, ou namespace/nom EST la forme que le provider cluster-api de
+	// multicluster-runtime utilise pour l'engager.
+	capiEndpoint := map[string]string{} // "ns/nom" -> "host:port"
+	for _, o := range s.Objects {
+		if groupOf(o) != "cluster.x-k8s.io" || kindOf(o) != "Cluster" {
+			continue
+		}
+		host := str(o.Object, "spec", "controlPlaneEndpoint", "host")
+		if host == "" {
+			continue
+		}
+		port, _ := i64(o.Object, "spec", "controlPlaneEndpoint", "port")
+		if port == 0 {
+			port = 6443
+		}
+		capiEndpoint[o.GetNamespace()+"/"+o.GetName()] = fmt.Sprintf("%s:%d", host, port)
+	}
 	for _, o := range s.Objects {
 		if groupOf(o) != "cluster.x-k8s.io" {
 			continue
@@ -62,13 +87,8 @@ func mapL1(g *rdf.Graph, s *Snapshot, endpoints map[string]string) {
 				g.Add(c, rdf.C("ready"), rdf.Bool(st == "True"))
 			}
 			managedByLabels(g, s.Cluster, c, o.GetNamespace(), o.GetLabels())
-			host := str(o.Object, "spec", "controlPlaneEndpoint", "host")
-			port, _ := i64(o.Object, "spec", "controlPlaneEndpoint", "port")
-			if host != "" {
-				if port == 0 {
-					port = 6443
-				}
-				if real, ok := endpoints[fmt.Sprintf("%s:%d", host, port)]; ok {
+			if ep, ok := capiEndpoint[o.GetNamespace()+"/"+o.GetName()]; ok {
+				if real, ok := endpoints[ep]; ok {
 					g.Add(clusterIRI(real), rdf.C("clusterDescribedBy"), c)
 				}
 			}
@@ -79,17 +99,21 @@ func mapL1(g *rdf.Graph, s *Snapshot, endpoints map[string]string) {
 			if cn := str(o.Object, "spec", "clusterName"); cn != "" {
 				g.Add(m, rdf.C("machineOfCluster"),
 					rdf.IRI(iri.Resource(s.Cluster, o.GetNamespace(), "Cluster", "cluster.x-k8s.io", cn)))
-				// Le Node vit dans le cluster DECRIT : son nom logique est le nom
-				// CANONIQUE du cluster workload, SOUS LA MEME FORME que celui utilise
-				// par le provider cluster-api de multicluster-runtime v0.24.1 pour
-				// engager ce cluster ("namespace/nom", cf. iri.CanonicalCluster) —
-				// PAS le seul nom nu du Cluster CAPI, qui ne correspond au nom logique
-				// du FactSource que par coincidence (quand namespace == nom). Le
-				// namespace du Cluster CAPI decrit est celui de la Machine qui le
-				// reference (convention CAPI : Machine et Cluster vivent dans le meme
-				// namespace).
+				// Le Node vit dans le cluster DECRIT : son nom logique est celui du
+				// FactSource REEL qui l'observe, resolu par endpoint (comme
+				// clusterDescribedBy ci-dessus) — JAMAIS un calcul aveugle depuis
+				// namespace/nom (voir resolveDescribedClusterName). Si l'endpoint ne
+				// correspond a AUCUN FactSource actuellement engage (ex. cluster
+				// workload pas encore observe ce cycle), on replie sur le nom
+				// CANONIQUE (meilleure estimation disponible, coherente avec
+				// iri.CanonicalCluster utilise ailleurs pour ce meme cluster), sauf
+				// quand le Cluster CAPI decrit est celui du management LUI-MEME
+				// (son host:port == celui du Snapshot courant) : dans ce cas precis
+				// on connait le nom reel avec certitude (s.Cluster), meme sans table
+				// d'endpoints, et on ne doit PAS utiliser le nom canonique (qui
+				// serait faux : --mgmt-name est independant de "namespace/nom").
 				if node := str(o.Object, "status", "nodeRef", "name"); node != "" {
-					wl := iri.CanonicalCluster(o.GetNamespace(), cn)
+					wl := resolveDescribedClusterName(s, o.GetNamespace(), cn, capiEndpoint, endpoints)
 					g.Add(m, rdf.C("machineHasNode"), rdf.IRI(iri.Resource(wl, "", "Node", "", node)))
 				}
 			}
@@ -98,4 +122,32 @@ func mapL1(g *rdf.Graph, s *Snapshot, endpoints map[string]string) {
 			}
 		}
 	}
+}
+
+// resolveDescribedClusterName : nom LOGIQUE REEL du cluster decrit par le
+// Cluster CAPI (capiNS, capiName), tel qu'un FactSource l'utilise comme
+// Snapshot.Cluster. Ordre de resolution :
+//  1. l'endpoint du Cluster CAPI correspond a celui du Snapshot COURANT (s) :
+//     le Cluster CAPI decrit s LUI-MEME (cas du management, dont le nom
+//     logique --mgmt-name est independant de "namespace/nom") -> s.Cluster ;
+//  2. l'endpoint correspond a un AUTRE FactSource deja connu (table
+//     endpoints, alimentee par tous les Snapshots du cycle, meme mecanisme
+//     que clusterDescribedBy) -> ce nom-la ;
+//  3. aucune correspondance (cluster pas encore engage/observe ce cycle) :
+//     repli sur le nom CANONIQUE (iri.CanonicalCluster(capiNS, capiName)),
+//     qui EST la forme reelle pour tout cluster WORKLOAD (convention du
+//     provider cluster-api de multicluster-runtime), donc une estimation
+//     fiable dans ce cas (jamais utilisee pour le management, deja couvert
+//     par le cas 1).
+func resolveDescribedClusterName(s *Snapshot, capiNS, capiName string, capiEndpoint, endpoints map[string]string) string {
+	ep, hasEP := capiEndpoint[capiNS+"/"+capiName]
+	if hasEP && ep == s.Endpoint {
+		return s.Cluster
+	}
+	if hasEP {
+		if real, ok := endpoints[ep]; ok {
+			return real
+		}
+	}
+	return iri.CanonicalCluster(capiNS, capiName)
 }
