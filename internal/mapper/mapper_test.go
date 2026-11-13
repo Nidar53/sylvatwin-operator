@@ -262,3 +262,29 @@ func desiredFromSnapshot(s *Snapshot) []*unstructured.Unstructured {
 	}
 	return out
 }
+
+// A6 : le caractere optionnel d'une reference a un Secret est ecrit comme un fait.
+func TestSecretRefInfo_Optionnel(t *testing.T) {
+	obj := map[string]any{"spec": map[string]any{"template": map[string]any{"spec": map[string]any{
+		"volumes": []any{
+			map[string]any{"secret": map[string]any{"secretName": "opt-seul", "optional": true}},
+			map[string]any{"secret": map[string]any{"secretName": "mixte", "optional": true}},
+			map[string]any{"secret": map[string]any{"secretName": "requis"}},
+		},
+		"containers": []any{map[string]any{
+			"env":     []any{map[string]any{"valueFrom": map[string]any{"secretKeyRef": map[string]any{"name": "mixte"}}}},
+			"envFrom": []any{map[string]any{"secretRef": map[string]any{"name": "env-opt", "optional": true}}},
+		}},
+		"imagePullSecrets": []any{map[string]any{"name": "pull"}},
+	}}}}
+	got := secretRefInfo(obj, "spec", "template", "spec")
+	want := map[string]bool{"opt-seul": true, "mixte": false, "requis": false, "env-opt": true, "pull": false}
+	if len(got) != len(want) {
+		t.Fatalf("got %v want %v", got, want)
+	}
+	for k, v := range want {
+		if got[k] != v {
+			t.Errorf("%s : optionnel=%v, attendu %v", k, got[k], v)
+		}
+	}
+}

@@ -1,5 +1,17 @@
 package mapper
 
+// VALEURS PAR DEFAUT ECRITES PAR LE GREFFIER (A6). Quand un champ est absent de
+// l'objet observe, le mapper ecrit la valeur par defaut de Kubernetes / Flux au
+// lieu de ne rien ecrire ; le juge ne distingue donc pas "absent" de "valeur par
+// defaut". Liste exhaustive :
+//   - Deployment : spec.replicas absent -> observedSpecReplicas = 1 ;
+//     status.readyReplicas absent -> actualReplicas = 0 ;
+//     spec.progressDeadlineSeconds absent -> 600 (defaut Kubernetes).
+//   - Flux (Kustomization, HelmRelease...) : spec.suspend absent -> suspended = false.
+//   - L4 (Open5GS) : port N2/N4/N3 absent de la configuration -> port et protocole
+//     par defaut d'Open5GS v2.7.2 (ngap 38412/SCTP, pfcp 8805/UDP, gtpu 2152/UDP).
+// Aucune autre valeur n'est inventee : un champ sans defaut connu n'est pas ecrit.
+
 import (
 	"strings"
 	"time"

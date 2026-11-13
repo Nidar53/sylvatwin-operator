@@ -51,8 +51,11 @@ func mapL2(g *rdf.Graph, s *Snapshot) {
 			g.Add(sec, rdf.Type, rdf.C("Secret"))
 			labels(g, sec, o.GetLabels())
 		case "ConfigMap":
-			// Jamais o.Object["data"] : seulement l'existence et la derniere
-			// modification (managedFields), pour StaleConfigDrift (D4).
+			// Ici (L2) : seulement l'existence et la derniere
+			// modification (managedFields), pour StaleConfigDrift (D4). Le CONTENU
+			// (data) d'une ConfigMap est lu ailleurs, par l'adaptateur L4 (l4_nf.go) :
+			// c'est la configuration des NF, qui n'est pas secrete. Un Secret, lui,
+			// n'est jamais lu que par ses metadonnees (voir plus haut).
 			cm := identity(g, s.Cluster, o, at)
 			g.Add(cm, rdf.Type, rdf.C("ConfigMap"))
 			if mt := lastManagedFieldTime(o); !mt.IsZero() {
@@ -76,8 +79,20 @@ func mapDeployment(g *rdf.Graph, cluster string, o *unstructured.Unstructured, a
 	// Valeur 3/3 : status.readyReplicas (0 si absent).
 	ready, _ := i64(o.Object, "status", "readyReplicas")
 	g.Add(d, rdf.C("actualReplicas"), rdf.Int(ready))
-	for _, sn := range secretRefs(o.Object, "spec", "template", "spec") {
-		g.Add(d, rdf.C("referencesSecret"), rdf.IRI(iri.Resource(cluster, o.GetNamespace(), "Secret", "", sn)))
+	refs := secretRefInfo(o.Object, "spec", "template", "spec")
+	names := make([]string, 0, len(refs))
+	for sn := range refs {
+		names = append(names, sn)
+	}
+	sort.Strings(names)
+	for _, sn := range names {
+		sec := rdf.IRI(iri.Resource(cluster, o.GetNamespace(), "Secret", "", sn))
+		g.Add(d, rdf.C("referencesSecret"), sec)
+		// Fait : TOUTES les references a ce Secret sont optionnelles (optional: true).
+		// La regle BrokenReference ne le lit pas (a decider, pas ici).
+		if refs[sn] {
+			g.Add(d, rdf.C("referencesSecretOptionally"), sec)
+		}
 	}
 	for _, cn := range configMapRefs(o.Object) {
 		g.Add(d, rdf.C("mountsConfigMap"), rdf.IRI(iri.Resource(cluster, o.GetNamespace(), "ConfigMap", "", cn)))
@@ -177,24 +192,32 @@ func labels(g *rdf.Graph, obj rdf.Term, l map[string]string) {
 	}
 }
 
-// secretRefs : Secrets references par un pod template (volumes, env, envFrom,
+// secretRefInfo : Secrets references par un pod template (volumes, env, envFrom,
 // imagePullSecrets ; conteneurs et init-conteneurs). Lecture de la SPEC du
-// Deployment, jamais du Secret.
-func secretRefs(obj map[string]any, podSpecPath ...string) []string {
+// Deployment, jamais du Secret. Valeur : true si TOUTES les references a ce
+// Secret sont optionnelles (optional: true ; imagePullSecrets ne l'est jamais).
+func secretRefInfo(obj map[string]any, podSpecPath ...string) map[string]bool {
 	set := map[string]bool{}
+	add := func(name string, optional bool) {
+		if name == "" {
+			return
+		}
+		if prev, seen := set[name]; seen {
+			set[name] = prev && optional
+		} else {
+			set[name] = optional
+		}
+	}
+	opt := func(m map[string]any, path ...string) bool { b, _ := boolean(m, path...); return b }
 	ps, _, _ := unstructured.NestedMap(obj, podSpecPath...)
 	vols, _, _ := unstructured.NestedSlice(ps, "volumes")
 	for _, v := range vols {
 		if m, ok := v.(map[string]any); ok {
-			if n := str(m, "secret", "secretName"); n != "" {
-				set[n] = true
-			}
+			add(str(m, "secret", "secretName"), opt(m, "secret", "optional"))
 			srcs, _, _ := unstructured.NestedSlice(m, "projected", "sources")
 			for _, sr := range srcs {
 				if sm, ok := sr.(map[string]any); ok {
-					if n := str(sm, "secret", "name"); n != "" {
-						set[n] = true
-					}
+					add(str(sm, "secret", "name"), opt(sm, "secret", "optional"))
 				}
 			}
 		}
@@ -209,17 +232,13 @@ func secretRefs(obj map[string]any, podSpecPath ...string) []string {
 			envs, _, _ := unstructured.NestedSlice(cm, "env")
 			for _, e := range envs {
 				if em, ok := e.(map[string]any); ok {
-					if n := str(em, "valueFrom", "secretKeyRef", "name"); n != "" {
-						set[n] = true
-					}
+					add(str(em, "valueFrom", "secretKeyRef", "name"), opt(em, "valueFrom", "secretKeyRef", "optional"))
 				}
 			}
 			efs, _, _ := unstructured.NestedSlice(cm, "envFrom")
 			for _, e := range efs {
 				if em, ok := e.(map[string]any); ok {
-					if n := str(em, "secretRef", "name"); n != "" {
-						set[n] = true
-					}
+					add(str(em, "secretRef", "name"), opt(em, "secretRef", "optional"))
 				}
 			}
 		}
@@ -227,11 +246,16 @@ func secretRefs(obj map[string]any, podSpecPath ...string) []string {
 	ips, _, _ := unstructured.NestedSlice(ps, "imagePullSecrets")
 	for _, p := range ips {
 		if pm, ok := p.(map[string]any); ok {
-			if n, _ := pm["name"].(string); n != "" {
-				set[n] = true
-			}
+			n, _ := pm["name"].(string)
+			add(n, false)
 		}
 	}
+	return set
+}
+
+// secretRefs : noms des Secrets references, tries.
+func secretRefs(obj map[string]any, podSpecPath ...string) []string {
+	set := secretRefInfo(obj, podSpecPath...)
 	out := make([]string, 0, len(set))
 	for n := range set {
 		out = append(out, n)
