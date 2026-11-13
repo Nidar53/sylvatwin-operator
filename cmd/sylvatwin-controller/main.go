@@ -17,7 +17,7 @@ Usage :
 	sylvatwin-controller --mgmt-kubeconfig management-cluster-kubeconfig \
 	  --rules /chemin/sylvatwin-poc/rules --sparql http://127.0.0.1:7878 \
 	  --track sylvatwin-flux/sylvatwin-5gc --nf-namespace sylvatwin-5gc \
-	  --out ./sylvatwin-out --debounce 2s --witness-node <nom-du-noeud-workload>
+	  --out ./sylvatwin-out --debounce 2s
 */
 package main
 
@@ -60,7 +60,6 @@ func main() {
 		maxDelay  = flag.Duration("max-delay", 10*time.Second, "delai MAXIMAL entre le premier evenement en attente et le depart du cycle, meme sous flux continu (A2)")
 		kcTargets = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
 			"cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster) : leur contenu n'est jamais lu")
-		witnessNode  = flag.String("witness-node", "", "nom du Node workload dont la Lease sert de temoin (vide = pas de temoin)")
 		freshness    = flag.Duration("freshness-horizon", 30*time.Second, "H_frais (theta) : age maximal du temoin avant verdict inconnu")
 		journalFile  = flag.String("journal", "", "fichier JSONL des cycles et des timings (vide = stdout seulement)")
 		metricsAddr  = flag.String("metrics-bind-address", "", "adresse d'ecoute des metriques (0 ou :0 = port libre, utile pour plusieurs instances)")
@@ -130,7 +129,6 @@ func main() {
 		KubeconfigTargets:  source.ParseTargets(*kcTargets),
 		Debounce:           *debounce,
 		MaxDelay:           *maxDelay,
-		WitnessNode:        *witnessNode,
 		FreshnessHorizon:   *freshness,
 		MetricsBindAddress: *metricsAddr,
 		HostOverride: func(endpoint string) string {
@@ -194,9 +192,7 @@ func main() {
 		fail(err.Error())
 	}
 
-	if *witnessNode != "" {
-		logger.Info("Watch temoin configure", "node", *witnessNode, "theta", freshness.String())
-	}
+	logger.Info("Watch temoin par cluster workload decouvert", "theta", freshness.String())
 	logger.Info("sylvatwin-controller demarre", "debounce", debounce.String())
 	if err := w.Start(ctx); err != nil {
 		fail(err.Error())

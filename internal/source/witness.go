@@ -13,7 +13,12 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-// Witness : Watch TEMOIN d'une seule Lease de noeud (partie 2, P1).
+// Witness : Watch TEMOIN des Lease de noeud d'UN cluster workload (partie 2, P1 ;
+// A5 : un temoin par workload decouvert, sans nom de noeud a configurer).
+//
+// Les Lease du namespace kube-node-lease sont toutes surveillees : n'importe quel
+// evenement recu prouve que le canal Watch vers ce cluster est vivant. Le cout
+// est negligeable (un renouvellement par noeud toutes les ~10 s).
 //
 // Exigence du contrôleur (partie 1) : ne jamais surveiller les Lease par
 // defaut. CE Watch est l'exception assumee et documentee : il NE sert PAS a
@@ -26,9 +31,8 @@ import (
 var gvrLease = schema.GroupVersionResource{Group: "coordination.k8s.io", Version: "v1", Resource: "leases"}
 
 type Witness struct {
-	cluster   string
-	leaseName string
-	theta     time.Duration
+	cluster string
+	theta   time.Duration
 
 	mu       sync.RWMutex
 	lastSeen time.Time
@@ -37,12 +41,12 @@ type Witness struct {
 // NewWitness demarre immediatement le Watch (bloquant dans une goroutine
 // interne, relance automatique en cas de coupure). cfg n'est jamais
 // journalise ni stocke au-dela de la construction du client.
-func NewWitness(ctx context.Context, cluster, nodeName string, theta time.Duration, cfg *rest.Config) (*Witness, error) {
+func NewWitness(ctx context.Context, cluster string, theta time.Duration, cfg *rest.Config) (*Witness, error) {
 	dyn, err := dynamic.NewForConfig(cfg)
 	if err != nil {
 		return nil, err
 	}
-	w := &Witness{cluster: cluster, leaseName: nodeName, theta: theta}
+	w := &Witness{cluster: cluster, theta: theta}
 	go w.loop(ctx, dyn)
 	return w, nil
 }
@@ -55,14 +59,9 @@ func (w *Witness) loop(ctx context.Context, dyn dynamic.Interface) {
 			return
 		default:
 		}
-		// Snapshot initial (evite d'attendre le premier renouvellement apres
-		// un redemarrage de l'operateur).
-		if obj, err := dyn.Resource(gvrLease).Namespace(ns).Get(ctx, w.leaseName, metav1.GetOptions{}); err == nil {
-			w.observe(obj)
-		}
-		res, err := dyn.Resource(gvrLease).Namespace(ns).Watch(ctx, metav1.ListOptions{
-			FieldSelector: "metadata.name=" + w.leaseName,
-		})
+		// Sans resourceVersion, le Watch rejoue d'abord l'etat courant (ADDED) :
+		// pas de Get a part, u_c(t) est connu des le demarrage.
+		res, err := dyn.Resource(gvrLease).Namespace(ns).Watch(ctx, metav1.ListOptions{})
 		if err != nil {
 			time.Sleep(5 * time.Second)
 			continue
@@ -104,8 +103,8 @@ func (w *Witness) LastSeen() time.Time {
 	return w.lastSeen
 }
 
-// Name : nom de la Lease temoin.
-func (w *Witness) Name() string { return w.leaseName }
+// Name : ce qui est surveille (ecrit comme fait :witnessLeaseName).
+func (w *Witness) Name() string { return "kube-node-lease" }
 
 // Theta : horizon de fraicheur configure.
 func (w *Witness) Theta() time.Duration { return w.theta }

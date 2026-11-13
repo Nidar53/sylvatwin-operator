@@ -83,10 +83,6 @@ type Options struct {
 	// depart du cycle, meme si les evenements continuent d'arriver (A2).
 	// Defaut : 5 x Debounce.
 	MaxDelay time.Duration
-	// WitnessNode : nom du Node DANS LE WORKLOAD dont la Lease sert de temoin
-	// de fraicheur (partie 2, P1). Vide = pas de temoin. Attache automatiquement
-	// a la premiere source workload engagee (H0 : un seul workload en pratique).
-	WitnessNode string
 	// FreshnessHorizon : H_frais (theta), publie comme fait sur le cluster temoin.
 	FreshnessHorizon time.Duration
 	// OnReport est appele apres chaque cycle (journal, status TwinSync...).
@@ -143,9 +139,8 @@ type Watcher struct {
 	deadline time.Time
 	failures int
 
-	witMu   sync.Mutex
-	witness *source.Witness
-	witFor  string // nom du cluster workload auquel le temoin est attache
+	witMu     sync.Mutex
+	witnesses map[string]*source.Witness // UN temoin par cluster workload decouvert (A5)
 
 	// srcMu/sources : UNE *source.Live par cluster, reutilisee a CHAQUE cycle
 	// (pas recreee). Necessaire pour la garantie P3 (source.go : "si le
@@ -472,29 +467,26 @@ func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 	return t
 }
 
-// witnessFor : demarre (une seule fois) le Watch temoin sur le premier cluster
-// workload engage, s'il est configure. Reutilise ensuite la meme instance.
+// witnessFor : le Watch temoin du cluster workload `cluster` (cree au premier
+// besoin, puis reutilise ; il vit autant que le Watcher).
 func (w *Watcher) witnessFor(ctx context.Context, cluster string, cfg *rest.Config) *source.Witness {
-	if w.opts.WitnessNode == "" {
-		return nil
-	}
 	w.witMu.Lock()
 	defer w.witMu.Unlock()
-	if w.witness != nil {
-		if w.witFor == cluster {
-			return w.witness
-		}
-		return nil // temoin deja attache a un AUTRE cluster (H0 : un seul workload attendu)
+	if wit, ok := w.witnesses[cluster]; ok {
+		return wit
 	}
 	theta := w.opts.FreshnessHorizon
 	if theta <= 0 {
 		theta = 30 * time.Second
 	}
-	wit, err := source.NewWitness(ctx, cluster, w.opts.WitnessNode, theta, cfg)
+	wit, err := source.NewWitness(ctx, cluster, theta, cfg)
 	if err != nil {
 		return nil
 	}
-	w.witness, w.witFor = wit, cluster
+	if w.witnesses == nil {
+		w.witnesses = map[string]*source.Witness{}
+	}
+	w.witnesses[cluster] = wit
 	return wit
 }
 
