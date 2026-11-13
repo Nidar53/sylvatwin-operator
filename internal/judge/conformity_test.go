@@ -190,13 +190,18 @@ func readLines(t *testing.T, p string) []string {
 // startOxigraph : instance jetable, base en memoire temporaire, 127.0.0.1 seulement.
 func startOxigraph(t *testing.T, bin string) (*Endpoint, func()) {
 	t.Helper()
+	return startOxigraphAt(t, bin, t.TempDir())
+}
+
+// startOxigraphAt : comme startOxigraph, dans un dossier choisi (mesure disque).
+func startOxigraphAt(t *testing.T, bin, dir string) (*Endpoint, func()) {
+	t.Helper()
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
 	}
 	port := l.Addr().(*net.TCPAddr).Port
 	l.Close()
-	dir := t.TempDir()
 	cmd := exec.Command(bin, "serve", "--location", dir, "--bind", fmt.Sprintf("127.0.0.1:%d", port))
 	if err := cmd.Start(); err != nil {
 		t.Fatal(err)

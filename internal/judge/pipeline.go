@@ -21,9 +21,13 @@ import (
 //	verdict/*.rq              -> verdicts (renvoyes, non stockes)
 //
 // Les regles de derives/ sont ecrites sans clause GRAPH : on les evalue sur
-// l'union des graphes voulus en les executant contre le graphe par defaut,
-// qu'on remplit, a chaque passe, avec facts (+ drifts). C'est la forme la plus
-// portable (aucune extension de moteur, aucune reecriture des regles).
+// l'union des graphes voulus grace au parametre default-graph-uri du protocole
+// SPARQL 1.1 (le graphe par defaut de la requete devient l'union de ces graphes
+// nommes). AUCUNE COPIE : l'ABox (faits) n'est ecrite qu'une fois par cycle, dans
+// son graphe nomme. Avant A4, le juge recopiait l'ABox dans le graphe par defaut
+// a chaque passe (un PUT puis trois ADD), ce qui faisait croitre la base
+// d'environ 4 Go par heure. Le graphe history n'est jamais inclus : les regles
+// de derives/ ne doivent pas le voir.
 type Pipeline struct {
 	E        *Endpoint
 	RulesDir string // .../sylvatwin-poc/rules
@@ -76,36 +80,27 @@ func (p *Pipeline) Run(ctx context.Context, facts []byte, now time.Time) (*Resul
 	var drifts bytes.Buffer
 	for i, group := range [][]string{pass("0"), pass("10-"), pass("11-")} {
 		t := time.Now()
-		// graphe par defaut = facts (+ derives deja trouvees)
-		if err := p.E.Update(ctx, "DROP SILENT DEFAULT"); err != nil {
-			return nil, err
-		}
-		if err := p.E.Update(ctx, "ADD <"+GraphFacts+"> TO DEFAULT"); err != nil {
-			return nil, err
-		}
+		// Graphes lus par cette passe : l'ABox ; plus les derives deja trouvees
+		// aux passes precedentes (petit graphe, ecrit une fois par passe).
+		in := []string{GraphFacts}
 		if drifts.Len() > 0 {
 			if err := p.E.PutGraph(ctx, GraphDrifts, drifts.Bytes()); err != nil {
 				return nil, err
 			}
-			if err := p.E.Update(ctx, "ADD <"+GraphDrifts+"> TO DEFAULT"); err != nil {
-				return nil, err
-			}
+			in = append(in, GraphDrifts)
 		}
 		for _, f := range group {
 			q, err := os.ReadFile(f)
 			if err != nil {
 				return nil, err
 			}
-			out, err := p.E.Construct(ctx, prep(string(q)))
+			out, err := p.E.ConstructIn(ctx, prep(string(q)), in)
 			if err != nil {
 				return nil, fmt.Errorf("%s : %w", filepath.Base(f), err)
 			}
 			drifts.Write(out)
 		}
 		res.Timings[fmt.Sprintf("passe%d", i+1)] = time.Since(t)
-	}
-	if err := p.E.Update(ctx, "DROP SILENT DEFAULT"); err != nil {
-		return nil, err
 	}
 	// <drifts> = derives du cycle (remplace celles du cycle precedent)
 	if err := p.E.PutGraph(ctx, GraphDrifts, drifts.Bytes()); err != nil {

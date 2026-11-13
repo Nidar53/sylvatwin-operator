@@ -95,9 +95,26 @@ func (e *Endpoint) DropGraph(ctx context.Context, graph string) error {
 	return e.Update(ctx, "DROP SILENT GRAPH <"+graph+">")
 }
 
-// Construct : CONSTRUCT -> N-Triples.
+// Construct : CONSTRUCT -> N-Triples, sur le graphe par defaut du serveur.
 func (e *Endpoint) Construct(ctx context.Context, q string) ([]byte, error) {
-	return e.do(ctx, http.MethodPost, "/query", "application/sparql-query", "application/n-triples", []byte(q))
+	return e.ConstructIn(ctx, q, nil)
+}
+
+// ConstructIn : CONSTRUCT dont le graphe par defaut est l'UNION des graphes
+// nommes donnes (parametre default-graph-uri du protocole SPARQL 1.1, section
+// 2.1.4). Aucune copie : le serveur evalue directement sur ces graphes. Les
+// regles de derives/ sont ecrites sans clause GRAPH ; c'est ce parametre qui
+// leur dit ou lire. Liste vide : graphe par defaut du serveur.
+func (e *Endpoint) ConstructIn(ctx context.Context, q string, graphs []string) ([]byte, error) {
+	path := "/query"
+	if len(graphs) > 0 {
+		v := url.Values{}
+		for _, g := range graphs {
+			v.Add("default-graph-uri", g)
+		}
+		path += "?" + v.Encode()
+	}
+	return e.do(ctx, http.MethodPost, path, "application/sparql-query", "application/n-triples", []byte(q))
 }
 
 // Select : SELECT -> JSON (SPARQL 1.1 Query Results JSON).
