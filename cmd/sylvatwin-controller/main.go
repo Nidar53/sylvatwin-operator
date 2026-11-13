@@ -56,7 +56,8 @@ func main() {
 		out       = flag.String("out", "sylvatwin-out", "dossier de sortie (dernier cycle)")
 		cache     = flag.String("cache", "/opt/nidar/cache-desired", "cache des clones Git")
 		validity  = flag.Float64("validity", 600, "horizon de validite par defaut (s), si aucun Watch temoin")
-		debounce  = flag.Duration("debounce", 2*time.Second, "regroupement des evenements Watch avant un cycle")
+		debounce  = flag.Duration("debounce", 2*time.Second, "fenetre de fusion (glissante) des evenements Watch avant un cycle")
+		maxDelay  = flag.Duration("max-delay", 10*time.Second, "delai MAXIMAL entre le premier evenement en attente et le depart du cycle, meme sous flux continu (A2)")
 		resyncNet = flag.Duration("resync-safety-net", 0, "filet de securite (0 = desactive ; N'EST PAS le mode normal)")
 		kcTargets = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
 			"cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster) : leur contenu n'est jamais lu")
@@ -129,6 +130,7 @@ func main() {
 		JudgePipeline:      twin.Twin{Judge: jp},
 		KubeconfigTargets:  source.ParseTargets(*kcTargets),
 		Debounce:           *debounce,
+		MaxDelay:           *maxDelay,
 		ResyncSafetyNet:    *resyncNet,
 		WitnessNode:        *witnessNode,
 		FreshnessHorizon:   *freshness,

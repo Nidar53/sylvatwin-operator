@@ -77,8 +77,13 @@ type Options struct {
 	// twin.Twin.Cycle, qui a acces a l'instantane du management) ou deja la
 	// forme canonique "namespace/nom".
 	KubeconfigTargets map[string]string
-	JudgePipeline    twin.Twin // gabarit : Judge, CacheDir, OutDir, Tracked recopies
-	Debounce         time.Duration
+	JudgePipeline     twin.Twin // gabarit : Judge, CacheDir, OutDir, Tracked recopies
+	// Debounce : fenetre de fusion glissante des evenements Watch.
+	Debounce time.Duration
+	// MaxDelay : delai MAXIMAL entre le premier evenement en attente et le
+	// depart du cycle, meme si les evenements continuent d'arriver (A2).
+	// Defaut : 5 x Debounce.
+	MaxDelay time.Duration
 	// ResyncSafetyNet : filet de securite. 0 = desactive.
 	ResyncSafetyNet time.Duration
 	// WitnessNode : nom du Node DANS LE WORKLOAD dont la Lease sert de temoin
@@ -132,11 +137,9 @@ type Watcher struct {
 	// UnknownVerdict apres la premiere Cycle, cf. HANDOFF).
 	longCtx context.Context
 
-	mu       sync.Mutex
-	pending  bool
-	timer    *time.Timer
-	firstEvt time.Time
-	trigSrc  string
+	// sched : l'UNIQUE executeur de cycles (A1 : un cycle a la fois ; A2 :
+	// fusion des rafales bornee ; A3 : minuterie d'echeance). Voir scheduler.go.
+	sched *scheduler
 
 	witMu   sync.Mutex
 	witness *source.Witness
@@ -182,7 +185,10 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 	if o.Debounce <= 0 {
 		o.Debounce = 2 * time.Second
 	}
-	w := &Watcher{opts: o, longCtx: ctx, sources: map[string]*source.Live{}}
+	if o.MaxDelay <= 0 {
+		o.MaxDelay = 5 * o.Debounce
+	}
+	w := &Watcher{opts: o, longCtx: ctx, sources: map[string]*source.Live{}, sched: newScheduler(o.Debounce, o.MaxDelay)}
 
 	// Scheme : le manager multi-cluster en a besoin pour TOUS les types
 	// utilises, y compris par le provider CAPI (capiv1beta2.Cluster), sans
@@ -342,50 +348,32 @@ func orDefault(v int32, d int32) int32 {
 	return v
 }
 
-// onEvent : programme (ou reprogramme) un cycle apres Debounce. Les
-// evenements rapproches se regroupent en UN seul cycle (dernier evenement
-// gagne, fenetre glissante), evitant une rafale de reconstructions completes.
-func (w *Watcher) onEvent(clusterHint string) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	now := time.Now()
-	if !w.pending {
-		w.pending = true
-		w.firstEvt = now
-		w.trigSrc = clusterHint
-	}
-	if w.timer != nil {
-		w.timer.Stop()
-	}
-	w.timer = time.AfterFunc(w.opts.Debounce, w.fireCycle)
-}
+// onEvent : un evenement Watch. Il est confie a l'ordonnanceur, qui fusionne
+// les rafales (fenetre glissante bornee par MaxDelay) et garantit qu'un seul
+// cycle tourne a la fois.
+func (w *Watcher) onEvent(clusterHint string) { w.sched.Event(clusterHint) }
 
-func (w *Watcher) fireCycle() {
-	w.mu.Lock()
-	evtAt := w.firstEvt
-	src := w.trigSrc
-	w.pending = false
-	w.mu.Unlock()
+// runTrigger : execute UN cycle du jumeau (twin.Twin.Cycle) avec les sources
+// courantes (management + clusters engages par le provider CAPI). Appele
+// uniquement par l'executeur unique de l'ordonnanceur : jamais en parallele.
+func (w *Watcher) runTrigger(tr Trigger) {
 	label := "watch"
-	if src != "" {
-		label = "watch:" + src
+	if tr.Cluster != "" {
+		label = "watch:" + tr.Cluster
 	}
-	w.runCycle(label, evtAt)
-}
-
-// runCycle : execute un cycle du jumeau (twin.Twin.Cycle) avec les sources
-// courantes (management + clusters engages par le provider CAPI).
-func (w *Watcher) runCycle(trigger string, evtAt time.Time) {
+	if tr.Cause == CauseDeadline {
+		label = CauseDeadline
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	judgeStart := time.Now()
 	rep, err := w.buildTwin(ctx).Cycle(ctx)
 	judgeEnd := time.Now()
-	if w.opts.Instrument != nil && !evtAt.IsZero() {
-		w.opts.Instrument(Timing{Cluster: trigger, EventAt: evtAt, JudgeStartAt: judgeStart, JudgeEndAt: judgeEnd})
+	if w.opts.Instrument != nil && !tr.FirstEventAt.IsZero() {
+		w.opts.Instrument(Timing{Cluster: label, EventAt: tr.FirstEventAt, JudgeStartAt: judgeStart, JudgeEndAt: judgeEnd})
 	}
 	if w.opts.OnReport != nil {
-		w.opts.OnReport(trigger, rep, err)
+		w.opts.OnReport(label, rep, err)
 	}
 }
 
@@ -482,6 +470,7 @@ func (w *Watcher) EngagedClusters() []string {
 // Start bloque jusqu'a ce que le contexte soit annule.
 func (w *Watcher) Start(ctx context.Context) error {
 	logger := log.FromContext(ctx)
+	go w.sched.Run(ctx, w.runTrigger)
 	if w.opts.ResyncSafetyNet > 0 {
 		go func() {
 			t := time.NewTicker(w.opts.ResyncSafetyNet)
@@ -492,7 +481,7 @@ func (w *Watcher) Start(ctx context.Context) error {
 					return
 				case <-t.C:
 					logger.Info("filet de securite : resync periodique (aucun evenement Watch recent)")
-					w.runCycle("resync-safety-net", time.Time{})
+					w.sched.Event("resync-safety-net") // passe par l'executeur unique
 				}
 			}
 		}()
