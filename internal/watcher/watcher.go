@@ -49,6 +49,7 @@ import (
 	crcluster "sigs.k8s.io/controller-runtime/pkg/cluster"
 	"sigs.k8s.io/controller-runtime/pkg/config"
 	crcontroller "sigs.k8s.io/controller-runtime/pkg/controller"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	mcbuilder "sigs.k8s.io/multicluster-runtime/pkg/builder"
@@ -136,7 +137,7 @@ type Watcher struct {
 
 	// memo, deadline, failures : etat de l'executeur unique (pas de verrou).
 	memo     twin.Memo
-	deadline time.Time
+	dls      deadlineState
 	failures int
 
 	witMu     sync.Mutex
@@ -253,6 +254,7 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 		return nil, fmt.Errorf("manager multi-cluster : %w", err)
 	}
 	w.mgr = mgr
+	w.dls.lastSeen = w.witnessLastSeen
 
 	if err := w.provider.SetupWithManager(mgr); err != nil {
 		return nil, fmt.Errorf("provider cluster-api : %w", err)
@@ -267,8 +269,9 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 	bld := mcbuilder.ControllerManagedBy(mgr).Named("sylvatwin-trigger").
 		WithOptions(crcontroller.TypedOptions[mcreconcile.Request]{SkipNameValidation: &skipNameValidation})
 	handlerFor := func() mchandler.TypedEventHandlerFunc[client.Object, mcreconcile.Request] {
-		return mchandler.TypedEnqueueRequestsFromMapFunc[client.Object](
-			func(ctx context.Context, _ client.Object) []mcreconcile.Request { return []mcreconcile.Request{{}} })
+		return wrapRecording(mchandler.TypedEnqueueRequestsFromMapFunc[client.Object](
+			func(ctx context.Context, _ client.Object) []mcreconcile.Request { return []mcreconcile.Request{{}} }),
+			w.sched.noteObject)
 	}
 	// Union des GVK du management et des workloads, avec la portee
 	// d'engagement DECLAREE explicitement par GVK (onManagement / onWorkload) :
@@ -330,6 +333,9 @@ func New(ctx context.Context, o Options) (*Watcher, error) {
 	}
 
 	if err := bld.Complete(mcreconcile.Func(func(_ context.Context, req mcreconcile.Request) (ctrl.Result, error) {
+		if req.Name != "" { // evenement du type d'ancrage (For) : la requete porte la cle de l'objet
+			w.sched.noteObject(fmt.Sprintf("%s %s %s", req.ClusterName, order[0].Kind, req.NamespacedName))
+		}
 		w.onEvent(string(req.ClusterName))
 		return ctrl.Result{}, nil
 	})); err != nil {
@@ -363,9 +369,10 @@ func (w *Watcher) runTrigger(tr Trigger) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
+	w.dls.hold()
 	judgeStart := time.Now()
 	tw := w.buildTwin(ctx)
-	tw.Cause = tr.Cause
+	tw.Cause, tw.TriggerObjects, tw.TriggerEvents = tr.Cause, tr.Objects, tr.Events
 	var rep *twin.CycleReport
 	var err error
 	if tr.Cause == CauseDeadline && w.memo.OK {
@@ -397,9 +404,10 @@ func (w *Watcher) afterCycle(rep *twin.CycleReport, err error) {
 		}
 	}
 	if err == nil && rep != nil {
-		w.deadline = rep.NextDeadline
+		w.sched.SetDeadline(w.dls.set(rep.Deadlines))
+	} else {
+		w.sched.SetDeadline(w.dls.resume())
 	}
-	w.sched.SetDeadline(w.deadline)
 	if !failed {
 		w.failures = 0
 		w.sched.CancelRetry()
@@ -448,7 +456,10 @@ func (w *Watcher) buildTwin(ctx context.Context) *twin.Twin {
 			t.Sources = append(t.Sources, ls)
 		}
 	}
+	present := map[string]bool{}
+	defer func() { w.pruneWitnesses(present) }()
 	for _, name := range w.provider.ListClusters() {
+		present[string(name)] = true
 		cl, err := w.mgr.GetCluster(ctx, name)
 		if err != nil {
 			continue
@@ -487,7 +498,37 @@ func (w *Watcher) witnessFor(ctx context.Context, cluster string, cfg *rest.Conf
 		w.witnesses = map[string]*source.Witness{}
 	}
 	w.witnesses[cluster] = wit
+	// Chaque Lease recue repousse la minuterie de fraicheur : pas de cycle, pas de jugement.
+	wit.OnRenew(func() {
+		if at, ok := w.dls.renewed(); ok {
+			w.sched.SetDeadline(at)
+		}
+	})
 	return wit
+}
+
+// witnessLastSeen : dernier evenement de Lease d'un cluster (zero si inconnu).
+func (w *Watcher) witnessLastSeen(cluster string) time.Time {
+	w.witMu.Lock()
+	wit := w.witnesses[cluster]
+	w.witMu.Unlock()
+	if wit == nil {
+		return time.Time{}
+	}
+	return wit.LastSeen()
+}
+
+// pruneWitnesses arrete le Watch des temoins dont le cluster n'est plus engage.
+func (w *Watcher) pruneWitnesses(present map[string]bool) {
+	w.witMu.Lock()
+	defer w.witMu.Unlock()
+	for name, wit := range w.witnesses {
+		if !present[name] {
+			wit.Stop()
+			delete(w.witnesses, name)
+			ctrllog.Log.WithName("temoin").Info("Watch temoin arrete : cluster disparu", "cluster", name)
+		}
+	}
 }
 
 // EngagedClusters : noms des clusters actuellement engages (hors management).

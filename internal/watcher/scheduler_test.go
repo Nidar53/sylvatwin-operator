@@ -2,6 +2,7 @@ package watcher
 
 import (
 	"context"
+	"github.com/orange/sylvatwin-operator/internal/judge"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -213,7 +214,8 @@ func TestScheduler_EvenementCouvreReprise(t *testing.T) {
 func TestAfterCycle_EchecConserveEcheanceEtReprogrammeReprise(t *testing.T) {
 	w := &Watcher{sched: newScheduler(time.Second, 5*time.Second)}
 	dl := time.Now().Add(time.Hour)
-	w.deadline = dl
+	w.dls.set(judge.Deadlines{Horizon: dl})
+	w.dls.hold()
 	w.afterCycle(nil, context.DeadlineExceeded)
 	if !w.sched.Deadline().Equal(dl) {
 		t.Fatalf("echeance perdue : %v", w.sched.Deadline())
@@ -230,5 +232,49 @@ func TestAfterCycle_EchecConserveEcheanceEtReprogrammeReprise(t *testing.T) {
 	w.afterCycle(nil, nil) // un succes arrete tout
 	if w.failures != 0 || w.sched.rtTimer != nil {
 		t.Fatalf("la reprise doit s'arreter au premier succes")
+	}
+}
+
+// Correction 1 (13/11) : chaque Lease recue repousse l'echeance de fraicheur du
+// cluster, sans cycle ni jugement ; le reveil ne sonne que si le temoin se tait.
+func TestFraicheur_LeaseRepousseEcheance(t *testing.T) {
+	var mu sync.Mutex
+	seen := time.Now()
+	s := newScheduler(50*time.Millisecond, 200*time.Millisecond)
+	st := &deadlineState{lastSeen: func(string) time.Time { mu.Lock(); defer mu.Unlock(); return seen }}
+	r := &recorder{}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go s.Run(ctx, r.fn(0))
+	window := 600 * time.Millisecond
+	// le jugement dit : fraicheur du cluster c dans 600 ms (temoin)
+	s.SetDeadline(st.set(judge.Deadlines{Fresh: []judge.FreshDeadline{{Cluster: "c", At: time.Now().Add(window), Window: window, Witness: true}}}))
+	// une Lease toutes les 200 ms pendant 1,6 s : aucun reveil
+	for i := 0; i < 8; i++ {
+		time.Sleep(200 * time.Millisecond)
+		mu.Lock()
+		seen = time.Now()
+		mu.Unlock()
+		if at, ok := st.renewed(); ok {
+			s.SetDeadline(at)
+		}
+	}
+	if r.count() != 0 {
+		t.Fatalf("reveil periodique alors que la Lease arrive : %+v", r.triggers)
+	}
+	// le temoin se tait : le reveil sonne, une seule fois, apres ~window+1 s
+	time.Sleep(2 * time.Second)
+	if r.count() != 1 || r.triggers[0].Cause != CauseDeadline {
+		t.Fatalf("attendu 1 reveil 'echeance' apres le silence, obtenu %+v", r.triggers)
+	}
+}
+
+// Pendant un cycle (hold), une Lease ne reprogramme rien.
+func TestFraicheur_PendantUnCycleRienNeEstArme(t *testing.T) {
+	st := &deadlineState{lastSeen: func(string) time.Time { return time.Now() }}
+	st.set(judge.Deadlines{Fresh: []judge.FreshDeadline{{Cluster: "c", At: time.Now().Add(time.Hour), Window: time.Second, Witness: true}}})
+	st.hold()
+	if _, ok := st.renewed(); ok {
+		t.Fatal("une Lease pendant un cycle ne doit rien armer")
 	}
 }

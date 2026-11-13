@@ -212,22 +212,48 @@ func (p *Pipeline) saveHistory(ctx context.Context) error {
 	return os.Rename(tmp, p.HistoryFile)
 }
 
-// NextDeadline : prochaine echeance utile (rules/deadline/*.rq) : le DELAI est
-// calcule par SPARQL, on y ajoute `now` sur l'etat courant (history + facts). Zero si aucune. L'appelant
-// programme UNE minuterie a cette date (A3).
-func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (time.Time, error) {
+// FreshDeadline : echeance de fraicheur d'un cluster (rules/deadline).
+type FreshDeadline struct {
+	Cluster string
+	At      time.Time     // maintenant + delai SPARQL
+	Window  time.Duration // seuil de peremption (fenetre) du cluster
+	Witness bool          // true : cluster a temoin (At se repousse a chaque Lease)
+}
+
+// Deadlines : les echeances rendues par rules/deadline. Les DELAIS et seuils
+// viennent de SPARQL ; Go n'ajoute que des instants.
+type Deadlines struct {
+	Horizon time.Time // prochaine fin d'horizon de convergence (zero = aucune)
+	Fresh   []FreshDeadline
+}
+
+// Min : la plus proche des echeances (zero = aucune).
+func (d Deadlines) Min() time.Time {
+	m := d.Horizon
+	for _, f := range d.Fresh {
+		if m.IsZero() || f.At.Before(m) {
+			m = f.At
+		}
+	}
+	return m
+}
+
+// NextDeadline : echeances utiles (rules/deadline/*.rq) : les DELAIS sont
+// calcules par SPARQL ; Go ajoute seulement `now`.
+func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (Deadlines, error) {
+	var out Deadlines
 	q, err := os.ReadFile(filepath.Join(p.RulesDir, "deadline", "01-prochaine-echeance.rq"))
 	if err != nil {
-		return time.Time{}, err
+		return out, err
 	}
 	seconds, err := os.ReadFile(filepath.Join(p.RulesDir, "verdict", "seconds.sparql"))
 	if err != nil {
-		return time.Time{}, err
+		return out, err
 	}
 	nowLit := now.UTC().Format("2006-01-02T15:04:05Z")
-	out, err := p.E.Select(ctx, Prepare(string(q), nowLit, p.Validity, strings.TrimSpace(string(seconds))))
+	raw, err := p.E.Select(ctx, Prepare(string(q), nowLit, p.Validity, strings.TrimSpace(string(seconds))))
 	if err != nil {
-		return time.Time{}, err
+		return out, err
 	}
 	var r struct {
 		Results struct {
@@ -236,21 +262,40 @@ func (p *Pipeline) NextDeadline(ctx context.Context, now time.Time) (time.Time, 
 			} `json:"bindings"`
 		} `json:"results"`
 	}
-	if err := json.Unmarshal(out, &r); err != nil {
-		return time.Time{}, err
+	if err := json.Unmarshal(raw, &r); err != nil {
+		return out, err
 	}
-	if len(r.Results.Bindings) == 0 {
-		return time.Time{}, nil
+	secs := func(b map[string]struct {
+		Value string `json:"value"`
+	}, k string) (time.Duration, bool) {
+		v, ok := b[k]
+		if !ok || v.Value == "" {
+			return 0, false
+		}
+		f, err := strconv.ParseFloat(v.Value, 64)
+		if err != nil {
+			return 0, false
+		}
+		return time.Duration(math.Ceil(f)) * time.Second, true
 	}
-	v, ok := r.Results.Bindings[0]["echeance"]
-	if !ok || v.Value == "" {
-		return time.Time{}, nil
+	for _, b := range r.Results.Bindings {
+		d, ok := secs(b, "delai")
+		if !ok {
+			continue
+		}
+		at := now.Add(d)
+		switch b["genre"].Value {
+		case "horizon":
+			if out.Horizon.IsZero() || at.Before(out.Horizon) {
+				out.Horizon = at
+			}
+		case "fraicheur":
+			win, _ := secs(b, "fenetre")
+			out.Fresh = append(out.Fresh, FreshDeadline{Cluster: b["cluster"].Value, At: at, Window: win,
+				Witness: b["temoin"].Value == "true"})
+		}
 	}
-	secs, err := strconv.ParseFloat(v.Value, 64)
-	if err != nil {
-		return time.Time{}, err
-	}
-	return now.Add(time.Duration(math.Ceil(secs)) * time.Second), nil
+	return out, nil
 }
 
 var secondsRe = regexp.MustCompile(`__SECONDS__\((\?\w+),\s*(\?\w+)\)`)

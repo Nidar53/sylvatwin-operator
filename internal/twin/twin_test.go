@@ -23,7 +23,7 @@ import (
 // (...) donne known=true").
 type fakeSource struct{ snap *mapper.Snapshot }
 
-func (f *fakeSource) Name() string                                 { return f.snap.Cluster }
+func (f *fakeSource) Name() string                                  { return f.snap.Cluster }
 func (f *fakeSource) Snapshot(ctx context.Context) *mapper.Snapshot { return f.snap }
 func (f *fakeSource) Close()                                        {}
 

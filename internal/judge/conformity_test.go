@@ -334,10 +334,11 @@ func TestProchaineEcheance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dl, err := p.NextDeadline(ctx, t0)
+	dls, err := p.NextDeadline(ctx, t0)
 	if err != nil {
 		t.Fatal(err)
 	}
+	dl := dls.Min()
 	if !dl.After(t0) {
 		t.Fatalf("echeance %v non future (now=%v)", dl, t0)
 	}

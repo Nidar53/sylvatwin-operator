@@ -23,6 +23,10 @@ type Trigger struct {
 	// ScheduledAt : instant ou le cycle a ete declare pret (fin de la fusion
 	// d'evenements, ou date d'echeance atteinte).
 	ScheduledAt time.Time
+	// Objects : les premiers objets (cluster, type, nom, operation, champs
+	// modifies) du lot fusionne ; Events : nombre total d'evenements du lot.
+	Objects []string
+	Events  int
 }
 
 // scheduler : UN executeur de cycles, UNE cle.
@@ -50,6 +54,8 @@ type scheduler struct {
 	evPending bool
 	evFirst   time.Time
 	evSrc     string
+	evObjs    []string
+	evCount   int
 	evTimer   *time.Timer
 	// declenchements prets (en attente de l'executeur)
 	ready   *Trigger
@@ -87,6 +93,26 @@ func (s *scheduler) signal() {
 	}
 }
 
+// maxObjects : nombre maximal d'objets distincts gardes par lot pour le journal.
+const maxObjects = 8
+
+// noteObject : decrit l'objet d'un evenement (journal). Appele par le handler
+// juste AVANT que le controller ne rappelle Event : la note est donc rattachee au
+// lot en cours de fusion. Ne declenche rien.
+func (s *scheduler) noteObject(desc string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if desc == "" || len(s.evObjs) >= maxObjects {
+		return
+	}
+	for _, o := range s.evObjs {
+		if o == desc {
+			return
+		}
+	}
+	s.evObjs = append(s.evObjs, desc)
+}
+
 // Event : un evenement Watch. Ne bloque jamais.
 func (s *scheduler) Event(src string) {
 	s.mu.Lock()
@@ -95,6 +121,7 @@ func (s *scheduler) Event(src string) {
 	if !s.evPending {
 		s.evPending, s.evFirst, s.evSrc = true, now, src
 	}
+	s.evCount++
 	// fenetre glissante, mais jamais au-dela de evFirst + maxDelay
 	wait := s.debounce
 	if limit := s.evFirst.Add(s.maxDelay).Sub(now); limit < wait {
@@ -115,9 +142,19 @@ func (s *scheduler) eventWindowClosed() {
 		s.mu.Unlock()
 		return
 	}
-	t := Trigger{Cause: CauseEvent, Cluster: s.evSrc, FirstEventAt: s.evFirst, ScheduledAt: time.Now()}
-	if s.ready != nil && s.ready.FirstEventAt.Before(t.FirstEventAt) {
-		t.FirstEventAt, t.Cluster = s.ready.FirstEventAt, s.ready.Cluster
+	t := Trigger{Cause: CauseEvent, Cluster: s.evSrc, FirstEventAt: s.evFirst, ScheduledAt: time.Now(),
+		Objects: s.evObjs, Events: s.evCount}
+	s.evObjs, s.evCount = nil, 0
+	if s.ready != nil {
+		// un lot deja pret et pas encore execute : on fusionne
+		if s.ready.FirstEventAt.Before(t.FirstEventAt) {
+			t.FirstEventAt, t.Cluster = s.ready.FirstEventAt, s.ready.Cluster
+		}
+		t.Events += s.ready.Events
+		t.Objects = append(append([]string{}, s.ready.Objects...), t.Objects...)
+		if len(t.Objects) > maxObjects {
+			t.Objects = t.Objects[:maxObjects]
+		}
 	}
 	s.ready = &t
 	s.evPending = false

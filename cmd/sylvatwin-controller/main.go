@@ -154,6 +154,10 @@ func main() {
 				rec["durationMs"] = rep.End.Sub(rep.Start).Milliseconds()
 				// A7 : mesures par cycle
 				rec["cause"] = rep.Cause // evenement | echeance | reprise
+				if len(rep.TriggerObjects) > 0 {
+					rec["triggerObjects"] = rep.TriggerObjects // cluster type nom operation [champs modifies]
+					rec["triggerEvents"] = rep.TriggerEvents
+				}
 				rec["timingsMs"] = rep.TimingsMS
 				rec["factsBytes"] = rep.FactsBytes
 				rec["apiRequests"] = rep.APIRequests

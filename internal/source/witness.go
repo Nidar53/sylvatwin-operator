@@ -37,6 +37,23 @@ type Witness struct {
 
 	mu       sync.RWMutex
 	lastSeen time.Time
+	onRenew  func() // appele a CHAQUE evenement de Lease (hors verrou) ; sans jugement ni cycle
+	cancel   context.CancelFunc
+}
+
+// OnRenew : fonction appelee a chaque evenement de Lease recu. Sert uniquement
+// a repousser la minuterie de fraicheur (aucun cycle, aucun jugement).
+func (w *Witness) OnRenew(f func()) {
+	w.mu.Lock()
+	w.onRenew = f
+	w.mu.Unlock()
+}
+
+// Stop arrete le Watch (cluster disparu). Sans effet s'il est deja arrete.
+func (w *Witness) Stop() {
+	if w.cancel != nil {
+		w.cancel()
+	}
 }
 
 // NewWitness demarre immediatement le Watch (bloquant dans une goroutine
@@ -47,7 +64,8 @@ func NewWitness(ctx context.Context, cluster string, theta time.Duration, cfg *r
 	if err != nil {
 		return nil, err
 	}
-	w := &Witness{cluster: cluster, theta: theta}
+	ctx, cancel := context.WithCancel(ctx)
+	w := &Witness{cluster: cluster, theta: theta, cancel: cancel}
 	go w.loop(ctx, dyn)
 	return w, nil
 }
@@ -65,7 +83,11 @@ func (w *Witness) loop(ctx context.Context, dyn dynamic.Interface) {
 		res, err := dyn.Resource(gvrLease).Namespace(ns).Watch(ctx, metav1.ListOptions{})
 		if err != nil {
 			ctrllog.Log.WithName("temoin").Error(err, "Watch des Lease impossible (nouvel essai dans 5 s)", "cluster", w.cluster)
-			time.Sleep(5 * time.Second)
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(5 * time.Second):
+			}
 			continue
 		}
 		w.drain(ctx, res)
@@ -95,7 +117,11 @@ func (w *Witness) observe(u *unstructured.Unstructured) {
 	_ = renew             // pas l'horodatage serveur (qui ne prouve rien sur le canal local)
 	w.mu.Lock()
 	w.lastSeen = t
+	f := w.onRenew
 	w.mu.Unlock()
+	if f != nil {
+		f()
+	}
 }
 
 // LastSeen : u_c(t), zero si aucun evenement recu depuis le demarrage.
