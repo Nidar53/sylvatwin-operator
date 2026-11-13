@@ -13,6 +13,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
+	"github.com/orange/sylvatwin-operator/internal/mapper"
 )
 
 // Reader : identite en lecture seule dans les workloads (impersonation).
@@ -64,6 +66,40 @@ func DiscoverCAPI(ctx context.Context, mgmt *rest.Config) ([]Discovered, error) 
 		out = append(out, d)
 	}
 	return out, nil
+}
+
+// DiscoveredFromSnapshot : meme resultat que DiscoverCAPI, mais lu depuis un
+// mapper.Snapshot DEJA EN MEMOIRE (fonction pure, pas d'appel reseau). Sert au
+// controleur continu (watcher), qui a deja le Snapshot du management a chaque
+// cycle et n'a pas besoin d'un second LIST : voir mission D1, "Alimente aussi
+// Twin.Discovered en mode continu si l'information est disponible cote
+// watcher".
+func DiscoveredFromSnapshot(mg *mapper.Snapshot) []Discovered {
+	if mg == nil {
+		return nil
+	}
+	var out []Discovered
+	for _, o := range mg.Objects {
+		if o.GetKind() != "Cluster" {
+			continue
+		}
+		gv, err := schema.ParseGroupVersion(o.GetAPIVersion())
+		if err != nil || gv.Group != "cluster.x-k8s.io" {
+			continue
+		}
+		host, _, _ := unstructured.NestedString(o.Object, "spec", "controlPlaneEndpoint", "host")
+		port, _, _ := unstructured.NestedInt64(o.Object, "spec", "controlPlaneEndpoint", "port")
+		if port == 0 {
+			port = 6443
+		}
+		ready, _, _ := unstructured.NestedBool(o.Object, "status", "initialization", "controlPlaneInitialized")
+		d := Discovered{Name: o.GetName(), Namespace: o.GetNamespace(), Ready: ready}
+		if host != "" {
+			d.Endpoint = fmt.Sprintf("%s:%d", host, port)
+		}
+		out = append(out, d)
+	}
+	return out
 }
 
 // WorkloadConfig : rest.Config d'un workload a partir du Secret kubeconfig de

@@ -5,6 +5,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
+	"github.com/orange/sylvatwin-operator/internal/iri"
 	"github.com/orange/sylvatwin-operator/internal/mapper"
 )
 
@@ -23,7 +24,10 @@ import (
 func FluxContext(s *mapper.Snapshot, discovered []Discovered, declared map[string]string) mapper.FluxContext {
 	fc := mapper.FluxContext{KubeconfigTargets: map[string]string{}, HelmChartRevisions: map[string]string{}}
 	for _, d := range discovered {
-		fc.KubeconfigTargets[d.Namespace+"/"+d.Name+"-kubeconfig"] = d.Name
+		// Nom CANONIQUE (namespace/nom), meme forme que le provider CAPI de
+		// multicluster-runtime (iri.CanonicalCluster) : le nom nu du Cluster CAPI
+		// ne correspond au nom du FactSource engage que par coincidence.
+		fc.KubeconfigTargets[d.Namespace+"/"+d.Name+"-kubeconfig"] = iri.CanonicalCluster(d.Namespace, d.Name)
 	}
 	for k, v := range declared {
 		fc.KubeconfigTargets[k] = v
