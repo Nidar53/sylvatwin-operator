@@ -56,6 +56,10 @@ type scheduler struct {
 	// minuterie d'echeance : une seule
 	dlTimer *time.Timer
 	dlAt    time.Time
+	// dlGen : numero de l'echeance courante. Time.Stop ne peut pas rattraper une
+	// minuterie DEJA sonnee dont le callback attend le verrou : le callback
+	// compare donc son numero a dlGen et s'efface s'il est perime.
+	dlGen uint64
 
 	kick chan struct{} // capacite 1 : les signaux se fusionnent
 }
@@ -127,6 +131,7 @@ func (s *scheduler) SetDeadline(at time.Time) {
 	}
 	s.dlReady = nil
 	s.dlAt = at
+	s.dlGen++
 	if at.IsZero() {
 		return
 	}
@@ -134,7 +139,8 @@ func (s *scheduler) SetDeadline(at time.Time) {
 	if d < 0 {
 		d = 0
 	}
-	s.dlTimer = time.AfterFunc(d, s.deadlineReached)
+	gen := s.dlGen
+	s.dlTimer = time.AfterFunc(d, func() { s.deadlineReached(gen) })
 }
 
 // Deadline : echeance actuellement programmee (zero = aucune).
@@ -144,8 +150,12 @@ func (s *scheduler) Deadline() time.Time {
 	return s.dlAt
 }
 
-func (s *scheduler) deadlineReached() {
+func (s *scheduler) deadlineReached(gen uint64) {
 	s.mu.Lock()
+	if gen != s.dlGen { // echeance remplacee ou couverte par un cycle d'evenement
+		s.mu.Unlock()
+		return
+	}
 	s.dlAt = time.Time{}
 	if s.evPending || s.ready != nil {
 		// Un cycle d'evenement est deja en cours de fusion ou pret : il jugera
@@ -167,6 +177,16 @@ func (s *scheduler) take() (Trigger, bool) {
 	if s.ready != nil {
 		t := *s.ready
 		s.ready, s.dlReady = nil, nil
+		// Ce cycle juge : il couvre l'echeance en attente, et l'appelant en
+		// reprogramme une nouvelle des qu'il a juge (SetDeadline). Sans cela, une
+		// echeance qui sonne entre le depart et la fin de ce cycle provoquerait
+		// un jugement de trop.
+		if s.dlTimer != nil {
+			s.dlTimer.Stop()
+			s.dlTimer = nil
+		}
+		s.dlAt = time.Time{}
+		s.dlGen++ // invalide un callback deja sonne
 		return t, true
 	}
 	if s.dlReady != nil {
