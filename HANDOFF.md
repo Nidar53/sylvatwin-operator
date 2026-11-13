@@ -10,6 +10,21 @@ envtest + un essai réel de 2h + un test de fraîcheur réel sur le vrai banc.
 cette mission, va directement à la section « Ce qui reste à faire » (parties
 4 à 8, recopiées intégralement en bas de ce fichier).
 
+## MISE A JOUR branche test2 (phase A, 13/11/2026) — à lire avant le reste
+
+Ce qui change par rapport au texte ci-dessous (écrit sur `test`) :
+- **Un seul cycle à la fois**, fusion des rafales bornée (`--max-delay`), cause du cycle journalisée : `evenement` | `echeance` | `reprise` (internal/watcher/scheduler.go).
+- **Réveils par échéance** : après chaque jugement UNE minuterie, à la date donnée par `rules/deadline/01-prochaine-echeance.rq` (délai en secondes calculé par SPARQL). Le réveil rejuge SANS relire le cluster (`Twin.Rejudge`, 0 requête API). `--resync-safety-net` est supprimé.
+- **Reprise après échec** (juge ou cluster indisponible) : 5, 10, 20, 40, 60 s (plafond), cause `reprise`, arrêtée au premier succès.
+- **Fraîcheur par cluster** : un témoin (Watch des Lease de `kube-node-lease`) par cluster workload découvert ; `--witness-node` supprimé. Verdict `inconnu` seulement si un cluster des ressources de la dérive est périmé ou non observé (rules/verdict/01-verdict.rq).
+- **Oxigraph EN MÉMOIRE** (sans `--location`) : seul le graphe `history` est exporté après chaque cycle dans `<out>/history.nt` (`--history`) et rechargé s'il manque au serveur. L'âge des dérives survit à un redémarrage ; facts et drifts sont reconstruits au premier cycle.
+- Journal par cycle (A7) : cause, timingsMs par étape, factsBytes, apiRequests par cluster, driftsByVerdict (causes racines et impacts séparés), objets, prochaine échéance.
+- **Valeurs par défaut écrites par le greffier** : liste dans internal/mapper/util.go.
+- `--validity` (600 s) : seuil de péremption des clusters SANS témoin (le management, ou un workload sans événement de Lease), mesuré depuis la dernière synchronisation. Un cluster avec témoin utilise `--freshness-horizon` (θ).
+- Piège : Oxigraph 0.5.13 n'évalue PAS `dateTime + dayTimeDuration` (la requête rend un binding vide, sans erreur) : utiliser `__SECONDS__`.
+- Piège : dans une requête, un `BIND(?now)` du groupe englobant n'est pas visible dans les branches d'un UNION ni dans un sous-SELECT.
+
+
 ## Résumé en 15 lignes (à lire en premier)
 
 1. Exigence non négociable tenue : le contrôleur tourne en continu, déclenché
@@ -345,7 +360,7 @@ source /opt/nidar/env.sh
 # 2. demarrer Oxigraph (si pas deja fait) - dans tmux, PAS en avant-plan
 tmux new-session -d -s sylvatwin-oxigraph -n ox
 tmux send-keys -t sylvatwin-oxigraph \
-  "/opt/nidar/tools/oxigraph serve --location /opt/nidar/sylvatwin-run/oxigraph-data --bind 127.0.0.1:7878" Enter
+  "/opt/nidar/tools/oxigraph serve --bind 127.0.0.1:7878   # EN MEMOIRE depuis test2 (A4bis) : pas de --location" Enter
 
 # 3. verifier qu'Oxigraph repond
 curl -s http://127.0.0.1:7878/ -o /dev/null -w "HTTP %{http_code}\n"
