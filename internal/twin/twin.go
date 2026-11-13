@@ -63,6 +63,7 @@ type Twin struct {
 type Memo struct {
 	Des []*mapper.Desired
 	FC  mapper.FluxContext
+	Rep []DesiredReport // etat du cote desire au dernier cycle complet (recopie dans cycle.json)
 	OK  bool
 }
 
@@ -161,7 +162,7 @@ func (t *Twin) Cycle(ctx context.Context) (*CycleReport, error) {
 	}
 	rep.TimingsMS["desired"] = time.Since(t0).Milliseconds()
 	if t.Memo != nil {
-		t.Memo.Des, t.Memo.FC, t.Memo.OK = des, fc, true
+		t.Memo.Des, t.Memo.FC, t.Memo.Rep, t.Memo.OK = des, fc, rep.Desired, true
 	}
 	return t.finish(ctx, rep, snaps, des, fc)
 }
@@ -189,6 +190,7 @@ func (t *Twin) Rejudge(ctx context.Context) (*CycleReport, error) {
 		rep.Clusters[sn.Cluster] = sn.Status
 		rep.Objects[sn.Cluster] = len(sn.Objects)
 	}
+	rep.Desired = t.Memo.Rep // le cote desire date du dernier cycle complet : on ne le relit pas
 	return t.finish(ctx, rep, snaps, t.Memo.Des, t.Memo.FC)
 }
 
