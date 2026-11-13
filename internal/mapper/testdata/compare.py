@@ -6,10 +6,18 @@ Normalisation (documentee dans ecarts.md) :
   - observedAt, lastSyncTime : horodatages de la photo, retires des deux cotes ;
   - desiredRevision, actualRevision : revisions Git (l'exemple date du commit
     9099eec, la photo du commit 6f6fb11) ; retirees des deux cotes ;
-  - l'exemple est un SOUS-ENSEMBLE choisi a la main (5 NF, pas tous les labels
-    de pods...) : on compare donc sur les SUJETS de l'exemple, et on liste a
-    part ce que l'operateur ecrit EN PLUS (attendu : faits non retenus dans
-    l'exemple, jamais de faits faux).
+  - CANONICAL_CLUSTER (fix D2, 13/11/2026) : l'exemple (ecrit a la main avant
+    ce fix) utilise le nom NU du cluster workload comme segment d'IRI
+    ("res:my-workload-kubeadm-capd/..."). L'operateur, depuis la correction
+    des noms de cluster incoherents (D2 : nom CANONIQUE "namespace/nom",
+    meme forme que le provider cluster-api de multicluster-runtime), ecrit
+    "res:my-workload-kubeadm-capd%2Fmy-workload-kubeadm-capd/..." (le "/"
+    du nom canonique est percent-encode par iri.segment). Sur CE banc les
+    deux coincident en texte clair (namespace du Cluster CAPI == nom du
+    Cluster CAPI), donc cette normalisation ne cache aucune vraie erreur :
+    elle traduit seulement le prefixe pour comparer aux sujets de l'exemple,
+    cote operateur UNIQUEMENT (l'exemple, fichier externe, n'est jamais
+    modifie).
 Sortie : code 0 si, sur les sujets de l'exemple, les deux graphes sont egaux.
 """
 import sys
@@ -19,21 +27,42 @@ from rdflib.compare import to_isomorphic, graph_diff
 op_path, ex_path = sys.argv[1], sys.argv[2]
 C = "https://w3id.org/sylvatwin/core#"
 VOLATILE = {URIRef(C + "observedAt"), URIRef(C + "lastSyncTime"), URIRef(C + "desiredRevision"), URIRef(C + "actualRevision")}
+# D2 : nom canonique (operateur) -> nom nu (exemple), SEULEMENT pour cette
+# comparaison. Namespace et nom du Cluster CAPI valent tous deux
+# "my-workload-kubeadm-capd" sur ce banc (cf. testdata/snapshot-20261108).
+CANON_NAME = "my-workload-kubeadm-capd/my-workload-kubeadm-capd"
+NU_NAME = "my-workload-kubeadm-capd"
+CANON_PREFIX = f"https://w3id.org/sylvatwin/res/my-workload-kubeadm-capd%2Fmy-workload-kubeadm-capd/"
+CANON_CLUSTER_IRI = URIRef(f"https://w3id.org/sylvatwin/res/my-workload-kubeadm-capd%2Fmy-workload-kubeadm-capd")
+NU_PREFIX = "https://w3id.org/sylvatwin/res/my-workload-kubeadm-capd/"
+NU_CLUSTER_IRI = URIRef("https://w3id.org/sylvatwin/res/my-workload-kubeadm-capd")
 
 op = Graph().parse(op_path, format="nt")
 ex = Graph().parse(ex_path, format="turtle")
 
-def norm(g):
+def uncanon(t):
+    if isinstance(t, URIRef):
+        if t == CANON_CLUSTER_IRI:
+            return NU_CLUSTER_IRI
+        if str(t).startswith(CANON_PREFIX):
+            return URIRef(NU_PREFIX + str(t)[len(CANON_PREFIX):])
+    if isinstance(t, Literal) and str(t) == CANON_NAME:
+        return Literal(NU_NAME)
+    return t
+
+def norm(g, rewrite_cluster=False):
     h = Graph()
     for s, p, o in g:
         if p in VOLATILE:
             continue
         if isinstance(o, Literal) and o.datatype is None and o.language is None:
             o = Literal(str(o))
+        if rewrite_cluster:
+            s, o = uncanon(s), uncanon(o)
         h.add((s, p, o))
     return h
 
-op, ex = norm(op), norm(ex)
+op, ex = norm(op, rewrite_cluster=True), norm(ex)
 # Faits VRAIS que l'exemple (ecrit a la main le 08/11) n'avait pas retenus.
 # Chacun est justifie dans testdata/ecarts.md et verifie sur la photo.
 DOCUMENTED = [
