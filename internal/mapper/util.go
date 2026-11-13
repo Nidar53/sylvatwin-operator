@@ -128,15 +128,3 @@ func seconds(d string) (float64, bool) {
 	}
 	return v.Seconds(), true
 }
-
-// endpointHostPort : "host:port" d'une URL de serveur Kubernetes.
-func endpointHostPort(server string) string {
-	s := strings.TrimPrefix(strings.TrimPrefix(server, "https://"), "http://")
-	if i := strings.Index(s, "/"); i >= 0 {
-		s = s[:i]
-	}
-	if !strings.Contains(s, ":") {
-		s += ":443"
-	}
-	return s
-}

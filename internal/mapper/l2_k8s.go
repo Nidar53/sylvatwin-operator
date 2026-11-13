@@ -252,14 +252,3 @@ func secretRefInfo(obj map[string]any, podSpecPath ...string) map[string]bool {
 	}
 	return set
 }
-
-// secretRefs : noms des Secrets references, tries.
-func secretRefs(obj map[string]any, podSpecPath ...string) []string {
-	set := secretRefInfo(obj, podSpecPath...)
-	out := make([]string, 0, len(set))
-	for n := range set {
-		out = append(out, n)
-	}
-	sort.Strings(out)
-	return out
-}

@@ -3,7 +3,6 @@ package source
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/url"
 	"strings"
 	"sync"
@@ -218,9 +217,4 @@ func classify(err error) string {
 		return mapper.StatusForbidden
 	}
 	return mapper.StatusUnreachable
-}
-
-// ErrNoReader : message clair quand le compte en lecture seule manque.
-func ErrNoReader(cluster, sa string) error {
-	return fmt.Errorf("cluster %s : le compte %s est absent ou sans droits (observation 'forbidden')", cluster, sa)
 }

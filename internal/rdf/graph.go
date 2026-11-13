@@ -164,13 +164,6 @@ func (g *Graph) Add(s, p, o Term) {
 	g.set[triple{s, p, o}] = struct{}{}
 }
 
-// Merge ajoute tous les triplets de h.
-func (g *Graph) Merge(h *Graph) {
-	for t := range h.set {
-		g.set[t] = struct{}{}
-	}
-}
-
 // Len : nombre de triplets.
 func (g *Graph) Len() int { return len(g.set) }
 
@@ -188,19 +181,6 @@ func (g *Graph) Objects(s, p Term) []Term {
 	sort.Slice(out, func(i, j int) bool { return out[i].NT() < out[j].NT() })
 	return out
 }
-
-// SubjectsOfType : sujets ayant rdf:type c.
-func (g *Graph) SubjectsOfType(c Term) []Term {
-	var out []Term
-	for t := range g.set {
-		if t.p == Type && t.o == c {
-			out = append(out, t.s)
-		}
-	}
-	sort.Slice(out, func(i, j int) bool { return out[i].value < out[j].value })
-	return out
-}
-
 func (g *Graph) sorted() []triple {
 	ts := make([]triple, 0, len(g.set))
 	for t := range g.set {
