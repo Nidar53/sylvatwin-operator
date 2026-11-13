@@ -43,6 +43,29 @@ func segment(s string) string {
 // Cluster : IRI du cluster reel (KubernetesCluster).
 func Cluster(cluster string) string { return Base + segment(cluster) }
 
+// CanonicalCluster : nom CANONIQUE d'un cluster workload decrit par un Cluster
+// CAPI (namespace, nom), SOUS LA MEME FORME que multicluster-runtime/providers/
+// cluster-api (types.NamespacedName.String(), "namespace/nom", cf. provider.go
+// v0.24.1 : multicluster.ClusterName(req.NamespacedName.String())). UN SEUL
+// endroit pour cette regle : toute IRI ou toute recherche d'instantane qui a
+// besoin du nom d'un cluster workload DOIT passer par cette fonction, jamais
+// reconstruire "ns/nom" a la main ni utiliser le nom nu du Cluster CAPI seul.
+//
+// Le cluster de management N'EST PAS decrit ainsi : il garde son nom logique
+// propre (--mgmt-name), fixe par l'operateur, independant de ce calcul.
+func CanonicalCluster(namespace, name string) string { return namespace + "/" + name }
+
+// SplitCanonicalCluster : inverse de CanonicalCluster. Coupe au PREMIER "/"
+// (un nom Kubernetes DNS-1123 ne contient jamais "/", donc sans ambiguite).
+// ok=false si s ne contient aucun "/" (nom nu, pas encore canonique).
+func SplitCanonicalCluster(s string) (namespace, name string, ok bool) {
+	i := strings.IndexByte(s, '/')
+	if i < 0 {
+		return "", "", false
+	}
+	return s[:i], s[i+1:], true
+}
+
 // Resource : IRI d'une ressource. group vide = ressource native (core, apps).
 func Resource(cluster, namespace, kind, group, name string) string {
 	ns := namespace
