@@ -1,0 +1,48 @@
+{
+ "titre": "Kustomization sylvatwin-5gc suspendue",
+ "couche": "L3",
+ "source_erreur": "observation du banc",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "GitOpsSyncDrift",
+    "mere": "RepairedByFluxDrift",
+    "cible": "Kustomization/sylvatwin-5gc",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "GitOpsSyncDrift",
+    "nf": [
+     "amf",
+     "ausf",
+     "bsf",
+     "nrf",
+     "nssf",
+     "pcf",
+     "scp",
+     "smf",
+     "udm",
+     "udr"
+    ],
+    "chemin": "flux"
+   }
+  ],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "SUPPOSE : une Kustomization suspendue ne reconcilie plus : Flux ne signale rien (pas d'evenement) et ne corrige rien"
+ },
+ "fenetre_s": 120,
+ "arret_anticipe": null,
+ "id": "F1"
+}

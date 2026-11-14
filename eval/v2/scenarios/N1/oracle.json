@@ -1,0 +1,31 @@
+{
+ "titre": "PLMN (mnc) change en direct dans nrf-config",
+ "couche": "L4",
+ "source_erreur": "3GPP TS 23.501, Open5GS",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "InterNFConsistencyDrift",
+    "mere": "UnattendedDrift",
+    "cible": "",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [],
+  "resolution": "flux"
+ },
+ "flux_suppose": {
+  "signale": true,
+  "corrige": true,
+  "delai_max_s": 135,
+  "remarque": "SUPPOSE : Flux remet la ConfigMap (conforme a Git) en <= 2 min ; la regle donne neanmoins Confirmed tout de suite (horizon infini, lifecycle/05 b). InterNFConsistencyDrift ne produit aucun FunctionImpactDrift (decision du 14/11)"
+ },
+ "fenetre_s": 300,
+ "arret_anticipe": "retour_base",
+ "id": "N1"
+}

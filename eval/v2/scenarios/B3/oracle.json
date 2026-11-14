@@ -1,0 +1,40 @@
+{
+ "titre": "commit Git legitime : replicas de udr 1 -> 2",
+ "couche": "benin",
+ "source_erreur": "operation normale (GitOps)",
+ "dans_le_modele": true,
+ "benin": true,
+ "git": true,
+ "attendu": {
+  "derives": [],
+  "derives_transitoires": [
+   {
+    "classe": "GitOpsSyncDrift",
+    "verdict_max": "SuspectedViolation"
+   },
+   {
+    "classe": "SpecDrift",
+    "verdict_max": "SuspectedViolation"
+   },
+   {
+    "classe": "ConvergenceDrift",
+    "verdict_max": "SuspectedViolation"
+   },
+   {
+    "classe": "FunctionImpactDrift",
+    "verdict_max": "SuspectedViolation"
+   }
+  ],
+  "impacts": [],
+  "resolution": "flux"
+ },
+ "flux_suppose": {
+  "signale": true,
+  "corrige": true,
+  "delai_max_s": 250,
+  "remarque": "SUPPOSE : Flux applique le commit (source <= 2 min, puis reconciliation)"
+ },
+ "fenetre_s": 300,
+ "arret_anticipe": null,
+ "id": "B3"
+}

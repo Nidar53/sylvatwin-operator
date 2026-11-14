@@ -1,0 +1,23 @@
+{
+ "titre": "champ absent de Git modifie (scp : spec.revisionHistoryLimit)",
+ "couche": "hors modele",
+ "source_erreur": "observation du banc",
+ "dans_le_modele": false,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [],
+  "impacts": [],
+  "resolution": "restauration",
+  "note": "champ hors Git et hors modele : aucune derive attendue pour personne"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "SUPPOSE : Flux n'applique pas ce champ (absent de son manifeste) : ni detection, ni correction"
+ },
+ "fenetre_s": 150,
+ "arret_anticipe": null,
+ "id": "H2"
+}

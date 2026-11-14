@@ -1,0 +1,63 @@
+{
+ "titre": "Kustomization suspendue puis scale (udr 1 -> 2)",
+ "couche": "L3",
+ "source_erreur": "test 2 de la procedure (docs/PROCEDURE-TESTS.md)",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "GitOpsSyncDrift",
+    "mere": "RepairedByFluxDrift",
+    "cible": "Kustomization/sylvatwin-5gc",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   },
+   {
+    "classe": "SpecDrift",
+    "mere": "RepairedByFluxDrift",
+    "cible": "Deployment/udr",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "GitOpsSyncDrift",
+    "nf": [
+     "amf",
+     "ausf",
+     "bsf",
+     "nrf",
+     "nssf",
+     "pcf",
+     "scp",
+     "smf",
+     "udm",
+     "udr"
+    ],
+    "chemin": "flux"
+   },
+   {
+    "cause": "SpecDrift",
+    "nf": [
+     "udr"
+    ],
+    "chemin": "direct"
+   }
+  ],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "SUPPOSE : suspendue, Flux ne corrige pas le scale ; SpecDrift confirmee tout de suite (horizon infini, lifecycle/03)"
+ },
+ "fenetre_s": 150,
+ "arret_anticipe": null,
+ "id": "F2"
+}

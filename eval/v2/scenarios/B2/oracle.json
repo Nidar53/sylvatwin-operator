@@ -1,0 +1,32 @@
+{
+ "titre": "rollout restart (udr)",
+ "couche": "benin",
+ "source_erreur": "operation normale",
+ "dans_le_modele": true,
+ "benin": true,
+ "git": false,
+ "attendu": {
+  "derives": [],
+  "derives_transitoires": [
+   {
+    "classe": "ConvergenceDrift",
+    "verdict_max": "SuspectedViolation"
+   },
+   {
+    "classe": "FunctionImpactDrift",
+    "verdict_max": "SuspectedViolation"
+   }
+  ],
+  "impacts": [],
+  "resolution": "kubernetes"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "rien a faire pour Flux"
+ },
+ "fenetre_s": 120,
+ "arret_anticipe": "retour_base",
+ "id": "B2"
+}

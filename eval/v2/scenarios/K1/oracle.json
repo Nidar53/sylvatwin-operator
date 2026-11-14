@@ -1,0 +1,48 @@
+{
+ "titre": "scale d'une NF (nrf 1 -> 2), kubectl scale",
+ "couche": "L2",
+ "source_erreur": "doc Flux Kustomization ; Mutiny, DSN 2024",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "SpecDrift",
+    "mere": "RepairedByFluxDrift",
+    "cible": "Deployment/nrf",
+    "verdict_initial": "SuspectedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "SpecDrift",
+    "nf": [
+     "amf",
+     "ausf",
+     "bsf",
+     "nrf",
+     "nssf",
+     "pcf",
+     "scp",
+     "smf",
+     "udm",
+     "udr"
+    ],
+    "chemin": "direct (nrf) + dependance (9 NF dependant du NRF)"
+   }
+  ],
+  "resolution": "flux"
+ },
+ "flux_suppose": {
+  "signale": true,
+  "corrige": true,
+  "delai_max_s": 135,
+  "remarque": "SUPPOSE : Flux reapplique replicas=1 au prochain passage (interval 2 min) et emet un evenement 'configured'"
+ },
+ "fenetre_s": 420,
+ "arret_anticipe": "retour_base",
+ "id": "K1"
+}

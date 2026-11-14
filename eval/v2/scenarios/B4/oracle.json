@@ -1,0 +1,23 @@
+{
+ "titre": "flux reconcile kustomization (force)",
+ "couche": "benin",
+ "source_erreur": "operation normale",
+ "dans_le_modele": true,
+ "benin": true,
+ "git": false,
+ "attendu": {
+  "derives": [],
+  "derives_transitoires": [],
+  "impacts": [],
+  "resolution": "aucune"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "rien a corriger"
+ },
+ "fenetre_s": 60,
+ "arret_anticipe": null,
+ "id": "B4"
+}
