@@ -84,6 +84,10 @@ type Options struct {
 	// depart du cycle, meme si les evenements continuent d'arriver (A2).
 	// Defaut : 5 x Debounce.
 	MaxDelay time.Duration
+	// ReadTimeout : duree maximale de la lecture d'UN cluster dans un cycle
+	// (--read-timeout). Au-dela, ce cluster est "injoignable" pour ce cycle et le
+	// cycle continue sur ses derniers faits connus. 0 = defaut (20 s).
+	ReadTimeout time.Duration
 	// FreshnessHorizon : H_frais (theta), publie comme fait sur le cluster temoin.
 	FreshnessHorizon time.Duration
 	// OnReport est appele apres chaque cycle (journal, status TwinSync...).
@@ -182,6 +186,9 @@ func gvkOf(sp source.Spec) schema.GroupVersionKind {
 func New(ctx context.Context, o Options) (*Watcher, error) {
 	if o.Debounce <= 0 {
 		o.Debounce = 2 * time.Second
+	}
+	if o.ReadTimeout <= 0 {
+		o.ReadTimeout = 20 * time.Second
 	}
 	if o.MaxDelay <= 0 {
 		o.MaxDelay = 5 * o.Debounce
@@ -435,6 +442,7 @@ func (w *Watcher) liveSource(name string, cfg *rest.Config, specs []source.Spec)
 	if err != nil {
 		return nil, err
 	}
+	ls.SetReadTimeout(w.opts.ReadTimeout)
 	w.sources[name] = ls
 	return ls, nil
 }

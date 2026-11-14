@@ -3,7 +3,10 @@ package source
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -68,5 +71,33 @@ func TestFluxContextSansLireDeSecret(t *testing.T) {
 	}
 	if fc.KubeconfigTargets["f/k"] != "wl2" || len(fc.KubeconfigTargets) != 2 {
 		t.Errorf("correspondances declarees : %v", fc.KubeconfigTargets)
+	}
+}
+
+// Un serveur qui accepte la connexion et ne repond jamais (connexion muette) :
+// le Snapshot rend la main apres readTimeout, statut "injoignable", et le dernier
+// instantane reussi est conserve.
+func TestSnapshot_ServeurMuet_DelaiMaximal(t *testing.T) {
+	release := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-release
+	}))
+	defer srv.Close()
+	defer close(release)
+
+	cfg := &rest.Config{Host: srv.URL}
+	l, err := NewLive("muet", cfg, []Spec{{Kind: "Pod", Version: "v1", Resource: "pods", Namespace: "*"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	l.SetReadTimeout(300 * time.Millisecond)
+	start := time.Now()
+	s := l.Snapshot(context.Background())
+	took := time.Since(start)
+	if s.Status == mapper.StatusOK {
+		t.Fatalf("statut ok sur un serveur muet")
+	}
+	if took > 3*time.Second {
+		t.Fatalf("lecture non bornee : %v", took)
 	}
 }

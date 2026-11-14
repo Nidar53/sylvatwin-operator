@@ -32,6 +32,9 @@ type Live struct {
 	dyn      dynamic.Interface
 	meta     metadata.Interface
 	witness  *Witness // Watch temoin (partie 2), optionnel
+	// readTimeout : duree maximale de TOUTES les lectures d'un Snapshot de ce
+	// cluster (0 = aucune borne autre que celle du contexte et du client).
+	readTimeout time.Duration
 
 	mu   sync.Mutex
 	last *mapper.Snapshot // dernier instantane REUSSI
@@ -42,6 +45,11 @@ type Live struct {
 
 // LastAPIRequests : nombre de requetes API Kubernetes du dernier Snapshot (A7).
 func (l *Live) LastAPIRequests() int64 { return l.lastCalls.Load() }
+
+// SetReadTimeout borne la duree totale d'un Snapshot (parametre --read-timeout).
+// Une lecture qui depasse est un echec ordinaire : statut "injoignable", dernier
+// instantane reussi conserve. A appeler avant le premier Snapshot.
+func (l *Live) SetReadTimeout(d time.Duration) { l.readTimeout = d }
 
 // SetWitness attache un Watch temoin (P1). A appeler avant le premier Snapshot.
 func (l *Live) SetWitness(w *Witness) { l.witness = w }
@@ -84,6 +92,11 @@ func (l *Live) Endpoint() string { return l.endpoint }
 // echoue, l'instantane precedent est renvoye avec le statut d'echec (P3).
 func (l *Live) Snapshot(ctx context.Context) *mapper.Snapshot {
 	now := time.Now().UTC().Truncate(time.Second)
+	if l.readTimeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, l.readTimeout)
+		defer cancel()
+	}
 	l.calls.Store(0)
 	defer func() { l.lastCalls.Store(l.calls.Load()) }()
 	var objs []*unstructured.Unstructured

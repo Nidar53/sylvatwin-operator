@@ -60,6 +60,7 @@ func main() {
 		historyFile = flag.String("history", "", "copie durable du graphe history (age des derives) ; defaut : <out>/history.nt. Oxigraph tourne EN MEMOIRE : ce fichier est la seule persistance")
 		validity    = flag.Float64("validity", 600, "horizon de validite par defaut (s), si aucun Watch temoin")
 		debounce    = flag.Duration("debounce", 2*time.Second, "fenetre de fusion (glissante) des evenements Watch avant un cycle")
+		readTimeout = flag.Duration("read-timeout", 20*time.Second, "duree MAXIMALE de la lecture d'un cluster dans un cycle ; au-dela le cluster est note injoignable et le cycle continue sur ses derniers faits connus")
 		maxDelay    = flag.Duration("max-delay", 10*time.Second, "delai MAXIMAL entre le premier evenement en attente et le depart du cycle, meme sous flux continu (A2)")
 		kcTargets   = flag.String("kubeconfig-target", "sylvatwin-flux/sylvatwin-5gc-kubeconfig=my-workload-kubeadm-capd",
 			"cible des kubeconfig Flux non-CAPI, DECLAREE (ns/secret=cluster) : leur contenu n'est jamais lu")
@@ -135,6 +136,7 @@ func main() {
 		KubeconfigTargets:  source.ParseTargets(*kcTargets),
 		Debounce:           *debounce,
 		MaxDelay:           *maxDelay,
+		ReadTimeout:        *readTimeout,
 		FreshnessHorizon:   *freshness,
 		MetricsBindAddress: *metricsAddr,
 		HostOverride: func(endpoint string) string {
