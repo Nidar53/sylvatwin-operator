@@ -28,8 +28,8 @@ func TestEtatSainInchange(t *testing.T) {
 			t.Fatal(err)
 		}
 		p := &Pipeline{E: e, RulesDir: filepath.Join(poc, "rules"), Validity: 600, HistoryFile: hist, TBoxFile: filepath.Join(poc, "sylvatwin-core-v1.ttl")}
-		now := time.Now().UTC()
-		for i := 0; i < 3; i++ { // 3 cycles : l'etat sain doit etre un point fixe
+		now := instantInstantane(t, facts) // l'instantane est rejoue a SON instant, pas a l'heure du test (temoins de fraicheur de 30 s)
+		for i := 0; i < 3; i++ {           // 3 cycles : l'etat sain doit etre un point fixe
 			res, err := p.Run(context.Background(), facts, now.Add(time.Duration(i)*10*time.Second))
 			if err != nil {
 				t.Fatal(err)
@@ -72,6 +72,11 @@ func TestEtatSainInchange(t *testing.T) {
 		}
 		return
 	}
+	cls := map[string]int{}
+	for _, l := range v1 {
+		cls[l[strings.LastIndex(l, " ")+1:]]++
+	}
+	t.Logf("classes de verdict apres correction : %v", cls)
 	t.Logf("apres correction : StaleConfigDrift=%d FunctionImpactDrift=%d verdicts=%d (Confirmed=%d) firstDetectedAt=%d", count(d1, "StaleConfigDrift"), count(d1, "FunctionImpactDrift"), len(v1), count(v1, "")-count(vNot(v1), ""), len(f1))
 	if count(d1, "StaleConfigDrift") != 5 || count(d1, "FunctionImpactDrift") != 11 || len(d1) != 16 {
 		t.Errorf("etat sain attendu 5 StaleConfigDrift + 11 FunctionImpactDrift, obtenu %d / %d (total %d)", count(d1, "StaleConfigDrift"), count(d1, "FunctionImpactDrift"), len(d1))
@@ -96,4 +101,26 @@ func vNot(v []string) (out []string) {
 		}
 	}
 	return
+}
+
+// instantInstantane : date du dernier fait observe de l'instantane (max de :lastSyncTime), plus 2 s.
+func instantInstantane(t *testing.T, facts []byte) time.Time {
+	var max time.Time
+	for _, l := range strings.Split(string(facts), "\n") {
+		if !strings.Contains(l, "core#lastSyncTime>") {
+			continue
+		}
+		i := strings.Index(l, `"`)
+		j := strings.Index(l[i+1:], `"`)
+		if i < 0 || j < 0 {
+			continue
+		}
+		if ts, err := time.Parse(time.RFC3339, l[i+1:i+1+j]); err == nil && ts.After(max) {
+			max = ts
+		}
+	}
+	if max.IsZero() {
+		t.Fatal("aucun lastSyncTime dans l'instantane")
+	}
+	return max.Add(2 * time.Second)
 }

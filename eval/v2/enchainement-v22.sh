@@ -12,9 +12,9 @@ stop() { echo "[$(ts)] ARRET : $*"; echo "$(ts) $*" > $ARRET; echo "Etat : voir 
 rm -f $ARRET
 echo "[$(ts)] enchainement demarre ; attente de la fin de campagne2"
 # 1. attendre la fin de campagne2 (session tmux), au plus 6 h
-for i in $(seq 1 720); do tmux has-session -t campagne2 2>/dev/null || break; sleep 30; done
+[ -n "$SANS_ATTENTE" ] || for i in $(seq 1 720); do tmux has-session -t campagne2 2>/dev/null || break; sleep 30; done
 tmux has-session -t campagne2 2>/dev/null && stop "campagne2 toujours en cours apres 6 h"
-tail -1 $EV/campagne-v2.1-FK4.log | grep -q "campagne terminee" || echo "[$(ts)] ATTENTION : campagne2 ne s'est pas terminee normalement : $(tail -1 $EV/campagne-v2.1-FK4.log)"
+[ -n "$SANS_ATTENTE" ] || tail -1 $EV/campagne-v2.1-FK4.log | grep -q "campagne terminee" || echo "[$(ts)] ATTENTION : campagne2 ne s'est pas terminee normalement : $(tail -1 $EV/campagne-v2.1-FK4.log)"
 [ -f $EV/ETAT_BANC.txt ] && stop "ETAT_BANC.txt present : une restauration a echoue pendant campagne2 ($(cat $EV/ETAT_BANC.txt))"
 # 2. etat sain avant toute chose (derives de base seulement ; la campagne2 a pu laisser des derives resolues dans history)
 python3 $D/verif_sain.py --attendre 900 || stop "etat non sain apres campagne2"
