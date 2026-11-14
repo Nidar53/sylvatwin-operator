@@ -30,3 +30,15 @@ qu'à la compaction, ou jamais rendus à l'allocateur. ~0,17 Mo par cycle pour 1
 2. **Envoyer seulement le delta des faits** (DELETE/INSERT DATA des triplets changés) au lieu d'un PUT complet. Réduit le travail
    et probablement la fuite ; à mesurer ; un cycle typique ne change presque rien. Plus de code côté greffier, aucune règle touchée.
 3. **Vérifier sur une version plus récente d'Oxigraph** si le comportement persiste.
+
+## Effet observé sur la durée des cycles (VÉRIFIÉ, journal.jsonl)
+
+La durée du jugement augmente avec l'âge du processus Oxigraph (la lecture des clusters, `observe`, reste à ~1,3 s) :
+
+| Fenêtre | Âge d'Oxigraph | TOTAL médiane | judge_lifecycle médiane |
+|---|---|---|---|
+| 13/11 21:13 → 23:11 | 0 → 2 h | 1911 ms | 127 ms |
+| 13/11 23:13 → 14/11 10:28 | 2 → 13 h | 2202 ms | 330 ms |
+| 14/11 10:05 → 10:28 | ~12,5 h | 2419 ms | 477 ms |
+
+Cohérent avec la même cause (versions remplacées qui s'accumulent). Un redémarrage d'Oxigraph le confirmerait (non fait : demandé « sans rien redémarrer »).
