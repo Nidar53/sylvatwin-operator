@@ -43,7 +43,14 @@ def cycle_state():
     for l in d.get("verdictList", []):
         v, i = l.split(" ", 1); ver[i] = v; allv.setdefault(i, set()).add(v)
     multi = {i: sorted(v) for i, v in allv.items() if len(v) > 1}   # v2.1 : une derive peut recevoir 2 verdicts (voir DIAGNOSTIC-SUSPENSION)
-    return dict(end=d.get("end"), ids=ids, ver=ver, multi=multi, clusters=d.get("clusters", {}), cause=d.get("cause"), trig=d.get("triggerObjects"))
+    fdm = {}                                                       # invariant v2.2 : au plus UN :firstDetectedAt par derive de history
+    try:
+        cnt = {}
+        for l in open(SVC + "/out/history.nt"):
+            if "core#firstDetectedAt>" in l: sj = l.split(" ", 1)[0]; cnt[sj] = cnt.get(sj, 0) + 1
+        fdm = {k.split("/drift/")[-1][:160]: n for k, n in cnt.items() if n > 1}
+    except Exception: pass
+    return dict(end=d.get("end"), ids=ids, ver=ver, multi=multi, fd_multi=fdm, clusters=d.get("clusters", {}), cause=d.get("cause"), trig=d.get("triggerObjects"))
 
 def sain(baseline, allow_label=False):
     """(ok, raisons). Lecture seule."""
@@ -124,7 +131,7 @@ class Collectors:
                 if "cause" not in d: continue
                 time.sleep(0.4); cs = cycle_state()
                 rec = dict(t=d["time"], cause=d["cause"], dur=d.get("durationMs"), trig=d.get("triggerObjects"), ids=(cs or {}).get("ids", {}),
-                           ver=(cs or {}).get("ver", {}), ver_multi=(cs or {}).get("multi", {}), clusters=d.get("clusters"), cycle_end=(cs or {}).get("end"))
+                           ver=(cs or {}).get("ver", {}), ver_multi=(cs or {}).get("multi", {}), fd_multi=(cs or {}).get("fd_multi", {}), clusters=d.get("clusters"), cycle_end=(cs or {}).get("end"))
                 with self.lock: self.cycles.append(rec)
                 out.write(json.dumps(rec) + "\n"); out.flush()
             time.sleep(0.5)

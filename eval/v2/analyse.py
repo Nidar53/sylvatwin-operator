@@ -152,6 +152,7 @@ def analyse_rep(d, scen):
     mu = {}
     for c in cyc:
         for i, v in (c.get("ver_multi") or {}).items(): mu[i] = v
+    R["invariants_enregistres"] = any("fd_multi" in c for c in cyc); R["cycles_fd_multiples"] = sum(1 for c in cyc if c.get("fd_multi")); R["cycles_verdicts_multiples"] = sum(1 for c in cyc if c.get("ver_multi"))
     R["verdicts_multiples"] = sorted(i.split("/")[0] + "/" + i.split("/")[-1] for i in mu)
     # diffs
     for lab, key in (("t0+10s", "10"), ("avant-restauration", "avant")):
@@ -294,6 +295,9 @@ def report21(reps, out):
     dbl = [(sc, sum(1 for r in by[sc] if r["verdicts_multiples"])) for sc in order]
     L += ["## Verdicts multiples pour une même dérive (défaut des règles, voir `DIAGNOSTIC-SUSPENSION-2026-11-14.md`)", "",
           "Répétitions dont au moins une dérive a reçu deux verdicts dans le même cycle (champ enregistré à partir de la mesure v2.1 ; absent des données de la campagne v2 : voir le diagnostic pour la mesure rétrospective par le journal) : " + (", ".join(f"{a} {b}/{len(by[a])}" for a, b in dbl if b) or "aucune / non enregistré") + ".", ""]
+    L += ["## Invariants des règles (une dérive : au plus un firstDetectedAt, un verdict par cycle)", "",
+          ("**Non enregistrés** dans cette campagne (mesure antérieure à v2.1 ; voir le diagnostic pour la mesure rétrospective par le journal)." if not any(r["invariants_enregistres"] for r in reps) else "") +
+          f"Cycles observés avec plus d'un `firstDetectedAt` pour une dérive : {sum(r['cycles_fd_multiples'] for r in reps)} ; cycles avec plus d'un verdict pour une dérive : {sum(r['cycles_verdicts_multiples'] for r in reps)} (sur {len(reps)} répétitions). Un compte non nul est un RÉSULTAT.", ""]
     L += ["## Détail par répétition", ""]
     for r in sorted(reps, key=lambda r: (r["scenario"], r["rep"])):
         L.append(f"* **{r['scenario']} rép {r['rep']}** — " + ", ".join(f"{x['classe']} {'détectée en %.0f s (%s)' % (x['delai_s'], x.get('verdict_initial')) if x['detectee'] else 'NON détectée'}" + (f", final {'atteint' if x.get('verdict_final_atteint') else 'non atteint'}" + (f" après {x['verdict_final_apres_s']:.0f} s" if x.get('verdict_final_apres_s') else "") if 'verdict_final_atteint' in x else "") for x in r["derives_attendues"]) + f" ; impacts {r['impacts_observes']}/{r['impacts_attendus']} ; fausses alertes : {len(r['fausses_alertes'])}" + (" (" + "; ".join(x['classe'] + ' ' + str(x['verdict_max']) for x in r['fausses_alertes'][:4]) + ")" if r["fausses_alertes"] else "") + f" ; état sain après : {r['etat_sain_apres']}.")
