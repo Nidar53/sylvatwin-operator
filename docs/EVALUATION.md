@@ -44,3 +44,10 @@ Aucun jeton, kubeconfig ni contenu de Secret n'y est écrit (le Secret udm-keys 
 * `flux diff kustomization` n'est pas comparable ici (il évalue contre le cluster de management, la Kustomization vise un cluster distant) : « non comparé ».
 * Les événements Flux sont dédupliqués par Kubernetes : une correction de dérive silencieuse peut ne laisser aucun événement (observé sur K1 : Flux corrige sans événement).
 * C1 : rejeu seulement (`eval/v2/c1-rejeu/RESULTAT.md`). K4 : retiré (voir `criteres-v2.md`). Analyseur statique : non installé.
+
+## Version 2.1 (14/11/2026)
+
+* Oracle 2.1 : `eval/v2/scenarios/<id>/oracle-2.1.json` (note datée dans `eval/v2/criteres-v2.1.md`). Le banc v2 (`oracle.json`, `resultats-v2.md`) est conservé.
+* Analyse des MÊMES données avec l'oracle 2.1 : `python3 eval/v2/analyse.py --version 2.1 DOSSIER` → `resultats-v2.1.md` / `.json`. Pour une campagne déjà faite sans journal Flux : `python3 eval/v2/flux_log.py DEPUIS_UTC DOSSIER/flux-kustomize-controller.jsonl` (lecture seule ; limité par la rétention du journal du pod).
+* Test des cibles : `python3 eval/v2/test_oracle_cibles.py --version 2.1` (chaque cible d'oracle doit correspondre à un identifiant réellement produit).
+* Relancer seulement F1, F2, F3 et K4 : `./campagne.sh --reps 3 --scenario F1 --scenario F2 --scenario F3 --scenario K4 --outdir …` en session tmux détachée. K4 commite sur la branche test (preparation) et pose un label de test sur le noeud workload ; la restauration retire le label et fait un `git revert`.
