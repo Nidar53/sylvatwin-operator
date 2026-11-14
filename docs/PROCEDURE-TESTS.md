@@ -102,8 +102,11 @@ python3 $S/scripts/suivre-journal.py $T/journal.jsonl --depuis $(date -u +%T)   
 * Attendu (SUPPOSÉ, non encore observé en vrai) : les connexions restent ouvertes, aucune erreur réseau, mais plus aucune Lease. Environ 30 s
   (θ) + 1 s après la dernière Lease : un cycle **`echeance`** avec `api=0` ; les dérives du workload passent `Unknown` ; celles du management restent
   `Confirmed`. Il n'y a **aucun cycle périodique** avant : tant que les Lease arrivaient, la minuterie était repoussée.
-* À surveiller : si un événement du management déclenche un cycle complet pendant le mutisme, sa lecture du workload attend jusqu'à
-  30 s par requête (plafond du cycle : 2 min), et l'`echeance` attend derrière lui (un seul cycle à la fois). Noter la durée du cycle.
+* À surveiller : si un événement du management déclenche un cycle complet pendant le mutisme, la lecture du workload est désormais
+  bornée par `--read-timeout` (20 s par défaut, par cluster) : le cycle se termine « partiel » (workload `unreachable`, derniers faits
+  conservés), puis une `reprise` à 5, 10, 20… s. L'`echeance` attend au plus ce cycle (un seul cycle à la fois) : le verdict
+  `Unknown` doit arriver **au plus ~53 s après la dernière Lease** (31 s si aucun cycle n'est en cours ; SUPPOSÉ, non mesuré en vrai).
+  Avant ce réglage le plafond était 30 s par requête et 2 min par cycle. Noter la durée du cycle (`durationMs`) : ~20 s + 2 s attendus.
 * `kill -CONT $PID` : les Lease reviennent ; le témoin qui était périmé provoque un rejugement immédiat (`echeance`, `api=0`) et les verdicts
   repassent `Confirmed` sans attendre un autre événement (SUPPOSÉ : testé en unitaire seulement).
 

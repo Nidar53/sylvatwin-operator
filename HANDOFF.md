@@ -1,4 +1,4 @@
-# HANDOFF — branche `test2` (mis à jour le 13/11/2026)
+# HANDOFF — branche `test2` (mis à jour le 14/11/2026)
 
 Archive de la session précédente (très détaillée, branche `test`) : `docs/HANDOFF-2026-11-10.md`.
 À lire avec `README.md` (architecture, vocabulaire TBox / ABox, ordonnanceur, témoins).
@@ -20,6 +20,26 @@ Archive de la session précédente (très détaillée, branche `test`) : `docs/H
 * Phase C (13/11) : Go v0 supprimé (`api/`, `internal/controller`, `internal/legacyv0`, `cmd/main.go`, scaffolding
   Kubebuilder) ; prototype Python v0 et ses données dans `sylvatwin-poc/legacy/`.
 
+## Services (systemd utilisateur, `~/.config/systemd/user/`, hors dépôt)
+
+* `sylvatwin-oxigraph.service` : `oxigraph serve --bind 127.0.0.1:7878` (en mémoire), `Restart=always`.
+* `sylvatwin-controller.service` : `Wants/After` Oxigraph, `bin/sylvatwin-controller` (`--out`, `--journal` dans un dossier daté
+  de `/opt/nidar/sylvatwin-run/`), proxies HTTP dans l'environnement, `Restart=always`. Journaux horodatés dans journald.
+  Les deux sont `enable`. Recompiler puis `systemctl --user restart sylvatwin-controller`.
+* Vrai redémarrage d'Oxigraph vérifié (13/11) : TBox (1247 triplets) et `history` rechargés au cycle suivant, âge des 16 dérives conservé.
+
+## Résultats de l'état sain (13–14/11/2026, dossier `test2-sain-20261113/`)
+
+* 2 h (145 cycles, tous `evenement`) : décompte constant 5 StaleConfigDrift + 11 FunctionImpactDrift, tous Confirmed ; 0 erreur partielle ;
+  0 cycle en parallèle ; 0 `echeance` (les Lease repoussent la minuterie). Cycle : médiane 1911 ms, p95 2007 ms (`observe` 1337 ms, jugement ~250 ms).
+* Cycles « inutiles » (ne changent rien) : mises à jour de `[status]` de Kustomization `sylvatwin-5gc` (~40 %), Nodes, HelmRelease `sylva-units`.
+  Décision du 14/11 : **ne rien filtrer**.
+* Mémoire d'Oxigraph : 30 Mo → 76 Mo (2 h) → 331 Mo (13 h) alors que les triplets sont stables (facts 17 089) ; croissance linéaire
+  (~0,17 Mo/cycle) et le jugement ralentit (127 → 480 ms pour `judge_lifecycle`). Voir `docs/MEMOIRE-OXIGRAPH-2026-11-14.md`. **Non corrigé** (propositions : plafond systemd, envoi du delta des faits).
+* 500 d'Oxigraph sur connexion inactive (48 en 2 h, sans effet sur les cycles) : corrigé le 14/11 (`IdleConnTimeout` 1 s) ; 0 message sur 28 min
+  (≈ 11 attendus), durée de cycle inchangée par rapport à l'instant précédent.
+* Lecture d'un cluster bornée : `--read-timeout` (20 s) ; test unitaire serveur muet. Pas encore observé en vrai (test 3).
+
 ## `--validity` et `--freshness-horizon`
 
 * `--freshness-horizon` (θ, 30 s) : un cluster **avec témoin** est périmé si aucune Lease n'est reçue depuis θ.
@@ -34,6 +54,15 @@ Archive de la session précédente (très détaillée, branche `test`) : `docs/H
 * Un `OPTIONAL` dans un `GRAPH { … }` est évalué isolément.
 * Les règles de `derives/` sont évaluées sur l'union des graphes (`default-graph-uri`) : **aucune clause `GRAPH`** (test `TestDerivesSansClauseGRAPH`).
 * Oxigraph n'accepte pas un `GET` sur un graphe absent (404) : tester avec `ASK` d'abord.
+
+## Questions ouvertes / réserves
+
+* `InterNFConsistencyDrift` ne produit **aucun** `FunctionImpactDrift` aujourd'hui : `derives/10` garde sa liste de classes (décision du 14/11 ;
+  lire `:RootDrift` ajouterait ces impacts, constaté sur S4). À rouvrir si l'article veut ces impacts.
+* Mémoire d'Oxigraph (ci-dessus) : à traiter avant toute observation longue.
+* Retour d'une Lease après péremption → rejugement immédiat : testé en unitaire seulement. Délai « inconnu » avec connexion muette : ≤ ~53 s (SUPPOSÉ).
+* `TestA8Equivalence` exécuté sur un cycle sur deux (76 cycles). Les corrections 1, 2 et 5 de la phase A sont dans un seul commit.
+* Trois tests de l'auteur (scale ; Kustomization suspendue puis scale ; coupure puis connexion muette) : préparés dans `docs/PROCEDURE-TESTS.md`, non exécutés.
 
 ## Reste à faire (recherche)
 
