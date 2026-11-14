@@ -269,6 +269,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reps", type=int, default=3); ap.add_argument("--scenario", action="append"); ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--seed", type=int, default=None); ap.add_argument("--outdir", default=None); ap.add_argument("--skip-prepare", action="store_true")
+    ap.add_argument("--reprendre", action="store_true", help="reprend le plan.json de --outdir : saute les repetitions deja faites (rep.json), sans reecrire plan.json")
     a = ap.parse_args()
     allsc = sorted(x for x in os.listdir(V2 + "/scenarios") if os.path.isdir(f"{V2}/scenarios/{x}"))
     sc = a.scenario or allsc
@@ -276,11 +277,17 @@ def main():
         if s not in allsc: sys.exit(f"scenario inconnu {s}")
     seed = a.seed if a.seed is not None else int(time.time()); rnd = random.Random(seed)
     plan = []
-    for r in range(1, a.reps + 1):                   # manche par manche : un arret tardif laisse des manches completes
-        o = list(sc); rnd.shuffle(o); plan += [(s, r) for s in o]
-    rundir = a.outdir or f"{EVRUN}/campagne-{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}{'-dry' if a.dry_run else ''}"
-    os.makedirs(rundir, exist_ok=True)
-    json.dump(dict(seed=seed, plan=plan, reps=a.reps, started=now(), dry=a.dry_run), open(rundir + "/plan.json", "w"))
+    if a.reprendre:
+        if not a.outdir: sys.exit("--reprendre demande --outdir")
+        rundir = a.outdir; old = json.load(open(rundir + "/plan.json")); seed = old["seed"]
+        plan = [(s, r) for s, r in old["plan"] if not os.path.exists(f"{rundir}/{s}/rep{r}/rep.json")]
+        json.dump(dict(seed=seed, plan=plan, reprise=now(), dry=a.dry_run), open(f"{rundir}/plan-reprise-{int(time.time())}.json", "w"))
+    else:
+        for r in range(1, a.reps + 1):                   # manche par manche : un arret tardif laisse des manches completes
+            o = list(sc); rnd.shuffle(o); plan += [(s, r) for s in o]
+        rundir = a.outdir or f"{EVRUN}/campagne-{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}{'-dry' if a.dry_run else ''}"
+        os.makedirs(rundir, exist_ok=True)
+        json.dump(dict(seed=seed, plan=plan, reps=a.reps, started=now(), dry=a.dry_run), open(rundir + "/plan.json", "w"))
     log("campagne", rundir, "graine", seed, "repetitions", len(plan))
     baseline = None
     if os.path.exists(EVRUN + "/baseline-ids.json"): baseline = json.load(open(EVRUN + "/baseline-ids.json"))

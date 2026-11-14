@@ -93,3 +93,26 @@ sys.exit(0 if live.strip()==open(f).read().strip() else 1)
 PY
 }
 flux_reconcile_ks() { flux --kubeconfig "$MGMT_KC" -n $KS_NS reconcile kustomization $KS --timeout=3m >/dev/null 2>&1; }
+
+# Recree le pod d'un Deployment SANS toucher a sa spec (kubectl delete pod : le Deployment le recree sur le meme ReplicaSet).
+# JAMAIS de "rollout restart" dans une restauration : Flux retire l'annotation restartedAt et revient a l'ancien ReplicaSet.
+# $1 = nom du Deployment (amf...). Echoue si le Deployment ne cible qu'un nom de pod du namespace NS.
+renouveler_pod() {
+  local dep=$1 sel pods
+  sel=$(k -n $NS get deploy "$dep" -o jsonpath='{.spec.selector.matchLabels.app\.kubernetes\.io/name}') || return 1
+  [ -n "$sel" ] || return 1
+  pods=$(k -n $NS get pods -l "app.kubernetes.io/name=$sel" -o name) || return 1
+  [ -n "$pods" ] || return 1
+  # shellcheck disable=SC2086
+  k -n $NS delete $pods --wait=true --timeout=120s >/dev/null || return 1
+  k -n $NS rollout status deploy/"$dep" --timeout=180s >/dev/null || return 1
+}
+# Instant (epoch) de la derniere modification de la ConfigMap $1-config (max des managedFields) et du pod le plus recent du Deployment $1.
+cm_modifiee_epoch() { k -n $NS get cm "$1-config" --show-managed-fields -o json | python3 -c '
+import sys, json, datetime as d
+t = [m["time"] for m in json.load(sys.stdin)["metadata"].get("managedFields", []) if m.get("time")]
+print(int(max(d.datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=d.timezone.utc).timestamp() for x in t)))'; }
+pod_cree_epoch() { k -n $NS get pods -l "app.kubernetes.io/name=$1" -o json | python3 -c '
+import sys, json, datetime as d
+p = [i["metadata"]["creationTimestamp"] for i in json.load(sys.stdin)["items"]]
+print(int(min(d.datetime.strptime(x, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=d.timezone.utc).timestamp() for x in p)) if p else 0)'; }
