@@ -41,10 +41,23 @@ git_commit_push() {
   git -C $GITWORK add -- usecase/5gc || die "git add"
   [ -z "$(git -C $GITWORK diff --cached --name-only | grep -v '^usecase/5gc/')" ] || die "fichier hors usecase/5gc dans le commit"
   git -C $GITWORK commit -q -m "$msg" || die "git commit"
-  mark "t0_push_debut"
+  # MARK_PREFIX vide : marques de mesure (t0_push_debut, push_fait). MARK_PREFIX=prep : commit de PREPARATION (K4), sans toucher a t0.
+  local m1="t0_push_debut" m2="push_fait"; [ -n "${MARK_PREFIX:-}" ] && { m1="${MARK_PREFIX}_push_debut"; m2="${MARK_PREFIX}_push_fait"; }
+  mark "$m1"
   git -C $GITWORK push -q origin HEAD:test || die "git push (jamais de --force)"
-  mark "push_fait $(git -C $GITWORK rev-parse HEAD)"
+  mark "$m2 $(git -C $GITWORK rev-parse HEAD)"
 }
+# Attend (max $2 s) que Flux ait applique la revision du commit $1 (sha) : lastAppliedRevision == test@sha1:<sha>.
+wait_applied() {
+  local sha=$1 max=${2:-420} i=0
+  while [ $i -lt $max ]; do
+    [ "$(km -n $KS_NS get kustomization $KS -o jsonpath='{.status.lastAppliedRevision}' 2>/dev/null)" = "test@sha1:$sha" ] && return 0
+    sleep 5; i=$((i+5))
+  done
+  return 1
+}
+WL_NODE() { k get nodes -o jsonpath='{.items[0].metadata.name}'; }
+TEST_LABEL=sylvatwin.orange.com/zone
 check_git_dirty_ok() { [ "$(git -C $GITWORK rev-parse --abbrev-ref HEAD)" = "test" ] || die "branche != test"; }
 git_revert_push() {  # $1 = scenario, $2 = rep : revert du DERNIER commit (qui doit etre le notre)
   local scen=$1 rep=$2

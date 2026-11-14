@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
-"""Analyse v2 : lit un dossier de campagne (campagne.py) et ecrit resultats-v2.md / resultats-v2.json.
-Usage : analyse.py DOSSIER [DOSSIER...]   (lecture seule des fichiers de mesure ; aucun acces cluster)"""
+"""Analyse v2 / v2.1 : lit un dossier de campagne (campagne.py) et ecrit resultats-v2.md / .json (oracle 2) ou resultats-v2.1.md / .json (--version 2.1).
+Usage : analyse.py [--version 2.1] DOSSIER [DOSSIER...]   (lecture seule des fichiers de mesure ; aucun acces cluster)
+La version 2 reste reproductible telle quelle ; la version 2.1 lit scenarios/<id>/oracle-2.1.json et ajoute le journal du kustomize-controller."""
 import json, os, re, statistics, sys, datetime as dt
 V2 = os.path.dirname(os.path.abspath(__file__))
+VER = ""        # "" = oracle 2 ; "2.1" = oracle 2.1
+def orc_path(sc): return f"{V2}/scenarios/{sc}/" + ("oracle-2.1.json" if VER == "2.1" else "oracle.json")
+def load_orc(sc): return json.load(open(orc_path(sc)))
 def P(s): return dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
+_FL = {}
+def flux_log(d):
+    """journal du kustomize-controller de la campagne (flux_log.py), mis en cache."""
+    camp = os.path.dirname(os.path.dirname(d))
+    if camp not in _FL:
+        _FL[camp] = [dict(e, t=P(e["ts"])) for e in jl(camp + "/flux-kustomize-controller.jsonl")]
+    return _FL[camp]
 def jl(p):
     out = []
     if os.path.exists(p):
@@ -18,7 +29,7 @@ def fmt_d(v):
     return "%.0f s (%.0f–%.0f)" % (med(v), min(v), max(v))
 
 def analyse_rep(d, scen):
-    orc = json.load(open(f"{V2}/scenarios/{scen}/oracle.json"))
+    orc = load_orc(scen)
     marks = [l.split("\t") for l in open(d + "/marks.tsv").read().splitlines()] if os.path.exists(d + "/marks.tsv") else []
     M = {}
     for t, e in marks: M.setdefault(e.split(" ")[0], t)
@@ -112,6 +123,36 @@ def analyse_rep(d, scen):
     if orc["git"]:
         ap = [P(p["t"]) for p in poll if win(P(p["t"])) and p.get("applied") and p.get("artifact") and p["applied"] == p["artifact"] and p.get("probe") == "0"]
         R["flux_applique_commit_s"] = (min(ap) - t0).total_seconds() if ap else None
+    # ---- v2.1 : journal du kustomize-controller (source retenue), delais Git, verdicts multiples ----
+    fl = [e for e in flux_log(d) if e["t"] > t0 and (not tend or e["t"] <= tend)]
+    R["flux_journal_disponible"] = bool(flux_log(d))
+    err = [e for e in fl if e["level"] == "error"]
+    R["flux_journal_erreur"] = bool(err); R["flux_journal_erreur_delai_s"] = (err[0]["t"] - t0).total_seconds() if err else None
+    R["flux_journal_suspendue"] = any("suspended" in e["msg"] for e in fl)
+    fo = orc.get("flux_objet")
+    chg = [e for e in fl if fo and fo in e["changed"]] if fo else []
+    R["flux_objet"] = fo
+    R["flux_journal_corrige_objet"] = (bool(chg) if fo else None); R["flux_journal_corrige_delai_s"] = (chg[0]["t"] - t0).total_seconds() if chg else None
+    R["flux_signale_total"] = bool(R["flux_signale"] or err)
+    sha = None
+    for l in open(d + "/marks.tsv"):
+        if "\tpush_fait " in l: sha = l.split("push_fait ")[1].strip()
+    if orc["git"] and sha:
+        rev = "test@sha1:" + sha
+        okr = [e for e in flux_log(d) if e.get("revision") == rev and e["level"] == "info" and e["msg"].startswith("Reconciliation finished")]
+        ko = [e for e in flux_log(d) if e.get("revision") == rev and e["level"] == "error"]
+        R["flux_applique_instant"] = okr[0]["ts"] if okr else None
+        R["flux_applique_depuis_push_s"] = (okr[0]["t"] - t0).total_seconds() if okr else None
+        R["flux_premiere_tentative_en_echec_s"] = (ko[0]["t"] - t0).total_seconds() if ko and not okr else None
+        ref = okr[0]["t"] if okr else (ko[0]["t"] if ko else None)
+        R["flux_reference_depuis"] = "application" if okr else ("premiere tentative en echec" if ko else None)
+        dd = [x["delai_s"] for x in dets if x.get("delai_s") is not None]
+        R["delai_sylvatwin_depuis_push_s"] = min(dd) if dd else None
+        R["delai_sylvatwin_depuis_flux_s"] = (min(dd) - (ref - t0).total_seconds()) if dd and ref else None
+    mu = {}
+    for c in cyc:
+        for i, v in (c.get("ver_multi") or {}).items(): mu[i] = v
+    R["verdicts_multiples"] = sorted(i.split("/")[0] + "/" + i.split("/")[-1] for i in mu)
     # diffs
     for lab, key in (("t0+10s", "10"), ("avant-restauration", "avant")):
         for tool in ("kubectl", "flux"):
@@ -135,16 +176,20 @@ def analyse_rep(d, scen):
     return R
 
 def main():
-    dirs = sys.argv[1:]
+    global VER
+    args = sys.argv[1:]
+    if args[:1] == ["--version"]: VER = args[1]; args = args[2:]
+    dirs = args
     reps = []
     for D in dirs:
         for sc in sorted(os.listdir(D)):
-            if not os.path.isdir(f"{D}/{sc}") or not os.path.exists(f"{V2}/scenarios/{sc}/oracle.json"): continue
+            if not os.path.isdir(f"{D}/{sc}") or not os.path.exists(orc_path(sc)): continue
             for r in sorted(os.listdir(f"{D}/{sc}")):
                 if r.startswith("rep") and os.path.exists(f"{D}/{sc}/{r}/marks.tsv"):
                     x = analyse_rep(f"{D}/{sc}/{r}", sc)
                     if x: x["rep"] = int(r[3:]); reps.append(x)
     out = dirs[0]
+    if VER == "2.1": return report21(reps, out)
     json.dump(reps, open(out + "/resultats-v2.json", "w"), indent=1, default=str)
     by = {}
     for r in reps: by.setdefault(r["scenario"], []).append(r)
@@ -152,7 +197,7 @@ def main():
          "Horloge unique : serveur. Délais : t0 = instant d'injection (push Git pour F3, N2, B3). **Mesuré** = observé dans les journaux ; les attendus de Flux sont SUPPOSÉS.", "",
          "| id | couche | source de l'erreur | SylvaTwin détecte | délai SylvaTwin | verdict conforme | fausses alertes (total) | Flux signale | Flux corrige | kubectl diff -k | flux diff | Alertmanager | retour sain |", "|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
     tool = {t: [0, 0, 0] for t in ("sylvatwin", "flux", "kdiff", "fdiff", "prom")}   # tp, malveillants, fp(benins)
-    for sc in sorted(by, key=lambda s: (json.load(open(f"{V2}/scenarios/{s}/oracle.json"))["couche"] == "benin", s)):
+    for sc in sorted(by, key=lambda s: (load_orc(s)["couche"] == "benin", s)):
         rr = by[sc]; n = len(rr); r0 = rr[0]
         k = lambda f: sum(1 for r in rr if f(r))
         dl = [r["delai_sylvatwin_s"] for r in rr if r.get("delai_sylvatwin_s") is not None]
@@ -187,4 +232,72 @@ def main():
         L.append(f"* **{r['scenario']} rép {r['rep']}** — dérives attendues : " + ", ".join(f"{x['classe']} {'détectée en %.0f s (%s)' % (x['delai_s'], x.get('verdict_initial')) if x['detectee'] else 'NON détectée'}" + (f", final {'atteint' if x.get('verdict_final_atteint') else 'non atteint'}" + (f" après {x['verdict_final_apres_s']:.0f} s" if x.get('verdict_final_apres_s') else "") if 'verdict_final_atteint' in x else "") for x in r["derives_attendues"]) + f" ; impacts {r['impacts_observes']}/{r['impacts_attendus']}" + (f" (manquants : {', '.join(r['impacts_manquants'][:4])}…)" if r["impacts_manquants"] else "") + f" ; fausses alertes : {len(r['fausses_alertes'])}" + (" (" + "; ".join(f['classe'] + ' ' + str(f['verdict_max']) for f in r['fausses_alertes'][:4]) + ")" if r["fausses_alertes"] else "") + f" ; transitoires tolérés : {r['transitoires_toleres']} ; état sain après : {r['etat_sain_apres']}.")
     open(out + "/resultats-v2.md", "w").write("\n".join(L) + "\n")
     print("\n".join(L[:30]))
+def report21(reps, out):
+    json.dump(reps, open(out + "/resultats-v2.1.json", "w"), indent=1, default=str)
+    by = {}
+    for r in reps: by.setdefault(r["scenario"], []).append(r)
+    order = sorted(by, key=lambda s: (load_orc(s)["couche"] == "benin", s))
+    f = lambda n, d: "%d/%d" % (n, d)
+    L = ["# Résultats v2.1 — SylvaTwin face à Flux CD (PRÉLIMINAIRES)", "",
+         f"Dossier : `{out}` ; {len(reps)} répétitions ; **mêmes données** que `resultats-v2.md` (conservé tel quel). Oracle : version 2.1 (`scenarios/*/oracle-2.1.json`, note datée du 14/11/2026 dans `criteres-v2.1.md`).",
+         "Horloge unique : serveur (UTC). t0 = injection (push Git pour F3, N2, B3 ; retrait du label pour K4). **Mesuré** = observé ; les attendus de Flux sont SUPPOSÉS.",
+         "**Source retenue pour « Flux signale » et « Flux corrige l'objet » : le journal du kustomize-controller** (lecture seule ; une ligne par réconciliation, avec l'action par objet et les erreurs ; non dédupliqué, contrairement aux événements Kubernetes). Les événements et la sonde de 10 s sont gardés à côté pour comparaison.", "",
+         "## Tableau par scénario", "",
+         "| id | couche | source de l'erreur | SylvaTwin détecte | délai SylvaTwin | verdict conforme | fausses alertes | Flux signale : événements | Flux signale : journal (erreur) | Flux corrige l'objet : journal | Flux corrige l'objet : sonde 10 s | la conséquence disparaît (vu par SylvaTwin) | kubectl diff -k | Alertmanager | retour sain |",
+         "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for sc in order:
+        rr = by[sc]; n = len(rr); r0 = rr[0]; k = lambda g: sum(1 for r in rr if g(r))
+        dl = [r["delai_sylvatwin_s"] for r in rr if r.get("delai_sylvatwin_s") is not None]
+        sd = (f(k(lambda r: r["sylvatwin_detecte"]), n) if r0["sylvatwin_detecte"] is not None else "sans objet")
+        fo = r0.get("flux_objet")
+        jc = (f(k(lambda r: r["flux_journal_corrige_objet"]), n) if fo else "—")
+        sc_ = (f(k(lambda r: r["flux_corrige"]), n) if r0["flux_corrige"] is not None else "n/a (Git)")
+        csq = (f(k(lambda r: r.get("resolu_avant_restauration")), n) if r0["derives_attendues"] else "—")
+        kd = "n/a (Git)" if r0["git"] else f(k(lambda r: r.get("diff_kubectl_10", {}).get("non_vide")), n)
+        L.append(f"| {sc} | {r0['couche']} | {r0['source']} | {sd} | {fmt_d(dl)} | {f(k(lambda r: r['verdict_conforme']), n)} | {sum(len(r['fausses_alertes']) for r in rr)} | {f(k(lambda r: r['flux_signale']), n)} | {f(k(lambda r: r['flux_journal_erreur']), n)} | {jc} | {sc_} | {csq} | {kd} | {f(k(lambda r: r['prom_detecte']), n)} | {fmt_d([r['retour_sain_s'] for r in rr if r.get('retour_sain_s') is not None])} |")
+    L += ["", "« Flux corrige l'objet » = Flux a remis l'objet comme dans Git (journal : action ≠ unchanged sur l'objet visé ; sonde : objet conforme à Git). « la conséquence disparaît » = SylvaTwin n'a plus aucune dérive nouvelle avant notre restauration : **c'est la vue de SylvaTwin, pas une mesure indépendante** (cas K5 : la ConfigMap est remise par Flux, le pod n'est jamais redémarré, la dérive persiste).", ""]
+    git = [sc for sc in order if load_orc(sc)["git"]]
+    if git:
+        L += ["## Scénarios Git : deux délais pour SylvaTwin", "", "| id | push → Flux applique | SylvaTwin depuis le push | SylvaTwin depuis l'application de Flux | référence |", "|---|---|---|---|---|"]
+        for sc in git:
+            rr = by[sc]
+            ap = [r["flux_applique_depuis_push_s"] for r in rr if r.get("flux_applique_depuis_push_s") is not None]
+            ft = [r["flux_premiere_tentative_en_echec_s"] for r in rr if r.get("flux_premiere_tentative_en_echec_s") is not None]
+            dp = [r["delai_sylvatwin_depuis_push_s"] for r in rr if r.get("delai_sylvatwin_depuis_push_s") is not None]
+            df = [r["delai_sylvatwin_depuis_flux_s"] for r in rr if r.get("delai_sylvatwin_depuis_flux_s") is not None]
+            ref = sorted(set(r.get("flux_reference_depuis") or "—" for r in rr))
+            L.append(f"| {sc} | {fmt_d(ap) if ap else ('jamais appliqué (1re tentative en échec : ' + fmt_d(ft) + ')' if ft else '—')} | {fmt_d(dp)} | {fmt_d(df)} | {', '.join(ref)} |")
+        L += ["", "Délai négatif = SylvaTwin a vu la dérive avant la fin de la réconciliation de Flux (la ressource change pendant l'application).", ""]
+    # rappel dans / hors modèle
+    tools = [("SylvaTwin", lambda r: bool(r["sylvatwin_detecte"]), False), ("Flux signale (événement, Ready=False ou erreur du journal)", lambda r: r["flux_signale_total"], False),
+             ("Flux corrige l'objet (journal)", lambda r: bool(r.get("flux_journal_corrige_objet")), False),
+             ("kubectl diff -k (scénarios non Git)", lambda r: bool(r.get("diff_kubectl_10", {}).get("non_vide")), True), ("Alertmanager (règles installées)", lambda r: r["prom_detecte"], False)]
+    inm = [r for r in reps if not r["benin"] and r["dans_le_modele"]]; hors = [r for r in reps if not r["benin"] and not r["dans_le_modele"]]; ben = [r for r in reps if r["benin"]]
+    L += ["## Rappel : dans le modèle, hors modèle, bénins", "", "| outil | dans le modèle (F, K, N) | hors modèle (H1, H2) | détections sur bénins (B1–B4) |", "|---|---|---|---|"]
+    for nm, g, nogit in tools:
+        a = [r for r in inm if not (nogit and r["git"])]; b = [r for r in hors if not (nogit and r["git"])]; c = [r for r in ben if not (nogit and r["git"])]
+        L.append(f"| {nm} | {f(sum(1 for r in a if g(r)), len(a))} | {f(sum(1 for r in b if g(r)), len(b))} | {'n/a (corriger n\'est pas détecter)' if 'corrige' in nm else sum(1 for r in c if g(r))} |")
+    L += ["", "« SylvaTwin » = les dérives attendues sont présentes (le verdict est jugé à part, colonne « verdict conforme »). Hors modèle : SylvaTwin n'a **rien à détecter par construction** (la règle SpecDrift ne compare que `replicas`) ; la ligne ne mesure pas un défaut, elle montre ce qui échappe au modèle. Précision de SylvaTwin sur les dérives : "
+          f"{sum(r['nouvelles_derives'] for r in reps) - sum(len(r['fausses_alertes']) for r in reps)}/{sum(r['nouvelles_derives'] for r in reps)} ; fausses alertes sur les répétitions : {sum(len(r['fausses_alertes']) for r in reps)}.", ""]
+    # scenarios qu'aucun autre outil ne voit
+    seul, corrige = [], []
+    for sc in order:
+        rr = by[sc]; r0 = rr[0]
+        if r0["benin"] or r0["sylvatwin_detecte"] is None: continue
+        sy = sum(1 for r in rr if r["sylvatwin_detecte"]) > 0
+        autre = any(r["flux_signale_total"] or (not r["git"] and r.get("diff_kubectl_10", {}).get("non_vide")) or r["prom_detecte"] for r in rr)
+        if sy and not autre: seul.append(sc)
+        if sy and not autre and not r0["git"] and any(r.get("flux_journal_corrige_objet") or r.get("flux_corrige") for r in rr): corrige.append(sc)
+    L += ["**Scénarios que SylvaTwin voit et qu'aucun autre outil ne signale** (ni événement/erreur Flux, ni `kubectl diff -k`, ni Alertmanager) : " + (", ".join(seul) or "aucun") + ".",
+          "Parmi eux, ceux où Flux corrige tout de même l'objet en silence : " + (", ".join(corrige) or "aucun") + ".", ""]
+    L += ["`flux diff kustomization` : non comparé (évalue la Kustomization contre le cluster de management, alors qu'elle vise un cluster distant). Analyseur statique : non comparé (aucun installé).", ""]
+    dbl = [(sc, sum(1 for r in by[sc] if r["verdicts_multiples"])) for sc in order]
+    L += ["## Verdicts multiples pour une même dérive (défaut des règles, voir `DIAGNOSTIC-SUSPENSION-2026-11-14.md`)", "",
+          "Répétitions dont au moins une dérive a reçu deux verdicts dans le même cycle (champ enregistré à partir de la mesure v2.1 ; absent des données de la campagne v2 : voir le diagnostic pour la mesure rétrospective par le journal) : " + (", ".join(f"{a} {b}/{len(by[a])}" for a, b in dbl if b) or "aucune / non enregistré") + ".", ""]
+    L += ["## Détail par répétition", ""]
+    for r in sorted(reps, key=lambda r: (r["scenario"], r["rep"])):
+        L.append(f"* **{r['scenario']} rép {r['rep']}** — " + ", ".join(f"{x['classe']} {'détectée en %.0f s (%s)' % (x['delai_s'], x.get('verdict_initial')) if x['detectee'] else 'NON détectée'}" + (f", final {'atteint' if x.get('verdict_final_atteint') else 'non atteint'}" + (f" après {x['verdict_final_apres_s']:.0f} s" if x.get('verdict_final_apres_s') else "") if 'verdict_final_atteint' in x else "") for x in r["derives_attendues"]) + f" ; impacts {r['impacts_observes']}/{r['impacts_attendus']} ; fausses alertes : {len(r['fausses_alertes'])}" + (" (" + "; ".join(x['classe'] + ' ' + str(x['verdict_max']) for x in r['fausses_alertes'][:4]) + ")" if r["fausses_alertes"] else "") + f" ; état sain après : {r['etat_sain_apres']}.")
+    open(out + "/resultats-v2.1.md", "w").write("\n".join(L) + "\n")
+    print("\n".join(L[:48]))
+
 if __name__ == "__main__": main()

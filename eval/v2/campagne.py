@@ -39,12 +39,13 @@ def cycle_state():
     ids = {}
     for l in d.get("driftList", []):
         c, i = l.split(" ", 1); ids[i] = c
-    ver = {}
+    ver = {}; allv = {}
     for l in d.get("verdictList", []):
-        v, i = l.split(" ", 1); ver[i] = v
-    return dict(end=d.get("end"), ids=ids, ver=ver, clusters=d.get("clusters", {}), cause=d.get("cause"), trig=d.get("triggerObjects"))
+        v, i = l.split(" ", 1); ver[i] = v; allv.setdefault(i, set()).add(v)
+    multi = {i: sorted(v) for i, v in allv.items() if len(v) > 1}   # v2.1 : une derive peut recevoir 2 verdicts (voir DIAGNOSTIC-SUSPENSION)
+    return dict(end=d.get("end"), ids=ids, ver=ver, multi=multi, clusters=d.get("clusters", {}), cause=d.get("cause"), trig=d.get("triggerObjects"))
 
-def sain(baseline):
+def sain(baseline, allow_label=False):
     """(ok, raisons). Lecture seule."""
     why = []
     pods = jk(k, "-n", NS, "get", "pods", "-o", "json")
@@ -72,7 +73,7 @@ def sain(baseline):
     if k("-n", NS, "get", "secret", "udm-keys", "-o", "name")[0] != 0: why.append("udm-keys absent")
     nodes = jk(k, "get", "nodes")
     for n in (nodes or {"items": []})["items"]:
-        if "sylvatwin.orange.com/zone" in n["metadata"].get("labels", {}): why.append("label de test present sur le noeud")
+        if not allow_label and "sylvatwin.orange.com/zone" in n["metadata"].get("labels", {}): why.append("label de test present sur le noeud")
     for u in ("sylvatwin-oxigraph", "sylvatwin-controller"):
         if sh(["systemctl", "--user", "is-active", u])[1].strip() != "active": why.append("service %s inactif" % u)
     cs = cycle_state()
@@ -83,10 +84,10 @@ def sain(baseline):
         if any(s != "ok" for s in cs["clusters"].values()): why.append("cluster non ok")
     return (not why), why
 
-def wait_sain(baseline, timeout, label=""):
+def wait_sain(baseline, timeout, label="", allow_label=False):
     t0 = time.time(); last = None; okcount = 0
     while time.time() - t0 < timeout:
-        ok, why = sain(baseline)
+        ok, why = sain(baseline, allow_label)
         okcount = okcount + 1 if ok else 0
         if okcount >= 2: return True, time.time() - t0     # deux lectures a 10 s d'ecart
         if why != last: log("attente etat sain %s: %s" % (label, "; ".join(why) or "ok (1/2)")); last = why
@@ -123,7 +124,7 @@ class Collectors:
                 if "cause" not in d: continue
                 time.sleep(0.4); cs = cycle_state()
                 rec = dict(t=d["time"], cause=d["cause"], dur=d.get("durationMs"), trig=d.get("triggerObjects"), ids=(cs or {}).get("ids", {}),
-                           ver=(cs or {}).get("ver", {}), clusters=d.get("clusters"), cycle_end=(cs or {}).get("end"))
+                           ver=(cs or {}).get("ver", {}), ver_multi=(cs or {}).get("multi", {}), clusters=d.get("clusters"), cycle_end=(cs or {}).get("end"))
                 with self.lock: self.cycles.append(rec)
                 out.write(json.dumps(rec) + "\n"); out.flush()
             time.sleep(0.5)
@@ -183,17 +184,14 @@ def run_rep(scen, rep, rundir, baseline, dry=False):
     env = dict(ENV, REP=str(rep), RUNDIR=d)
     sd = f"{V2}/scenarios/{scen}"
     if dry:
-        for s in ("inject", "restore"):
+        for s in [x for x in ("prepare", "inject", "restore") if os.path.exists(f"{sd}/{x}.sh")]:
             rc, o, e = sh(["bash", f"{sd}/{s}.sh", "--dry-run"], 120, env); log(f"[dry-run] {scen} rep{rep} {s}: rc={rc} {o.strip()} {e.strip()[:200]}")
             if rc != 0: raise Abort(f"dry-run {scen}/{s} en echec")
         return
     log(f"=== {scen} rep{rep} : {orc['titre']}")
     ok, dur = wait_sain(baseline, 600, "avant")
     if not ok: raise Abort(f"etat non sain avant {scen} rep{rep}")
-    col = Collectors(d); col.probe_cmd = f"{sd}/probe.sh"; col.start(); time.sleep(12)
-    open(f"{d}/baseline-avant.json", "w").write(json.dumps(cycle_state()))
-    bl = set((cycle_state() or {})["ids"]); marks = f"{d}/marks.tsv"
-    injected = False; t0 = None; restore_done = False
+    restore_done = False
     def restore():
         nonlocal restore_done
         rc, o, e = sh(["bash", f"{sd}/restore.sh"], 400, env)
@@ -202,7 +200,20 @@ def run_rep(scen, rep, rundir, baseline, dry=False):
             open(f"{EVRUN}/ETAT_BANC.txt", "w").write(f"{now()} restauration de {scen} rep{rep} en echec (rc={rc}). Voir {d}/restore.log. Rien d'autre n'a ete tente.\n")
             raise Abort(f"RESTAURATION EN ECHEC {scen} rep{rep}")
         restore_done = True
+    col = Collectors(d); col.probe_cmd = f"{sd}/probe.sh"; col.start(); time.sleep(12)
+    marks = f"{d}/marks.tsv"
+    injected = False; t0 = None
+    gitish = orc["git"] or orc.get("git_prep")
     try:
+        if os.path.exists(f"{sd}/prepare.sh"):     # K4 : preparation hors mesure (commit + label), puis retour a un etat stable AVANT la baseline
+            injected = True                        # la restauration (idempotente) doit pouvoir defaire la preparation
+            rc, o, e = sh(["bash", f"{sd}/prepare.sh"], 900, env); open(f"{d}/prepare.log", "a").write(o + e)
+            if rc != 0: raise Abort(f"preparation en echec {scen} rep{rep} : {(o+e)[-300:]}")
+            ok, dur = wait_sain(baseline, 600, "apres preparation", allow_label=True)
+            if not ok: raise Abort(f"etat non stable apres la preparation de {scen} rep{rep}")
+            open(marks, "a").write(f"{now()}\tprep_stable\n")
+        open(f"{d}/baseline-avant.json", "w").write(json.dumps(cycle_state()))
+        bl = set((cycle_state() or {})["ids"])
         injected = True
         rc, o, e = sh(["bash", f"{sd}/inject.sh"], 300, env); open(f"{d}/inject.log", "a").write(o + e)
         if rc != 0: raise Abort(f"injection en echec {scen} rep{rep} : {(o+e)[-300:]}")
@@ -227,10 +238,10 @@ def run_rep(scen, rep, rundir, baseline, dry=False):
         mark_t = now(); open(marks, "a").write(f"{mark_t}\tfin_attente\n")
         restore()
         open(marks, "a").write(f"{now()}\trestauration_faite\n")
-        ok, dur = wait_sain(baseline, 900 if orc["git"] else 600, "apres")
+        ok, dur = wait_sain(baseline, 900 if gitish else 600, "apres")
         open(marks, "a").write(f"{now()}\tetat_sain_{'oui' if ok else 'NON'}\n")
         if not ok: raise Abort(f"etat non sain apres {scen} rep{rep}")
-        if orc["git"] and not sh(f"git -C {GITWORK} fetch -q origin test && git -C {GITWORK} diff --quiet $(cat {EVRUN}/START_SHA) origin/test -- usecase/5gc")[0] == 0:
+        if gitish and not sh(f"git -C {GITWORK} fetch -q origin test && git -C {GITWORK} diff --quiet $(cat {EVRUN}/START_SHA) origin/test -- usecase/5gc")[0] == 0:
             raise Abort(f"./usecase/5gc differe du commit de depart apres {scen} rep{rep}")
         time.sleep(10)
     except Abort as ex:
@@ -285,5 +296,10 @@ def main():
         log("CAMPAGNE ARRETEE :", ex); open(rundir + "/ARRET.txt", "w").write(f"{now()} {ex}\n"); sys.exit(2)
     finally:
         open(rundir + "/rss.txt", "a").write(f"fin {now()} {rss()} kB\n")
+        # journal du kustomize-controller (LECTURE SEULE) : source retenue pour "Flux signale / corrige"
+        try:
+            since = (P(json.load(open(rundir + "/plan.json"))["started"]) - dt.timedelta(seconds=60)).strftime("%Y-%m-%dT%H:%M:%SZ")
+            log("journal kustomize-controller :", sh(["python3", V2 + "/flux_log.py", since, rundir + "/flux-kustomize-controller.jsonl"], 200)[1].strip())
+        except Exception as ex: log("journal kustomize-controller non extrait :", repr(ex))
     log("campagne terminee")
 if __name__ == "__main__": main()
