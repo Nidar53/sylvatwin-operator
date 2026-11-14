@@ -160,18 +160,22 @@ def main():
         fa = sum(len(r["fausses_alertes"]) for r in rr)
         fs = k(lambda r: r["flux_signale"]); fc = k(lambda r: r["flux_corrige"]) if r0["flux_corrige"] is not None else None
         kd = k(lambda r: r.get("diff_kubectl_10", {}).get("non_vide")); fd = k(lambda r: r.get("diff_flux_10", {}).get("non_vide"))
+        fd_err = all(r.get("diff_flux_10", {}).get("erreur", True) for r in rr)
         pr = k(lambda r: r["prom_detecte"]); vc = k(lambda r: r["verdict_conforme"]); rs = [r["retour_sain_s"] for r in rr if r.get("retour_sain_s") is not None]
         dag = "†" if r0["git"] else ""
-        L.append(f"| {sc} | {r0['couche']} | {r0['source']} | {('%d/%d' % (sdet, n)) if sdet is not None else 'sans objet (rien attendu)'} | {fmt_d(dl)} | {vc}/{n} | {fa} | {fs}/{n} | {('%d/%d' % (fc, n)) if fc is not None else 'n/a (Git)'} | {kd}/{n}{dag} | {fd}/{n}{dag} | {pr}/{n} | {fmt_d(rs)} |")
+        L.append(f"| {sc} | {r0['couche']} | {r0['source']} | {('%d/%d' % (sdet, n)) if sdet is not None else 'sans objet (rien attendu)'} | {fmt_d(dl)} | {vc}/{n} | {fa} | {fs}/{n} | {('%d/%d' % (fc, n)) if fc is not None else 'n/a (Git)'} | {kd}/{n}{dag} | {('n/c (erreur : flux diff ne suit pas kubeConfig)' if fd_err else '%d/%d%s' % (fd, n, dag))} | {pr}/{n} | {fmt_d(rs)} |")
         mal = not r0["benin"]
         for key, val in (("sylvatwin", sdet if sdet is not None else 0), ("flux", fs), ("kdiff", kd), ("fdiff", fd), ("prom", pr)):
             if key in ("kdiff", "fdiff") and r0["git"]: continue
+            if key == "fdiff" and fd_err: continue
             if mal: tool[key][0] += val; tool[key][1] += n
             else: tool[key][2] += val
     L += ["", "† Scénario Git : le diff compare le dépôt (déjà poussé) au cluster ; il montre le commit en attente, pas une dérive : exclu des rappels `kubectl diff` / `flux diff`.", ""]
     L += ["## Rappel et précision globaux (scénarios malveillants ; les bénins B1–B4 comptent comme faux positifs)", "", "| outil | détections | répétitions malveillantes | rappel | détections sur bénins | précision |", "|---|---|---|---|---|---|"]
     names = dict(sylvatwin="SylvaTwin", flux="Flux CD (événement ou Ready=False ou correction)", kdiff="kubectl diff -k", fdiff="flux diff kustomization", prom="Alertmanager (règles installées)")
     for key, (tp, nm, fp) in tool.items():
+        if key == "fdiff" and nm == 0:
+            L.append(f"| {names[key]} | — | — | **non comparé** : `flux diff` évalue la Kustomization contre le cluster de management (elle vise un cluster distant par `spec.kubeConfig`) ; erreur « namespace introuvable » | — | — |"); continue
         L.append(f"| {names[key]} | {tp} | {nm} | {('%.0f %%' % (100 * tp / nm)) if nm else '—'} | {fp} | {('%.0f %%' % (100 * tp / (tp + fp))) if tp + fp else '—'} |")
     mod = [r for r in reps if not r["benin"] and r["dans_le_modele"]]
     if mod:
