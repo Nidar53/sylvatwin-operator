@@ -37,6 +37,9 @@ const (
 	GraphTBox = "https://w3id.org/sylvatwin/graph/tbox"
 )
 
+// idleConnTimeout : delai d'inactivite d'une connexion avant fermeture cote client.
+const idleConnTimeout = time.Second
+
 // Endpoint : un serveur SPARQL 1.1 (Oxigraph : /query, /update, /store).
 type Endpoint struct {
 	Base   string // ex. http://127.0.0.1:7878
@@ -55,7 +58,11 @@ func NewEndpoint(base string) (*Endpoint, error) {
 	if host != "localhost" && (ip == nil || !ip.IsLoopback()) {
 		return nil, fmt.Errorf("endpoint SPARQL %q refuse : boucle locale uniquement", base)
 	}
-	tr := &http.Transport{Proxy: nil} // jamais par le proxy Orange
+	// Jamais par le proxy Orange. IdleConnTimeout court : Oxigraph repond "500
+	// Resource temporarily unavailable" sur une connexion inactive reutilisee
+	// (constate sur 2 h : 48 messages) ; on ferme les connexions inactives avant.
+	// Les requetes d'un meme cycle, enchainees, gardent leur connexion.
+	tr := &http.Transport{Proxy: nil, IdleConnTimeout: idleConnTimeout, MaxIdleConnsPerHost: 2}
 	return &Endpoint{Base: strings.TrimRight(base, "/"), client: &http.Client{Transport: tr, Timeout: 5 * time.Minute}}, nil
 }
 
