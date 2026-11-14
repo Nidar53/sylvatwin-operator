@@ -207,7 +207,8 @@ def run_rep(scen, rep, rundir, baseline, dry=False):
         rc, o, e = sh(["bash", f"{sd}/inject.sh"], 300, env); open(f"{d}/inject.log", "a").write(o + e)
         if rc != 0: raise Abort(f"injection en echec {scen} rep{rep} : {(o+e)[-300:]}")
         mk = [l.split("\t") for l in open(marks).read().splitlines()]
-        t0 = P(next((m[0] for m in mk if m[1].startswith("t0_push_debut")), next(m[0] for m in mk if m[1] == "t0")))
+        tm = {m[1].split(" ")[0]: m[0] for m in mk}
+        t0 = P(tm.get("t0_push_debut") or tm["t0"])
         def diff10():
             time.sleep(max(0, 10 - (dt.datetime.now(dt.timezone.utc) - t0).total_seconds())); capture_diffs(d, "t0+10s")
         dth = threading.Thread(target=diff10); dth.start()
