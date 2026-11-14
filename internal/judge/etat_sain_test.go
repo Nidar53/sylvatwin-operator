@@ -29,8 +29,8 @@ func TestEtatSainInchange(t *testing.T) {
 		}
 		p := &Pipeline{E: e, RulesDir: filepath.Join(poc, "rules"), Validity: 600, HistoryFile: hist, TBoxFile: filepath.Join(poc, "sylvatwin-core-v1.ttl")}
 		now := instantInstantane(t, facts) // l'instantane est rejoue a SON instant, pas a l'heure du test (temoins de fraicheur de 30 s)
-		for i := 0; i < 3; i++ {           // 3 cycles : l'etat sain doit etre un point fixe
-			res, err := p.Run(context.Background(), facts, now.Add(time.Duration(i)*10*time.Second))
+		for i := 0; i < 3; i++ {           // 3 cycles : l'etat sain doit etre un point fixe, a 1 s d'ecart (le temoin de fraicheur du workload a un horizon de 30 s)
+			res, err := p.Run(context.Background(), facts, now.Add(time.Duration(i)*time.Second))
 			if err != nil {
 				t.Fatal(err)
 			}
