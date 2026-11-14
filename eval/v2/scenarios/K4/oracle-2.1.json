@@ -1,0 +1,44 @@
+{
+ "titre": "label de noeud retire alors que bsf a un nodeSelector (commit de preparation, label de test)",
+ "couche": "L2",
+ "source_erreur": "doc Kubernetes (nodeSelector IgnoredDuringExecution) ; Mutiny",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "git_prep": true,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "PlacementDrift",
+    "mere": "UnattendedDrift",
+    "cible": "Pod/bsf",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "PlacementDrift",
+    "nf": [
+     "bsf"
+    ],
+    "chemin": "direct (bsf seul : une PlacementDrift ne touche que la NF qui exige le label)"
+   }
+  ],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "SUPPOSE : le nodeSelector est dans Git, le label est sur le noeud : Flux ne regarde pas les noeuds, ne signale et ne corrige rien ; kubernetes n'evince pas (IgnoredDuringExecution)"
+ },
+ "fenetre_s": 120,
+ "arret_anticipe": null,
+ "id": "K4",
+ "preparation": "hors mesure : commit nodeSelector sur bsf (branche test, usecase/5gc) puis label de test sur le noeud workload ; t0 = retrait du label ; restauration = retrait du label + git revert",
+ "version": "2.1",
+ "flux_objet": null,
+ "note_version": "2.1 (14/11/2026) : scenario K4 ajoute (oracle ecrit avant tout essai)."
+}

@@ -1,0 +1,42 @@
+{
+ "titre": "Secret udm-keys supprime (hors Git)",
+ "couche": "L2",
+ "source_erreur": "Configuration Defects in Kubernetes, arXiv 2512.05062",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "BrokenReferenceDrift",
+    "mere": "UnattendedDrift",
+    "cible": "Secret/udm-keys",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "BrokenReferenceDrift",
+    "nf": [
+     "udm"
+    ],
+    "chemin": "direct"
+   }
+  ],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "SUPPOSE : le Secret est hors Git (inventaire Flux) : Flux ne le voit pas et ne le recree pas"
+ },
+ "fenetre_s": 150,
+ "arret_anticipe": null,
+ "id": "K2",
+ "version": "2.1",
+ "flux_objet": "Secret/sylvatwin-5gc/udm-keys",
+ "note_version": "2.1 (14/11/2026) : identique a la version 2 ; ajout de flux_objet (objet que Flux est cense corriger/appliquer, pour le journal du kustomize-controller)."
+}

@@ -1,0 +1,42 @@
+{
+ "titre": "ConfigMap amf-config modifiee a la main, pod non redemarre",
+ "couche": "L2",
+ "source_erreur": "issue kubernetes/kubernetes 22368 ; cas reels du banc",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "StaleConfigDrift",
+    "mere": "UnattendedDrift",
+    "cible": "Pod/amf",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "StaleConfigDrift",
+    "nf": [
+     "amf"
+    ],
+    "chemin": "direct"
+   }
+  ],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": true,
+  "corrige": true,
+  "delai_max_s": 135,
+  "remarque": "SUPPOSE : Flux remet le contenu de la ConfigMap mais ne redemarre JAMAIS le pod : la derive reste (c'est le point du scenario)"
+ },
+ "fenetre_s": 240,
+ "arret_anticipe": null,
+ "id": "K5",
+ "version": "2.1",
+ "flux_objet": "ConfigMap/sylvatwin-5gc/amf-config",
+ "note_version": "2.1 (14/11/2026) : identique a la version 2 ; ajout de flux_objet (objet que Flux est cense corriger/appliquer, pour le journal du kustomize-controller)."
+}

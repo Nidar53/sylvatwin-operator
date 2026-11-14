@@ -1,0 +1,51 @@
+{
+ "titre": "commit Git invalide (imagePullPolicy inconnue sur udr), revision non appliquee",
+ "couche": "L3",
+ "source_erreur": "doc Flux (dry-run / health) ; observation du banc",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": true,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "GitOpsSyncDrift",
+    "mere": "RepairedByFluxDrift",
+    "cible": "Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc",
+    "verdict_initial": "SuspectedViolation",
+    "verdict_final": "ConfirmedViolation",
+    "verdict_final_apres_s": 420
+   }
+  ],
+  "impacts": [
+   {
+    "cause": "GitOpsSyncDrift",
+    "nf": [
+     "amf",
+     "ausf",
+     "bsf",
+     "nrf",
+     "nssf",
+     "pcf",
+     "scp",
+     "smf",
+     "udm",
+     "udr"
+    ],
+    "chemin": "flux"
+   }
+  ],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": true,
+  "corrige": false,
+  "delai_max_s": 250,
+  "remarque": "SUPPOSE : le dry-run echoue, Ready=False, evenement d'erreur, nouvel essai toutes les 1 min ; la revision n'est jamais appliquee. Horizon 420 s = interval 120 + timeout 300"
+ },
+ "fenetre_s": 660,
+ "arret_anticipe": null,
+ "id": "F3",
+ "version": "2.1",
+ "flux_objet": "Deployment/sylvatwin-5gc/udr",
+ "note_version": "2.1 (14/11/2026) : seule la cible de F1, F2, F3 change (erreur d'identifiant : l'identifiant produit par iri.Resource est Kustomization.kustomize.toolkit.fluxcd.io/sylvatwin-5gc). Les attendus (classe, verdict, impacts) sont INCHANGES. Ajout de flux_objet (objet que Flux est cense corriger/appliquer, pour le journal du kustomize-controller)."
+}

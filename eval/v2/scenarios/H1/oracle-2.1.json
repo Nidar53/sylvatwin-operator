@@ -1,0 +1,26 @@
+{
+ "titre": "image changee a la main (scp, meme image epinglee par digest)",
+ "couche": "hors modele",
+ "source_erreur": "observation du banc ; erreur courante de hotfix",
+ "dans_le_modele": false,
+ "benin": false,
+ "git": false,
+ "attendu": {
+  "derives": [],
+  "impacts": [],
+  "resolution": "flux",
+  "note": "SpecDrift ne compare que replicas : aucune derive attendue (angle mort du modele)"
+ },
+ "flux_suppose": {
+  "signale": true,
+  "corrige": true,
+  "delai_max_s": 135,
+  "remarque": "SUPPOSE : Flux detecte (champ gere) et remet l'image"
+ },
+ "fenetre_s": 300,
+ "arret_anticipe": null,
+ "id": "H1",
+ "version": "2.1",
+ "flux_objet": "Deployment/sylvatwin-5gc/scp",
+ "note_version": "2.1 (14/11/2026) : identique a la version 2 ; ajout de flux_objet (objet que Flux est cense corriger/appliquer, pour le journal du kustomize-controller)."
+}

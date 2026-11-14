@@ -1,0 +1,44 @@
+{
+ "titre": "tranche (sst 2) ajoutee au SMF dans Git, absente de l'AMF",
+ "couche": "L4",
+ "source_erreur": "3GPP TS 23.501, Open5GS",
+ "dans_le_modele": true,
+ "benin": false,
+ "git": true,
+ "attendu": {
+  "derives": [
+   {
+    "classe": "InterNFConsistencyDrift",
+    "mere": "UnattendedDrift",
+    "cible": "",
+    "verdict_initial": "ConfirmedViolation",
+    "verdict_final": null,
+    "verdict_final_apres_s": null
+   }
+  ],
+  "derives_transitoires": [
+   {
+    "classe": "GitOpsSyncDrift",
+    "verdict_max": "SuspectedViolation"
+   },
+   {
+    "classe": "FunctionImpactDrift",
+    "verdict_max": "SuspectedViolation"
+   }
+  ],
+  "impacts": [],
+  "resolution": "restauration"
+ },
+ "flux_suppose": {
+  "signale": false,
+  "corrige": false,
+  "delai_max_s": null,
+  "remarque": "SUPPOSE : Flux applique le commit sans erreur (la ConfigMap est conforme a Git) : la derive est semantique, invisible pour Flux. GitOpsSync transitoire (commit non encore applique) toleree"
+ },
+ "fenetre_s": 420,
+ "arret_anticipe": null,
+ "id": "N2",
+ "version": "2.1",
+ "flux_objet": "ConfigMap/sylvatwin-5gc/smf-config",
+ "note_version": "2.1 (14/11/2026) : identique a la version 2 ; ajout de flux_objet (objet que Flux est cense corriger/appliquer, pour le journal du kustomize-controller)."
+}
