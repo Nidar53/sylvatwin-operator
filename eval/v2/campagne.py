@@ -299,8 +299,11 @@ def main():
     stop = {"v": False}
     def onsig(sig, fr): stop["v"] = True; log("signal", sig, ": arret propre apres la repetition en cours"); 
     signal.signal(signal.SIGTERM, onsig)
-    pid = int(sh(["systemctl", "--user", "show", "-p", "MainPID", "--value", "sylvatwin-oxigraph"])[1] or 0)
-    rss = lambda: sh(f"grep VmRSS /proc/{pid}/status")[1].split()[1] if pid else "?"
+    def rss():   # PID relu a chaque appel : Oxigraph est redemarre entre les manches
+        try:
+            pid = int(sh(["systemctl", "--user", "show", "-p", "MainPID", "--value", "sylvatwin-oxigraph"])[1] or 0)
+            return sh(f"grep VmRSS /proc/{pid}/status")[1].split()[1] if pid else "?"
+        except Exception: return "?"
     open(rundir + "/rss.txt", "a").write(f"debut {now()} {rss()} kB\n")
     try:
         last_r = None
