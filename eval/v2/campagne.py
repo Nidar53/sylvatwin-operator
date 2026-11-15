@@ -269,7 +269,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--reps", type=int, default=3); ap.add_argument("--scenario", action="append"); ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--seed", type=int, default=None); ap.add_argument("--outdir", default=None); ap.add_argument("--skip-prepare", action="store_true")
-    ap.add_argument("--reprendre", action="store_true", help="reprend le plan.json de --outdir : saute les repetitions deja faites (rep.json), sans reecrire plan.json")
+    ap.add_argument("--sans-redemarrage", action="store_true"); ap.add_argument("--reprendre", action="store_true", help="reprend le plan.json de --outdir : saute les repetitions deja faites (rep.json), sans reecrire plan.json")
     a = ap.parse_args()
     allsc = sorted(x for x in os.listdir(V2 + "/scenarios") if os.path.isdir(f"{V2}/scenarios/{x}"))
     sc = a.scenario or allsc
@@ -303,8 +303,15 @@ def main():
     rss = lambda: sh(f"grep VmRSS /proc/{pid}/status")[1].split()[1] if pid else "?"
     open(rundir + "/rss.txt", "a").write(f"debut {now()} {rss()} kB\n")
     try:
+        last_r = None
         for s, r in plan:
             if stop["v"] or os.path.exists(EVRUN + "/STOP"): log("arret demande"); break
+            if last_r is not None and r != last_r and not a.sans_redemarrage:      # entre deux manches : Oxigraph redemarre (memoire non liberee)
+                rc, out, _ = sh([V2 + "/redemarrer_oxigraph.sh"], 1500)
+                log("redemarrage d'Oxigraph entre les manches", last_r, "et", r, ":", "OK" if rc == 0 else f"ECHEC rc={rc}", out.strip().splitlines()[-1] if out.strip() else "")
+                open(rundir + "/rss.txt", "a").write(f"redemarrage-manche-{r} {now()} {rss()} kB\n")
+                if rc != 0: raise Abort(f"redemarrage d'Oxigraph en echec avant la manche {r}")
+            last_r = r
             run_rep(s, r, rundir, baseline)
     except Abort as ex:
         log("CAMPAGNE ARRETEE :", ex); open(rundir + "/ARRET.txt", "w").write(f"{now()} {ex}\n"); sys.exit(2)
