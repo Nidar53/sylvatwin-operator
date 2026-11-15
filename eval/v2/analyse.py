@@ -5,6 +5,7 @@ La version 2 reste reproductible telle quelle ; la version 2.1 lit scenarios/<id
 import json, os, re, statistics, sys, datetime as dt
 V2 = os.path.dirname(os.path.abspath(__file__))
 VER = ""        # "" = oracle 2 ; "2.1" = oracle 2.1
+FEN = False     # --fenetre : fenetre de mesure = t0 -> instant juste avant restore.sh (mark fin_attente) ; ce qui apparait ensuite = transitoires de restauration
 def orc_path(sc): return f"{V2}/scenarios/{sc}/" + ("oracle-2.1.json" if VER == "2.1" else "oracle.json")
 def load_orc(sc): return json.load(open(orc_path(sc)))
 def P(s): return dt.datetime.fromisoformat(s.replace("Z", "+00:00"))
@@ -39,7 +40,9 @@ def analyse_rep(d, scen):
     tsain = P(M["etat_sain_oui"]) if "etat_sain_oui" in M else None
     R = dict(scenario=scen, t0=t0s, git=orc["git"], benin=orc["benin"], dans_le_modele=orc["dans_le_modele"], couche=orc["couche"], source=orc["source_erreur"])
     base = json.load(open(d + "/baseline-avant.json"))["ids"] if os.path.exists(d + "/baseline-avant.json") else {}
-    cyc = [c for c in jl(d + "/sylvatwin/cycles.jsonl") if P(c["t"]) > t0 and (not trest or P(c["t"]) <= trest)]
+    cut = (tend or trest) if FEN else trest            # v2.1 : jusqu'a restauration_faite ; --fenetre : jusqu'a fin_attente (avant restore.sh)
+    allcyc = [c for c in jl(d + "/sylvatwin/cycles.jsonl") if P(c["t"]) > t0]
+    cyc = [c for c in allcyc if (not cut or P(c["t"]) <= cut)]
     new = {}   # id -> dict(class, first, verdicts[(t,v)])
     for c in cyc:
         for i, cl in c["ids"].items():
@@ -47,6 +50,17 @@ def analyse_rep(d, scen):
             e = new.setdefault(i, dict(cls=cl, first=P(c["t"]), vs=[]))
             e["vs"].append((P(c["t"]), c["ver"].get(i)))
     att = orc["attendu"]
+    if FEN:   # transitoires de restauration : nouvelles derives vues apres fin_attente, jusqu'au retour a l'etat sain (comptees a part, jamais masquees)
+        end = tsain or trest
+        tr = {}
+        for c in allcyc:
+            if cut and P(c["t"]) > cut and (not end or P(c["t"]) <= end):
+                for i, cl in c["ids"].items():
+                    if i in base or i in new: continue
+                    e = tr.setdefault(i, dict(classe=cl, verdict_max=None))
+                    v = c["ver"].get(i)
+                    if RANK.get(v, -1) > RANK.get(e["verdict_max"], -1): e["verdict_max"] = v
+        R["transitoires_restauration"] = [dict(id=i.replace("my-workload-kubeadm-capd%2Fmy-workload-kubeadm-capd/", "wl/"), **e) for i, e in sorted(tr.items())]
     # derives attendues
     dets = []
     for e in att.get("derives", []):
@@ -178,8 +192,10 @@ def analyse_rep(d, scen):
 
 def main():
     global VER
+    global FEN
     args = sys.argv[1:]
     if args[:1] == ["--version"]: VER = args[1]; args = args[2:]
+    if args[:1] == ["--fenetre"]: FEN = True; args = args[1:]
     dirs = args
     reps = []
     for D in dirs:
@@ -234,7 +250,8 @@ def main():
     open(out + "/resultats-v2.md", "w").write("\n".join(L) + "\n")
     print("\n".join(L[:30]))
 def report21(reps, out):
-    json.dump(reps, open(out + "/resultats-v2.1.json", "w"), indent=1, default=str)
+    sfx = "-fenetre" if FEN else ""
+    json.dump(reps, open(out + f"/resultats-v2.1{sfx}.json", "w"), indent=1, default=str)
     by = {}
     for r in reps: by.setdefault(r["scenario"], []).append(r)
     order = sorted(by, key=lambda s: (load_orc(s)["couche"] == "benin", s))
@@ -298,10 +315,18 @@ def report21(reps, out):
     L += ["## Invariants des règles (une dérive : au plus un firstDetectedAt, un verdict par cycle)", "",
           ("**Non enregistrés** dans cette campagne (mesure antérieure à v2.1 ; voir le diagnostic pour la mesure rétrospective par le journal)." if not any(r["invariants_enregistres"] for r in reps) else "") +
           f"Cycles observés avec plus d'un `firstDetectedAt` pour une dérive : {sum(r['cycles_fd_multiples'] for r in reps)} ; cycles avec plus d'un verdict pour une dérive : {sum(r['cycles_verdicts_multiples'] for r in reps)} (sur {len(reps)} répétitions). Un compte non nul est un RÉSULTAT.", ""]
+    if FEN:
+        L += ["## Fenêtre de mesure et transitoires de restauration", "", "Fenêtre de mesure d'une répétition : de t0 à l'instant juste avant le début de `restore.sh` (marque `fin_attente`), pour tous les scénarios et toutes les répétitions. Les nouvelles dérives qui n'apparaissent qu'ensuite (jusqu'au retour à l'état sain) sont comptées ici à part ; elles ne sont ni des détections ni des fausses alertes.", "",
+              "| id | répétitions avec transitoire | transitoires (classe, verdict max) |", "|---|---|---|"]
+        for sc in order:
+            rr = by[sc]; ts = [r for r in rr if r.get("transitoires_restauration")]
+            kinds = sorted({(t["classe"], t["verdict_max"]) for r in rr for t in r.get("transitoires_restauration", [])})
+            L.append(f"| {sc} | {len(ts)}/{len(rr)} | " + ("; ".join(f"{a} {b}" for a, b in kinds) or "—") + " |")
+        L += ["", f"Total : {sum(len(r.get('transitoires_restauration', [])) for r in reps)} dérives transitoires de restauration sur {len(reps)} répétitions.", ""]
     L += ["## Détail par répétition", ""]
     for r in sorted(reps, key=lambda r: (r["scenario"], r["rep"])):
         L.append(f"* **{r['scenario']} rép {r['rep']}** — " + ", ".join(f"{x['classe']} {'détectée en %.0f s (%s)' % (x['delai_s'], x.get('verdict_initial')) if x['detectee'] else 'NON détectée'}" + (f", final {'atteint' if x.get('verdict_final_atteint') else 'non atteint'}" + (f" après {x['verdict_final_apres_s']:.0f} s" if x.get('verdict_final_apres_s') else "") if 'verdict_final_atteint' in x else "") for x in r["derives_attendues"]) + f" ; impacts {r['impacts_observes']}/{r['impacts_attendus']} ; fausses alertes : {len(r['fausses_alertes'])}" + (" (" + "; ".join(x['classe'] + ' ' + str(x['verdict_max']) for x in r['fausses_alertes'][:4]) + ")" if r["fausses_alertes"] else "") + f" ; état sain après : {r['etat_sain_apres']}.")
-    open(out + "/resultats-v2.1.md", "w").write("\n".join(L) + "\n")
+    open(out + f"/resultats-v2.1{sfx}.md", "w").write("\n".join(L) + "\n")
     print("\n".join(L[:48]))
 
 if __name__ == "__main__": main()
