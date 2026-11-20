@@ -154,12 +154,34 @@ class Collectors:
         if not self.probe_cmd: return None
         rc, o, e = sh(["bash", self.probe_cmd], 30, ENV); return o.strip()
     def fluxevents(self):
-        out = open(f"{self.d}/flux/events.log", "a")
-        cmd = ["kubectl", "--kubeconfig", MG, "-n", KS_NS, "get", "events", "--watch-only", "--no-headers", "-o",
-               "custom-columns=KIND:.involvedObject.kind,NAME:.involvedObject.name,TYPE:.type,REASON:.reason,MSG:.message"]
+        """Evenements Kubernetes du namespace de la Kustomization. Correctif du 20/11/2026 : on lit la date PROPRE de l'evenement
+        (series.lastObservedTime, lastTimestamp, eventTime, firstTimestamp) et on ignore dans events.log ceux dont cette date est
+        anterieure au demarrage du collecteur (donc a t0) : un ancien evenement relu par la surveillance (ex. le Warning "Bogus" de F3
+        recu pendant F2) n'est plus compte. Rien n'est perdu : tout est garde dans events-brut.jsonl (avec les deux dates)."""
+        out = open(f"{self.d}/flux/events.log", "a"); raw = open(f"{self.d}/flux/events-brut.jsonl", "a")
+        start = dt.datetime.now(dt.timezone.utc) - dt.timedelta(seconds=2)
+        cmd = ["kubectl", "--kubeconfig", MG, "-n", KS_NS, "get", "events", "--watch-only", "-o", "json"]
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True, env=ENV); self.procs.append(p)
-        for line in p.stdout:
-            out.write(now() + "\t" + line.rstrip()[:600] + "\n"); out.flush()
+        dec = json.JSONDecoder(); buf = ""
+        while True:
+            chunk = p.stdout.readline()
+            if not chunk: break
+            buf += chunk
+            while buf.strip():
+                try: ev, n = dec.raw_decode(buf.lstrip())
+                except ValueError: break
+                buf = buf.lstrip()[n:]
+                io = ev.get("involvedObject", {})
+                own = (ev.get("series") or {}).get("lastObservedTime") or ev.get("lastTimestamp") or ev.get("eventTime") or ev.get("firstTimestamp")
+                rec = dict(recu=now(), date_evenement=own, kind=io.get("kind"), name=io.get("name"), type=ev.get("type"), reason=ev.get("reason"),
+                           message=(ev.get("message") or "")[:600])
+                try: ancien = bool(own) and P(own) < start
+                except Exception: ancien = False
+                rec["ignore_ancien"] = ancien
+                raw.write(json.dumps(rec) + "\n"); raw.flush()
+                if not ancien:
+                    msg = " ".join((ev.get("message") or "").split())
+                    out.write(f"{rec['recu']}\t{rec['kind']}   {rec['name']}   {rec['type']}   {rec['reason']}   {msg}"[:620] + "\n"); out.flush()
             if self.stop.is_set(): break
     def alerts(self):
         out = open(f"{self.d}/alerts/poll.jsonl", "a")
