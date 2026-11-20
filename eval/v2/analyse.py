@@ -5,6 +5,7 @@ La version 2 reste reproductible telle quelle ; la version 2.1 lit scenarios/<id
 import json, os, re, statistics, sys, datetime as dt
 V2 = os.path.dirname(os.path.abspath(__file__))
 VER = ""        # "" = oracle 2 ; "2.1" = oracle 2.1
+SYL = False     # --sylvactl : ajoute la colonne sylvactl (implique --fenetre) ; sortie resultats-v2.1-sylvactl.md
 FEN = False     # --fenetre : fenetre de mesure = t0 -> instant juste avant restore.sh (mark fin_attente) ; ce qui apparait ensuite = transitoires de restauration
 def orc_path(sc): return f"{V2}/scenarios/{sc}/" + ("oracle-2.1.json" if VER == "2.1" else "oracle.json")
 def load_orc(sc): return json.load(open(orc_path(sc)))
@@ -186,6 +187,21 @@ def analyse_rep(d, scen):
                 newal.setdefault(a["name"], P(p["t"]))
     R["prom_alertes"] = sorted(newal); R["prom_detecte"] = bool(newal)
     R["prom_delai_s"] = min(((t - t0).total_seconds() for t in newal.values()), default=None)
+    if SYL:   # sylvactl watch -A --once toutes les 10 s (criteres-sylvactl.md)
+        sp = jl(d + "/sylvactl/poll.jsonl")
+        R["sylvactl_releves"] = len(sp); R["sylvactl_erreurs"] = sum(1 for p in sp if p.get("rc") != 0)
+        inw = [p for p in sp if p.get("rc") == 0 and t0 < P(p["t"]) and (not tend or P(p["t"]) <= tend)]
+        bad = [p for p in inw if not p.get("notre_ok")]
+        R["sylvactl_signale"] = bool(bad)
+        R["sylvactl_delai_s"] = (P(bad[0]["t"]) - t0).total_seconds() if bad else None
+        strip = lambda l: " ".join(l.split()[2:]) if l else "(Kustomization absente de la sortie)"
+        R["sylvactl_message"] = strip(bad[0].get("ks")) if bad else None
+        R["sylvactl_messages"] = sorted({strip(p.get("ks"))[:200] for p in bad})[:5]
+        R["sylvactl_autres_unites_pas_pretes"] = sum(1 for p in inw if not p.get("all_done"))
+        if bad:
+            back = [p for p in sp if p.get("rc") == 0 and P(p["t"]) > P(bad[0]["t"]) and p.get("all_done") and p.get("notre_ok")]
+            R["sylvactl_retour_all_done_depuis_t0_s"] = (P(back[0]["t"]) - t0).total_seconds() if back else None
+            R["sylvactl_retour_all_done_apres_restauration_s"] = (P(back[0]["t"]) - trest).total_seconds() if back and trest else None
     R["retour_sain_s"] = (tsain - trest).total_seconds() if tsain and trest else None
     R["etat_sain_apres"] = "etat_sain_oui" in M
     return R
@@ -196,6 +212,8 @@ def main():
     args = sys.argv[1:]
     if args[:1] == ["--version"]: VER = args[1]; args = args[2:]
     if args[:1] == ["--fenetre"]: FEN = True; args = args[1:]
+    global SYL
+    if args[:1] == ["--sylvactl"]: SYL = FEN = True; args = args[1:]
     dirs = args
     reps = []
     for D in dirs:
@@ -250,7 +268,7 @@ def main():
     open(out + "/resultats-v2.md", "w").write("\n".join(L) + "\n")
     print("\n".join(L[:30]))
 def report21(reps, out):
-    sfx = "-fenetre" if FEN else ""
+    sfx = "-sylvactl" if SYL else ("-fenetre" if FEN else "")
     json.dump(reps, open(out + f"/resultats-v2.1{sfx}.json", "w"), indent=1, default=str)
     by = {}
     for r in reps: by.setdefault(r["scenario"], []).append(r)
@@ -323,6 +341,23 @@ def report21(reps, out):
             kinds = sorted({(t["classe"], t["verdict_max"]) for r in rr for t in r.get("transitoires_restauration", [])})
             L.append(f"| {sc} | {len(ts)}/{len(rr)} | " + ("; ".join(f"{a} {b}" for a, b in kinds) or "—") + " |")
         L += ["", f"Total : {sum(len(r.get('transitoires_restauration', [])) for r in reps)} dérives transitoires de restauration sur {len(reps)} répétitions.", ""]
+    if SYL:
+        att = {"F1": "oui", "F2": "oui", "F3": "oui"}
+        L += ["## sylvactl (outil de Sylva, `watch -A --once` toutes les 10 s, lecture seule)", "",
+              "Attendus écrits avant l'essai dans `eval/v2/criteres-sylvactl.md` (SUPPOSÉ). « signale » = la ligne de notre Kustomization n'est pas `ReconciliationSucceeded` (ou le GitRepository pas `Succeeded`) dans la fenêtre. Avec peu de répétitions : k/n, sans intervalle de confiance.", "",
+              "| id | attendu | sylvactl signale | 1er signal depuis t0 | message (1er relevé) | retour à All Done après la restauration | relevés (erreurs) | relevés où une AUTRE unité n'est pas prête |", "|---|---|---|---|---|---|---|---|"]
+        for sc in order:
+            rr = by[sc]; n = len(rr)
+            if "sylvactl_signale" not in rr[0]: continue
+            dl = [r["sylvactl_delai_s"] for r in rr if r.get("sylvactl_delai_s") is not None]
+            rb = [r["sylvactl_retour_all_done_apres_restauration_s"] for r in rr if r.get("sylvactl_retour_all_done_apres_restauration_s") is not None]
+            msg = "; ".join(sorted({(r.get("sylvactl_message") or "")[:120] for r in rr if r.get("sylvactl_message")})) or "—"
+            L.append(f"| {sc} | {att.get(sc, 'non')} | {sum(1 for r in rr if r['sylvactl_signale'])}/{n} | {fmt_d(dl)} | {msg} | {fmt_d(rb)} | {sum(r['sylvactl_releves'] for r in rr)} ({sum(r['sylvactl_erreurs'] for r in rr)}) | {sum(r['sylvactl_autres_unites_pas_pretes'] for r in rr)} |")
+        L += ["", "Détail par répétition (sylvactl) :", ""]
+        for r in sorted(reps, key=lambda r: (r["scenario"], r["rep"])):
+            if "sylvactl_signale" in r:
+                L.append(f"* {r['scenario']} rép {r['rep']} : signale={'oui' if r['sylvactl_signale'] else 'non'}" + (f", à t0+{r['sylvactl_delai_s']:.0f} s, « {r['sylvactl_message']} », retour à All Done à t0+{r.get('sylvactl_retour_all_done_depuis_t0_s') or float('nan'):.0f} s" if r["sylvactl_signale"] else "") + f" ; relevés {r['sylvactl_releves']}, erreurs {r['sylvactl_erreurs']}.")
+        L.append("")
     L += ["## Détail par répétition", ""]
     for r in sorted(reps, key=lambda r: (r["scenario"], r["rep"])):
         L.append(f"* **{r['scenario']} rép {r['rep']}** — " + ", ".join(f"{x['classe']} {'détectée en %.0f s (%s)' % (x['delai_s'], x.get('verdict_initial')) if x['detectee'] else 'NON détectée'}" + (f", final {'atteint' if x.get('verdict_final_atteint') else 'non atteint'}" + (f" après {x['verdict_final_apres_s']:.0f} s" if x.get('verdict_final_apres_s') else "") if 'verdict_final_atteint' in x else "") for x in r["derives_attendues"]) + f" ; impacts {r['impacts_observes']}/{r['impacts_attendus']} ; fausses alertes : {len(r['fausses_alertes'])}" + (" (" + "; ".join(x['classe'] + ' ' + str(x['verdict_max']) for x in r['fausses_alertes'][:4]) + ")" if r["fausses_alertes"] else "") + f" ; état sain après : {r['etat_sain_apres']}.")

@@ -32,6 +32,33 @@ def jk(fn, *a):
     try: return json.loads(o)
     except Exception: return None
 
+# ---------- sylvactl (outil de Sylva) : LECTURE SEULE ----------
+SYLVACTL = "/opt/nidar/sylva-core/bin/sylvactl"
+SYLVACTL_AUTORISEES = (("watch", "-A", "--once"), ("status", "-A"))       # seules commandes permises (criteres-sylvactl.md)
+SYLVACTL_INTERDITES = ("--reconcile", "--unit-timeout", "--resume-suspended")  # options qui MODIFIENT le cluster
+SYLVACTL_TIMEOUT = 25                                                      # delai maximal par appel (s)
+def sylvactl_cmd(args):
+    """Garde-fou : refuse toute commande hors liste ou contenant une option qui modifie le cluster."""
+    cmd = [SYLVACTL, "--kubeconfig", MG, *args]
+    if any(x.startswith(f) for x in cmd for f in SYLVACTL_INTERDITES):
+        raise SystemExit(f"REFUS sylvactl : option interdite dans {args}")
+    if tuple(args) not in SYLVACTL_AUTORISEES:
+        raise SystemExit(f"REFUS sylvactl : commande non autorisee {args}")
+    return cmd
+def sylvactl_once(args=("watch", "-A", "--once")):
+    """Un appel borne ; renvoie l'enregistrement analyse et la sortie brute."""
+    t = now(); t1 = time.time()
+    rc, o, e = sh(sylvactl_cmd(list(args)), SYLVACTL_TIMEOUT)
+    lines = (o + e).splitlines()                      # sylvactl ecrit les lignes d'etat sur stderr
+    ks = next((l for l in lines if "Kustomization/sylvatwin-flux/sylvatwin-5gc" in l), None)
+    gr = next((l for l in lines if "GitRepository/sylvatwin-flux/sylvatwin-poc" in l), None)
+    res = [l for l in lines if l[:4].isdigit() and len(l.split()) > 3 and "/" in l.split()[2]]
+    pas_ok = [l for l in res if not any(w in l for w in ("Succeeded", "Ready"))]
+    rec = dict(t=t, dur_ms=int((time.time() - t1) * 1000), rc=rc, all_done=any("All Done" in l for l in lines), ks=ks, gr=gr,
+               notre_ok=bool(ks and "ReconciliationSucceeded" in ks and (gr is None or "Succeeded" in gr)), n_ressources=len(res), pas_ok=pas_ok[:20],
+               fin=(lines[-1] if lines else ""))
+    return rec, f"=== {t} rc={rc} dur_ms={rec['dur_ms']} cmd=sylvactl {' '.join(args)}\n{o}{e}"
+
 # ---------- etat sain ----------
 def cycle_state():
     try: d = json.load(open(SVC + "/out/cycle.json"))
@@ -105,10 +132,10 @@ def wait_sain(baseline, timeout, label="", allow_label=False):
 class Collectors:
     def __init__(self, d):
         self.d = d; self.stop = threading.Event(); self.th = []; self.procs = []
-        for sub in ("sylvatwin", "flux", "alerts", "diffs"): os.makedirs(f"{d}/{sub}", exist_ok=True)
+        for sub in ("sylvatwin", "flux", "alerts", "diffs", "sylvactl"): os.makedirs(f"{d}/{sub}", exist_ok=True)
         self.lock = threading.Lock(); self.cycles = []
     def start(self):
-        for f in (self.sylva, self.fluxpoll, self.fluxevents, self.alerts):
+        for f in (self.sylva, self.fluxpoll, self.fluxevents, self.alerts, self.sylvactl):
             t = threading.Thread(target=f, daemon=True); t.start(); self.th.append(t)
     def halt(self):
         self.stop.set()
@@ -183,6 +210,13 @@ class Collectors:
                     msg = " ".join((ev.get("message") or "").split())
                     out.write(f"{rec['recu']}\t{rec['kind']}   {rec['name']}   {rec['type']}   {rec['reason']}   {msg}"[:620] + "\n"); out.flush()
             if self.stop.is_set(): break
+    def sylvactl(self):
+        """sylvactl watch -A --once toutes les 10 s (lecture seule, garde-fou dans sylvactl_cmd) ; sortie brute complete + releve analyse."""
+        out = open(f"{self.d}/sylvactl/poll.jsonl", "a"); raw = open(f"{self.d}/sylvactl/brut.log", "a")
+        while not self.stop.is_set():
+            rec, brut = sylvactl_once()
+            raw.write(brut + "\n"); raw.flush(); out.write(json.dumps(rec) + "\n"); out.flush()
+            self.stop.wait(10)
     def alerts(self):
         out = open(f"{self.d}/alerts/poll.jsonl", "a")
         while not self.stop.is_set():
@@ -213,6 +247,8 @@ def run_rep(scen, rep, rundir, baseline, dry=False):
     env = dict(ENV, REP=str(rep), RUNDIR=d)
     sd = f"{V2}/scenarios/{scen}"
     if dry:
+        rec, brut = sylvactl_once(); log(f"[dry-run] {scen} rep{rep} sylvactl watch -A --once : rc={rec['rc']} all_done={rec['all_done']} notre_ok={rec['notre_ok']} ressources={rec['n_ressources']} {rec['dur_ms']} ms")
+        if rec["rc"] != 0: raise Abort("dry-run : sylvactl en echec")
         for s in [x for x in ("prepare", "inject", "restore") if os.path.exists(f"{sd}/{x}.sh")]:
             rc, o, e = sh(["bash", f"{sd}/{s}.sh", "--dry-run"], 120, env); log(f"[dry-run] {scen} rep{rep} {s}: rc={rc} {o.strip()} {e.strip()[:200]}")
             if rc != 0: raise Abort(f"dry-run {scen}/{s} en echec")
