@@ -36,7 +36,7 @@ def jk(fn, *a):
 SYLVACTL = "/opt/nidar/sylva-core/bin/sylvactl"
 SYLVACTL_AUTORISEES = (("watch", "-A", "--once"), ("status", "-A"))       # seules commandes permises (criteres-sylvactl.md)
 SYLVACTL_INTERDITES = ("--reconcile", "--unit-timeout", "--resume-suspended")  # options qui MODIFIENT le cluster
-SYLVACTL_TIMEOUT = 25                                                      # delai maximal par appel (s)
+SYLVACTL_TIMEOUT = 8                                                       # delai maximal par appel (s) ; un appel toutes les 10 s (debut a debut)
 def sylvactl_cmd(args):
     """Garde-fou : refuse toute commande hors liste ou contenant une option qui modifie le cluster."""
     cmd = [SYLVACTL, "--kubeconfig", MG, *args]
@@ -48,14 +48,21 @@ def sylvactl_cmd(args):
 def sylvactl_once(args=("watch", "-A", "--once")):
     """Un appel borne ; renvoie l'enregistrement analyse et la sortie brute."""
     t = now(); t1 = time.time()
-    rc, o, e = sh(sylvactl_cmd(list(args)), SYLVACTL_TIMEOUT)
+    # Constate le 20/11 (essai) : "watch --once" NE SE TERMINE PAS tant qu'une ressource n'est pas prete (il attend). On coupe au bout de
+    # SYLVACTL_TIMEOUT et on GARDE la sortie partielle (les lignes d'etat sont ecrites des le debut) ; "attend" = l'appel n'a pas abouti.
+    p = subprocess.Popen(sylvactl_cmd(list(args)), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=ENV)
+    attend = False
+    try: o, e = p.communicate(timeout=SYLVACTL_TIMEOUT); rc = p.returncode
+    except subprocess.TimeoutExpired:
+        p.kill(); o, e = p.communicate(); rc = 124; attend = True
     lines = (o + e).splitlines()                      # sylvactl ecrit les lignes d'etat sur stderr
     ks = next((l for l in lines if "Kustomization/sylvatwin-flux/sylvatwin-5gc" in l), None)
     gr = next((l for l in lines if "GitRepository/sylvatwin-flux/sylvatwin-poc" in l), None)
     res = [l for l in lines if l[:4].isdigit() and len(l.split()) > 3 and "/" in l.split()[2]]
     pas_ok = [l for l in res if not any(w in l for w in ("Succeeded", "Ready"))]
     rec = dict(t=t, dur_ms=int((time.time() - t1) * 1000), rc=rc, all_done=any("All Done" in l for l in lines), ks=ks, gr=gr,
-               notre_ok=bool(ks and "ReconciliationSucceeded" in ks and (gr is None or "Succeeded" in gr)), n_ressources=len(res), pas_ok=pas_ok[:20],
+               notre_ok=bool(ks and "ReconciliationSucceeded" in ks and (gr is None or "Succeeded" in gr)), n_ressources=len(res), pas_ok=pas_ok[:20], attend=attend,
+               valide=bool(res),
                fin=(lines[-1] if lines else ""))
     return rec, f"=== {t} rc={rc} dur_ms={rec['dur_ms']} cmd=sylvactl {' '.join(args)}\n{o}{e}"
 
@@ -216,7 +223,7 @@ class Collectors:
         while not self.stop.is_set():
             rec, brut = sylvactl_once()
             raw.write(brut + "\n"); raw.flush(); out.write(json.dumps(rec) + "\n"); out.flush()
-            self.stop.wait(10)
+            self.stop.wait(max(0.5, 10 - rec["dur_ms"] / 1000))
     def alerts(self):
         out = open(f"{self.d}/alerts/poll.jsonl", "a")
         while not self.stop.is_set():

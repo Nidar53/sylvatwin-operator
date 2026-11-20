@@ -189,8 +189,10 @@ def analyse_rep(d, scen):
     R["prom_delai_s"] = min(((t - t0).total_seconds() for t in newal.values()), default=None)
     if SYL:   # sylvactl watch -A --once toutes les 10 s (criteres-sylvactl.md)
         sp = jl(d + "/sylvactl/poll.jsonl")
-        R["sylvactl_releves"] = len(sp); R["sylvactl_erreurs"] = sum(1 for p in sp if p.get("rc") != 0)
-        inw = [p for p in sp if p.get("rc") == 0 and t0 < P(p["t"]) and (not tend or P(p["t"]) <= tend)]
+        ok_ = lambda p: p.get("valide", p.get("rc") == 0)          # releve exploitable : sortie avec des lignes d'etat (meme si l'appel a ete coupe)
+        R["sylvactl_releves"] = len(sp); R["sylvactl_erreurs"] = sum(1 for p in sp if not ok_(p))
+        inw = [p for p in sp if ok_(p) and t0 < P(p["t"]) and (not tend or P(p["t"]) <= tend)]
+        R["sylvactl_attend"] = sum(1 for p in inw if p.get("attend"))
         bad = [p for p in inw if not p.get("notre_ok")]
         R["sylvactl_signale"] = bool(bad)
         R["sylvactl_delai_s"] = (P(bad[0]["t"]) - t0).total_seconds() if bad else None
@@ -199,7 +201,7 @@ def analyse_rep(d, scen):
         R["sylvactl_messages"] = sorted({strip(p.get("ks"))[:200] for p in bad})[:5]
         R["sylvactl_autres_unites_pas_pretes"] = sum(1 for p in inw if not p.get("all_done"))
         if bad:
-            back = [p for p in sp if p.get("rc") == 0 and P(p["t"]) > P(bad[0]["t"]) and p.get("all_done") and p.get("notre_ok")]
+            back = [p for p in sp if ok_(p) and P(p["t"]) > P(bad[0]["t"]) and p.get("all_done") and p.get("notre_ok")]
             R["sylvactl_retour_all_done_depuis_t0_s"] = (P(back[0]["t"]) - t0).total_seconds() if back else None
             R["sylvactl_retour_all_done_apres_restauration_s"] = (P(back[0]["t"]) - trest).total_seconds() if back and trest else None
     R["retour_sain_s"] = (tsain - trest).total_seconds() if tsain and trest else None
@@ -345,14 +347,14 @@ def report21(reps, out):
         att = {"F1": "oui", "F2": "oui", "F3": "oui"}
         L += ["## sylvactl (outil de Sylva, `watch -A --once` toutes les 10 s, lecture seule)", "",
               "Attendus écrits avant l'essai dans `eval/v2/criteres-sylvactl.md` (SUPPOSÉ). « signale » = la ligne de notre Kustomization n'est pas `ReconciliationSucceeded` (ou le GitRepository pas `Succeeded`) dans la fenêtre. Avec peu de répétitions : k/n, sans intervalle de confiance.", "",
-              "| id | attendu | sylvactl signale | 1er signal depuis t0 | message (1er relevé) | retour à All Done après la restauration | relevés (erreurs) | relevés où une AUTRE unité n'est pas prête |", "|---|---|---|---|---|---|---|---|"]
+              "| id | attendu | sylvactl signale | 1er signal depuis t0 | message (1er relevé) | retour à All Done après la restauration | relevés (erreurs) | relevés où sylvactl attend (appel non terminé) | relevés où une AUTRE unité n'est pas prête |", "|---|---|---|---|---|---|---|---|---|"]
         for sc in order:
             rr = by[sc]; n = len(rr)
             if "sylvactl_signale" not in rr[0]: continue
             dl = [r["sylvactl_delai_s"] for r in rr if r.get("sylvactl_delai_s") is not None]
             rb = [r["sylvactl_retour_all_done_apres_restauration_s"] for r in rr if r.get("sylvactl_retour_all_done_apres_restauration_s") is not None]
             msg = "; ".join(sorted({(r.get("sylvactl_message") or "")[:120] for r in rr if r.get("sylvactl_message")})) or "—"
-            L.append(f"| {sc} | {att.get(sc, 'non')} | {sum(1 for r in rr if r['sylvactl_signale'])}/{n} | {fmt_d(dl)} | {msg} | {fmt_d(rb)} | {sum(r['sylvactl_releves'] for r in rr)} ({sum(r['sylvactl_erreurs'] for r in rr)}) | {sum(r['sylvactl_autres_unites_pas_pretes'] for r in rr)} |")
+            L.append(f"| {sc} | {att.get(sc, 'non')} | {sum(1 for r in rr if r['sylvactl_signale'])}/{n} | {fmt_d(dl)} | {msg} | {fmt_d(rb)} | {sum(r['sylvactl_releves'] for r in rr)} ({sum(r['sylvactl_erreurs'] for r in rr)}) | {sum(r.get('sylvactl_attend', 0) for r in rr)} | {sum(r['sylvactl_autres_unites_pas_pretes'] for r in rr)} |")
         L += ["", "Détail par répétition (sylvactl) :", ""]
         for r in sorted(reps, key=lambda r: (r["scenario"], r["rep"])):
             if "sylvactl_signale" in r:
