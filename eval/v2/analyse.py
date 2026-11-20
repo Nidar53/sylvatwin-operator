@@ -199,7 +199,7 @@ def analyse_rep(d, scen):
         strip = lambda l: " ".join(l.split()[2:]) if l else "(Kustomization absente de la sortie)"
         R["sylvactl_message"] = strip(bad[0].get("ks")) if bad else None
         R["sylvactl_messages"] = sorted({strip(p.get("ks"))[:200] for p in bad})[:5]
-        R["sylvactl_autres_unites_pas_pretes"] = sum(1 for p in inw if not p.get("all_done"))
+        R["sylvactl_autres_unites_pas_pretes"] = sum(1 for p in inw if any("sylvatwin-flux/" not in l for l in p.get("pas_ok", [])))
         if bad:
             back = [p for p in sp if ok_(p) and P(p["t"]) > P(bad[0]["t"]) and p.get("all_done") and p.get("notre_ok")]
             R["sylvactl_retour_all_done_depuis_t0_s"] = (P(back[0]["t"]) - t0).total_seconds() if back else None
